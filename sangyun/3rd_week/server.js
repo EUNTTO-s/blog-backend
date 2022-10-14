@@ -31,8 +31,44 @@ dataSource.initialize().then(() => {
   console.log("Data Source has been initialized!");
 });
 
-// book route
-// app.get('/book', getBook(dataSource));
+
+
+
+// user route
+app.post('/user', addUser);
+
+// register user
+async function addUser(req, res) {
+  const { email, nickname, password, profile_image = 'none'} = req.body;
+  if (!email | !nickname | !password) {
+    res.status(400).json({ message: "plz fill out 'email, nickname, password'" });
+    return;
+  }
+
+  const answer = await dataSource
+    .query(
+      `INSERT INTO users(
+                          email,
+                          nickname,
+                          password,
+                          profile_image
+                        ) VALUES (?, ?, ?, ?);
+                        `,
+      [email, nickname, password, profile_image]
+    )
+    .catch((err) => {
+      console.log(err);
+      return Promise.resolve(undefined);
+    });
+
+  console.dir(answer);
+
+  if (answer) {
+    res.status(201).json({ message: "successfully created" });
+  } else {
+    res.status(500).json({ message: "failed to create" });
+  }
+};
 
 
 // init
