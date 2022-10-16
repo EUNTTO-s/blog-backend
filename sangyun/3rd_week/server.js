@@ -3,8 +3,11 @@ const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
 
+const asyncWrap = require('./utils/async-wrap');
+
 const app = express();
 app.use(express.json());
+
 
 const { DataSource } = require('typeorm');
 // in .env file
@@ -35,27 +38,32 @@ dataSource.initialize().then(() => {
 // TODO: 좋아요 API 만들어보기
 
 // user route
-app.post('/user', addUser);
+app.post('/user', asyncWrap(addUser));
 
 // posting route
-app.post('/post', addPost);
-app.get('/post', getPostAll);
-app.patch('/post/:id', patchPost);
-app.delete('/post/:id', deletePost);
-app.get('/post/user/:id', getPostByUserId);
+app.post('/post', asyncWrap(addPost));
+app.get('/post', asyncWrap(getPostAll));
+app.patch('/post/:id', asyncWrap(patchPost));
+app.delete('/post/:id', asyncWrap(deletePost));
+app.get('/post/user/:id', asyncWrap(getPostByUserId));
 
-
+// error handling 미들웨어
+app.use((err, req, res, next) => {
+  let responseInfo = err;
+  if (err.sqlMessage) {
+    responseInfo = {status: 500, message: "failed"};
+  }
+  res.status(responseInfo.status || 500).send({ message: responseInfo.message || '' });
+});
 
 // register user
 async function addUser(req, res) {
   const { email, nickname, password, profile_image = 'none'} = req.body;
   if (!email | !nickname | !password) {
-    res.status(400).json({ message: "plz fill out 'email, nickname, password'" });
-    return;
+    throw {status: 400, message: "plz fill 'email, nickname, password"};
   }
 
-  const answer = await dataSource
-    .query(
+  await dataSource.query(
       `INSERT INTO users(
                           email,
                           nickname,
@@ -65,25 +73,17 @@ async function addUser(req, res) {
                         `,
       [email, nickname, password, profile_image]
     )
-    .catch((err) => {
-      console.log(err);
-      return Promise.resolve(undefined);
+    .catch(() => {
+      throw {status: 500, message: "sql failed"};
     });
 
-  console.dir(answer);
-
-  if (answer) {
-    res.status(201).json({ message: "successfully created" });
-  } else {
-    res.status(500).json({ message: "failed to create" });
-  }
+  res.status(201).json({ message: "successfully created" });
 };
 
 async function addPost(req, res) {
   const { contents, image_url, user_id} = req.body;
   if (!contents | !image_url) {
-    res.status(400).json({ message: "plz fill out 'contents, image_url'" });
-    return;
+    throw {status: 400, message: "plz fill out 'contents, image_url'"};
   }
 
   const answer = await dataSource.transaction(async (transactionalEntityManager) => {
@@ -105,17 +105,9 @@ async function addPost(req, res) {
       [posting.insertId, image_url]
     );
     return posting;
-    })
-  .catch(e => {
-    console.log(e.sqlMessage);
-    return Promise.resolve(undefined);
-  });
+    });
 
-  if (answer) {
-    res.status(201).json({ message: "successfully created" });
-  } else {
-    res.status(500).json({ message: "failed to create" });
-  }
+  res.status(201).json({ message: "successfully created" });
 }
 
 async function getPostAll(req, res) {
@@ -131,19 +123,8 @@ async function getPostAll(req, res) {
         FROM postings
         JOIN users ON postings.user_id = users.id
         JOIN posting_images ON posting_images.posting_id = postings.id
-      `)
-    .catch((err) => {
-      console.log(err);
-      return Promise.resolve(undefined);
-    });
-
-  console.dir(answer);
-
-  if (answer) {
+    `);
     res.status(201).json({ data: answer });
-  } else {
-    res.status(500).json({ message: "failed to create" });
-  }
 }
 
 async function getPostByUserId(req, res) {
@@ -166,9 +147,9 @@ async function getPostByUserId(req, res) {
       [userId])
     .then((answer) => {
       if (!answer) {
-        return Promise.resolve(answer);
+        return answer;
       }
-      return Promise.resolve({
+      return {
         userId: answer[0].userId,
         userProfileImage: answer[0].userProfileImage,
         postings: [...answer].map((post) => {
@@ -178,27 +159,18 @@ async function getPostByUserId(req, res) {
             postingContent: post.postingContent
           }
         })
-        }
-      );
-    })
-    .catch((err) => {
-      console.log(err);
-      return Promise.resolve(undefined);
+      }
+      ;
     });
 
-  if (answer) {
-    res.status(201).json({ data: answer });
-  } else {
-    res.status(500).json({ message: "failed" });
-  }
+  res.status(201).json({ data: answer });
 }
 
 async function patchPost(req, res) {
   const postId = req.params.id;
   const { contents, image_url } = req.body;
   if (!contents | !image_url) {
-    res.status(400).json({ message: "plz fill out 'contents, image_url'" });
-    return;
+    throw {status: 400, message: "plz fill out 'contents, image_url'"};
   }
 
   const answer = await dataSource.transaction(
@@ -230,18 +202,9 @@ async function patchPost(req, res) {
           ,[postId, image_url]);
       }
       return await getPost(postId);
-  })
-  // transaction 실패
-  .catch(e => {
-    console.log(e);
-    return Promise.resolve(undefined);
   });
 
-  if (answer) {
-    res.status(200).json({data: answer});
-  } else {
-    res.status(500).json({ message: "failed to patch" });
-  }
+  res.status(200).json({data: answer});
 }
 
 async function deletePost(req, res) {
@@ -260,16 +223,9 @@ async function deletePost(req, res) {
       ,[postId])
 
       if (!result.affectedRows) {
-        return Promise.reject({status: 404, message: "postID에 해당하는 포스트가 존재하지 않습니다"});
+        throw {status: 404, message: "postID에 해당하는 포스트가 존재하지 않습니다"};
       }
-
-      return Promise.resolve({status: 200, message: "successfully deleted"});
-  })
-  .catch(err => {
-    if (err.sqlMessage) {
-      return Promise.resolve({status: 500, message: "failed"});
-    }
-    return Promise.resolve(err);
+      return {status: 200, message: "successfully deleted"};
   });
 
   res.status(answer.status).json({ message: answer.message });
