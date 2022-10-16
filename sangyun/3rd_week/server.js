@@ -45,7 +45,8 @@ app.post('/post', asyncWrap(addPost));
 app.get('/post', asyncWrap(getPostAll));
 app.patch('/post/:id', asyncWrap(patchPost));
 app.delete('/post/:id', asyncWrap(deletePost));
-app.get('/post/user/:id', asyncWrap(getPostByUserId));
+app.get('/post/:id', asyncWrap(getPost));
+app.get('/post/user/:id', asyncWrap(getPostsByUserId));
 
 // error handling 미들웨어
 app.use((err, req, res, next) => {
@@ -53,6 +54,7 @@ app.use((err, req, res, next) => {
   if (err.sqlMessage) {
     responseInfo = {status: 500, message: "failed"};
   }
+  console.log("ERROR LOG:", responseInfo);
   res.status(responseInfo.status || 500).send({ message: responseInfo.message || '' });
 });
 
@@ -114,53 +116,83 @@ async function getPostAll(req, res) {
   const answer = await dataSource
     .query(
       `SELECT
-        users.id AS userId,
-        users.profile_image AS userProfileImage,
-        postings.id AS postingId,
-        posting_images.image_url AS postingImageUrl,
-        postings.contents AS postingContent
+      users.id AS user_id,
+      users.profile_image AS user_profile_image,
+      JSON_ARRAYAGG(JSON_OBJECT("image_url_list", posts.image_list, "id", posts.id, "content", content))
+        AS post_list
 
-        FROM postings
-        JOIN users ON postings.user_id = users.id
-        JOIN posting_images ON posting_images.posting_id = postings.id
-    `);
-    res.status(201).json({ data: answer });
+      FROM users
+
+      JOIN (
+        SELECT
+          postings.id,
+          postings.user_id,
+          postings.contents AS content,
+          pi.post_imgs AS image_list
+        FROM
+          postings
+        JOIN (
+          SELECT
+            posting_id,
+            JSON_ARRAYAGG(image_url) AS post_imgs
+          FROM
+            posting_images
+          GROUP BY
+            posting_id
+        ) pi ON pi.posting_id = postings.id
+      ) posts ON posts.user_id = users.id
+
+      GROUP BY users.id
+  `)
+    .then((answer) => {
+      return [...answer].map((userWithPost)=> {
+        return {...userWithPost, post_list: JSON.parse(userWithPost.post_list) }
+      })
+    });
+
+  res.status(201).json({ data: answer });
 }
 
-async function getPostByUserId(req, res) {
+async function getPostsByUserId(req, res) {
   const userId = req.params.id;
   const answer = await dataSource
+  // 한 유저에 대한 포스트 리스트 찾기
     .query(
       `SELECT
-        users.id AS userId,
-        users.profile_image AS userProfileImage,
-        postings.id AS postingId,
-        posting_images.image_url AS postingImageUrl,
-        postings.contents AS postingContent
+      users.id AS user_id,
+      users.profile_image AS user_profile_image,
+      JSON_ARRAYAGG(JSON_OBJECT("image_url_list", posts.image_list, "id", posts.id, "content", content))
+        AS post_list
 
-        FROM postings
-        JOIN users ON postings.user_id = users.id
-        JOIN posting_images ON posting_images.posting_id = postings.id
+      FROM users
+      -- 게시물을 가져옴(게시물 이미지 리스트 테이블을 엮은)
+      JOIN (
+        SELECT
+          postings.id,
+          postings.user_id,
+          postings.contents AS content,
+          pi.post_imgs AS image_list
+        FROM
+          postings
+        JOIN (
+          SELECT
+            posting_id,
+            JSON_ARRAYAGG(image_url) AS post_imgs
+          FROM
+            posting_images
+          GROUP BY
+            posting_id
+        ) pi ON pi.posting_id = postings.id
+        WHERE postings.user_id = ?
+      ) posts ON posts.user_id = users.id
 
-        WHERE users.id = ?
-      `,
+      GROUP BY users.id
+  `,
       [userId])
     .then((answer) => {
-      if (!answer) {
-        return answer;
-      }
-      return {
-        userId: answer[0].userId,
-        userProfileImage: answer[0].userProfileImage,
-        postings: [...answer].map((post) => {
-          return {
-            postingId : post.postingId,
-            postingImageUrl: post.postingImageUrl,
-            postingContent: post.postingContent
-          }
-        })
-      }
-      ;
+      return [...answer].map((userWithPost)=> {
+        return {...userWithPost, post_list: JSON.parse(userWithPost.post_list) }
+      })
     });
 
   res.status(201).json({ data: answer });
@@ -201,7 +233,7 @@ async function patchPost(req, res) {
           ) VALUES (?, ?);`
           ,[postId, image_url]);
       }
-      return await getPost(postId);
+      return await getPostByPostId(postId);
   });
 
   res.status(200).json({data: answer});
@@ -231,7 +263,12 @@ async function deletePost(req, res) {
   res.status(answer.status).json({ message: answer.message });
 }
 
-async function getPost(postId) {
+async function getPost(req, res) {
+  const userId = req.params.id;
+  const answer = await getPostByPostId(userId);
+  res.status(200).json({data: answer});
+}
+async function getPostByPostId(postId) {
   /*
   아래와 같은 값을 반환함.
   {
@@ -245,19 +282,31 @@ async function getPost(postId) {
   return await dataSource
     .query(
       `SELECT
-        users.id AS userId,
-        users.nickname AS userName,
-        postings.id AS postingId,
-        posting_images.image_url AS postingImageUrl,
-        postings.contents AS postingContent
-
-        FROM postings
-        JOIN users ON postings.user_id = users.id
-        JOIN posting_images ON posting_images.posting_id = postings.id
-
-        WHERE postings.id = ?
+        postings.id,
+        postings.user_id,
+        postings.contents AS content,
+        pi.post_imgs AS image_list
+      FROM
+        postings
+      JOIN (
+        SELECT
+          posting_id,
+          JSON_ARRAYAGG(image_url) AS post_imgs
+        FROM
+          posting_images
+        GROUP BY
+          posting_id
+      ) pi ON pi.posting_id = postings.id
+      WHERE postings.id = ?
       `,
-    [postId]);
+    [postId])
+    .then((answer) => {
+      if (!answer.length)
+        throw {status: 404, message: "there is no matched result"};
+
+      const post = answer[0].image_list && answer[0];
+      return {...post, image_list: JSON.parse(post.image_list)}
+    })
 }
 
 // init
