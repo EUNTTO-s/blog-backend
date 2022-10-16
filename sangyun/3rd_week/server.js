@@ -8,6 +8,11 @@ const asyncWrap = require('./utils/async-wrap');
 const app = express();
 app.use(express.json());
 
+const morgan = require('morgan');
+app.use(morgan('combined'));
+
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const { DataSource } = require('typeorm');
 // in .env file
@@ -39,6 +44,8 @@ dataSource.initialize().then(() => {
 
 // user route
 app.post('/user', asyncWrap(addUser));
+// user login route
+app.post('/login', asyncWrap(login));
 
 // posting route
 app.post('/post', asyncWrap(addPost));
@@ -48,10 +55,39 @@ app.delete('/post/:id', asyncWrap(deletePost));
 app.get('/post/:id', asyncWrap(getPost));
 app.get('/post/user/:id', asyncWrap(getPostsByUserId));
 
+async function login(req, res) {
+  const {email, password} = req.body;
+  if (!email || !password) {
+    throw {status: 400, message: 'plz fill out id, password'};
+  }
+  // 매칭되는 유저가 있는 지 확인
+  const answer = await dataSource.query(`
+    SELECT
+      id,
+      password
+    FROM users
+    WHERE
+    email = ?
+  `, [email]);
+  // 있으면 토큰 발행
+  if (!answer.length) {
+    throw {status: 404, message: '등록되지 않은 이메일이에요.'}
+  }
+  else if (!bcrypt.compareSync(password, answer[0].password)) {
+    throw {status: 404, message: '비밀번호가 달라요.'}
+  }
+  makeToken = jwt.sign({ id:answer.id }, 'server_made_secret_key', { expiresIn: '1h' });
+  res.send({message: 'login Success' ,token: makeToken});
+}
+
+//TODO [추가 Mission 1] | CRUD - Create & Delete (음료 Like 기능)
+//TODO [추가 Mission 2] | CRUD - comments or reviews
+
 // error handling 미들웨어
 app.use((err, req, res, next) => {
   let responseInfo = err;
   if (err.sqlMessage) {
+    console.log(err.sqlMessage);
     responseInfo = {status: 500, message: "failed"};
   }
   console.log("ERROR LOG:", responseInfo);
@@ -65,6 +101,8 @@ async function addUser(req, res) {
     throw {status: 400, message: "plz fill 'email, nickname, password"};
   }
 
+
+
   await dataSource.query(
       `INSERT INTO users(
                           email,
@@ -73,7 +111,7 @@ async function addUser(req, res) {
                           profile_image
                         ) VALUES (?, ?, ?, ?);
                         `,
-      [email, nickname, password, profile_image]
+      [email, nickname, await makeHash(password), profile_image]
     )
     .catch(() => {
       throw {status: 500, message: "sql failed"};
@@ -307,6 +345,10 @@ async function getPostByPostId(postId) {
       const post = answer[0].image_list && answer[0];
       return {...post, image_list: JSON.parse(post.image_list)}
     })
+}
+
+async function makeHash(password) {
+  return await bcrypt.hash(password, 10)
 }
 
 // init
