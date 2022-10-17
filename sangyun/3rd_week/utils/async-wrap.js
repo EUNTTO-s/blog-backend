@@ -1,7 +1,7 @@
 function asyncWrap(asyncController) {
   return async (req, res, next) => {
 		  try {
-        await asyncController(req, res)
+        await asyncController(req, res, next)
       }
       catch(error) {
         next(error);

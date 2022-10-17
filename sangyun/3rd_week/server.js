@@ -55,6 +55,9 @@ app.delete('/post/:id', asyncWrap(deletePost));
 app.get('/post/:id', asyncWrap(getPost));
 app.get('/post/user/:id', asyncWrap(getPostsByUserId));
 
+// test
+app.get('/test', asyncWrap(authMiddleware), asyncWrap(test));
+
 async function login(req, res) {
   const {email, password} = req.body;
   if (!email || !password) {
@@ -70,14 +73,15 @@ async function login(req, res) {
     email = ?
   `, [email]);
   // 있으면 토큰 발행
-  if (!answer.length) {
+  const userInfo = answer.pop();
+  if (!userInfo) {
     throw {status: 404, message: '등록되지 않은 이메일이에요.'}
   }
-  else if (!bcrypt.compareSync(password, answer[0].password)) {
+  else if (!bcrypt.compareSync(password, userInfo.password)) {
     throw {status: 404, message: '비밀번호가 달라요.'}
   }
-  makeToken = jwt.sign({ id:answer.id }, 'server_made_secret_key', { expiresIn: '1h' });
-  res.send({message: 'login Success' ,token: makeToken});
+  const makeToken = jwt.sign({ id: userInfo.id }, 'server_made_secret_key', { expiresIn: '24h' });
+  res.status(200).send({message: 'login Success' ,token: makeToken});
 }
 
 //TODO [추가 Mission 1] | CRUD - Create & Delete (음료 Like 기능)
@@ -100,8 +104,6 @@ async function addUser(req, res) {
   if (!email | !nickname | !password) {
     throw {status: 400, message: "plz fill 'email, nickname, password"};
   }
-
-
 
   await dataSource.query(
       `INSERT INTO users(
@@ -347,8 +349,51 @@ async function getPostByPostId(postId) {
     })
 }
 
+function decodeToken(token) {
+  try {
+    return jwt.verify(token, 'server_made_secret_key');
+  } catch (err) {
+    console.log(`err: ${err}`);
+    throw {status: 401, message: "unauthorized"}
+  }
+}
+
+// 유저 정보 찾기
+async function findUser(userId) {
+  return await dataSource.query(`
+    SELECT
+      id,
+      email,
+      nickname
+    FROM users
+    WHERE users.id = ?
+  `, [userId])
+  .then(arr => {
+    if (!arr.length) {
+      throw {status: 400, message: '해당 유저가 존재하지 않습니다'}
+    }
+    return arr.pop();
+  })
+  .catch((err) => {
+    throw {status: 400, message: err.message || '인증 실패'}
+  })
+}
+
+async function authMiddleware(req, res, next) {
+	const token = req.headers.authorization;
+	const decodedToken = decodeToken(token);
+  const userInfo = await findUser(decodedToken.id);
+  req.userInfo = userInfo;
+  next();
+}
+
+
 async function makeHash(password) {
   return await bcrypt.hash(password, 10)
+}
+
+async function test(req, res) {
+  res.send("TEST");
 }
 
 // init
