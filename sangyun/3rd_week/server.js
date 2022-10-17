@@ -55,6 +55,9 @@ app.delete('/post/:id', asyncWrap(deletePost));
 app.get('/post/:id', asyncWrap(getPost));
 app.get('/post/user/:id', asyncWrap(getPostsByUserId));
 
+// likes route
+app.post('/post/:id/like', asyncWrap(authMiddleware), asyncWrap(addLikePost));
+
 // test
 app.get('/test', asyncWrap(authMiddleware), asyncWrap(test));
 
@@ -387,13 +390,40 @@ async function authMiddleware(req, res, next) {
   next();
 }
 
-
 async function makeHash(password) {
   return await bcrypt.hash(password, 10)
 }
 
 async function test(req, res) {
+  console.log(`userInfo: ${JSON.stringify(req.userInfo)}`);
   res.send("TEST");
+}
+
+async function addLikePost(req, res) {
+  const userId = req.userInfo.id;
+  const postId = req.params.id;
+  const {like} = req.body;
+  const queryText = like ?
+      (`
+        INSERT INTO
+          likes_postings_users(
+            user_id,
+            posting_id
+          )
+        VALUES(?, ?)
+        ON DUPLICATE KEY
+          UPDATE
+            user_id=user_id,
+            posting_id=posting_id
+      `)
+    :
+      (`
+        DELETE FROM
+          likes_postings_users
+        WHERE user_id = ? AND posting_id = ?
+      `);
+  dataSource.query(queryText, [userId, postId])
+  res.send(`success to ${like? "like" : "remove like"}`);
 }
 
 // init
