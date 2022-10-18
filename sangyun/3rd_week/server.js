@@ -39,13 +39,22 @@ dataSource.initialize().then(() => {
   console.log("Data Source has been initialized!");
 });
 
-
-// TODO: 좋아요 API 만들어보기
-
 // user route
 app.post('/user', asyncWrap(addUser));
 // user login route
 app.post('/login', asyncWrap(login));
+
+// TODO 대댓글 추가해보기
+// comments route
+  // create comment
+app.post('/post/comment', asyncWrap(authMiddleware), asyncWrap(addCommentOnPost));
+  // read comment
+app.get('/post/comment/:id', asyncWrap(getCommentOnPost));
+  // update comment
+app.patch('/post/comment', asyncWrap(authMiddleware), asyncWrap(updateCommentOnPost));
+  // delete comment
+app.delete('/post/comment', asyncWrap(authMiddleware), asyncWrap(deleteCommentOnPost));
+
 
 // posting route
 app.post('/post', asyncWrap(addPost));
@@ -86,9 +95,6 @@ async function login(req, res) {
   const makeToken = jwt.sign({ id: userInfo.id }, 'server_made_secret_key', { expiresIn: '24h' });
   res.status(200).send({message: 'login Success' ,token: makeToken});
 }
-
-//TODO [추가 Mission 1] | CRUD - Create & Delete (음료 Like 기능)
-//TODO [추가 Mission 2] | CRUD - comments or reviews
 
 // error handling 미들웨어
 app.use((err, req, res, next) => {
@@ -424,6 +430,80 @@ async function addLikePost(req, res) {
       `);
   dataSource.query(queryText, [userId, postId])
   res.send(`success to ${like? "like" : "remove like"}`);
+}
+
+async function addCommentOnPost(req, res) {
+  const userId = req.userInfo.id;
+  const {comment, postId} = req.body;
+  console.log(`comment: `, comment);
+  await dataSource.query(`
+      INSERT INTO comments(
+        comment,
+        posting_id,
+        user_id
+        )
+      VALUES(?, ?, ?);`
+      , [comment, postId, userId]);
+  res.send(`success to add comment`);
+}
+
+async function deleteCommentOnPost(req, res) {
+  const userId = req.userInfo.id;
+  const {commentId} = req.body;
+  console.log(`commentId: `, commentId);
+  const result = await dataSource.query(`
+      DELETE FROM
+        comments
+      WHERE id = ? AND user_id = ?`
+      , [commentId, userId]
+    )
+  console.log(JSON.stringify(result));
+  if (!result.affectedRows) {
+    throw {status: 404, message: "권한이 없거나 해당 코멘트가 없습니다."};
+  }
+  res.send(`success to add comment`);
+}
+
+async function updateCommentOnPost(req, res) {
+  const userId = req.userInfo.id;
+  const {commentId, comment} = req.body;
+  console.log(`commentId: `, commentId);
+  const result = await dataSource.query(`
+      UPDATE comments
+        SET comment = ?
+      WHERE id = ? AND user_id = ?`
+      , [comment, commentId, userId]
+    )
+  if (!result.affectedRows) {
+    throw {status: 404, message: "권한이 없거나 해당 코멘트가 없습니다."};
+  }
+  res.send(`success to update comment`);
+}
+
+async function getCommentOnPost(req, res) {
+  const commentId = req.params.id;
+  console.log(`commentId: `, commentId);
+  const result = await dataSource.query(`
+      SELECT
+        comments.comment,
+        postings.id AS post_id,
+        comments.created_at,
+        comments.updated_at,
+        users.nickname as user_nickname,
+        users.id as user_id
+      FROM comments
+      JOIN users    ON comments.user_id     = users.id
+      JOIN postings ON comments.posting_id  = postings.id
+      WHERE comments.id = ?`
+      , [commentId]
+    )
+  .then(arr => {
+    if (!arr.length) {
+      throw {status: 400, message: '해당 코멘트가 존재하지 않습니다'}
+    }
+    return arr.pop();
+  });
+  res.send({data: result});
 }
 
 // init
