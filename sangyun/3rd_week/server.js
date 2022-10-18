@@ -76,7 +76,7 @@ async function login(req, res) {
     throw {status: 400, message: 'plz fill out id, password'};
   }
   // 매칭되는 유저가 있는 지 확인
-  const answer = await dataSource.query(`
+  const [userInfo] = await dataSource.query(`
     SELECT
       id,
       password
@@ -85,7 +85,6 @@ async function login(req, res) {
     email = ?
   `, [email]);
   // 있으면 토큰 발행
-  const userInfo = answer.pop();
   if (!userInfo) {
     throw {status: 404, message: '등록되지 않은 이메일이에요.'}
   }
@@ -369,7 +368,7 @@ function decodeToken(token) {
 
 // 유저 정보 찾기
 async function findUser(userId) {
-  return await dataSource.query(`
+  let [userInfo] = await dataSource.query(`
     SELECT
       id,
       email,
@@ -377,15 +376,13 @@ async function findUser(userId) {
     FROM users
     WHERE users.id = ?
   `, [userId])
-  .then(arr => {
-    if (!arr.length) {
-      throw {status: 400, message: '해당 유저가 존재하지 않습니다'}
-    }
-    return arr.pop();
-  })
   .catch((err) => {
     throw {status: 400, message: err.message || '인증 실패'}
   })
+  if (!userInfo) {
+    throw {status: 400, message: '해당 유저가 존재하지 않습니다'}
+  }
+  return userInfo;
 }
 
 async function authMiddleware(req, res, next) {
@@ -483,7 +480,7 @@ async function updateCommentOnPost(req, res) {
 async function getCommentOnPost(req, res) {
   const commentId = req.params.id;
   console.log(`commentId: `, commentId);
-  const result = await dataSource.query(`
+  const [comment] = await dataSource.query(`
       SELECT
         comments.comment,
         postings.id AS post_id,
@@ -496,14 +493,11 @@ async function getCommentOnPost(req, res) {
       JOIN postings ON comments.posting_id  = postings.id
       WHERE comments.id = ?`
       , [commentId]
-    )
-  .then(arr => {
-    if (!arr.length) {
-      throw {status: 400, message: '해당 코멘트가 존재하지 않습니다'}
-    }
-    return arr.pop();
-  });
-  res.send({data: result});
+    );
+  if (!comment) {
+    throw {status: 400, message: '해당 코멘트가 존재하지 않습니다'}
+  }
+  res.send({data: comment});
 }
 
 // init
