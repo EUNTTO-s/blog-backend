@@ -11,7 +11,8 @@ CREATE TABLE `postings` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_id` int NOT NULL,
   `contents` varchar(2000),
-  `created_at` datetime DEFAULT (now())
+  `created_at` datetime DEFAULT (now()),
+  `updated_at` datetime default now() ON UPDATE now()
 );
 
 CREATE TABLE `posting_images` (
@@ -26,7 +27,8 @@ CREATE TABLE `comments` (
   `comment` varchar(2000),
   `posting_id` int NOT NULL,
   `user_id` int NOT NULL,
-  `created_at` datetime DEFAULT (now())
+  `created_at` datetime DEFAULT (now()),
+  `updated_at` datetime default now() ON UPDATE now()
 );
 
 CREATE TABLE `likes_postings_users` (

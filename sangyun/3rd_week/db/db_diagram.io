@@ -12,6 +12,7 @@ Table postings {
   user_id int [not null]
   contents varchar(2000) [null]
   created_at datetime [default: `now()`]
+  updated_at "datetime default now() ON UPDATE now()"
 }
 Ref: postings.user_id > users.id
 
@@ -29,6 +30,7 @@ Table comments {
 	posting_id int [not null]
 	user_id int [not null]
   created_at datetime [default: `now()`]
+  updated_at "datetime default now() ON UPDATE now()"
 }
 Ref: comments.posting_id > postings.id
 Ref: comments.user_id > users.id
