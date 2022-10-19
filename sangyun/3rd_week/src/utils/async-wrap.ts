@@ -1,4 +1,6 @@
-function asyncWrap(asyncController) {
+import express from 'express';
+
+function asyncWrap(asyncController : express.RequestHandler) {
   return async (req, res, next) => {
 		  try {
         await asyncController(req, res, next)
@@ -9,4 +11,4 @@ function asyncWrap(asyncController) {
   };
 }
 
-module.exports = asyncWrap;
+export default asyncWrap;

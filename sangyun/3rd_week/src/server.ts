@@ -1,20 +1,19 @@
-const express = require('express');
-
-const dotenv = require('dotenv');
+import express from 'express';
+import dotenv from 'dotenv';
 dotenv.config();
 
-const asyncWrap = require('./utils/async-wrap');
+import asyncWrap from './utils/async-wrap';
 
 const app = express();
 app.use(express.json());
 
-const morgan = require('morgan');
+import morgan from 'morgan';
 app.use(morgan('combined'));
 
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-const { DataSource } = require('typeorm');
+import { DataSource } from 'typeorm';
 // in .env file
 // TYPEORM_CONNECTION = mysql
 // TYPEORM_HOST = 127.0.0.1
@@ -29,7 +28,7 @@ const { DataSource } = require('typeorm');
 const dataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
   host: process.env.TYPEORM_HOST,
-  port: process.env.TYPEORM_PORT,
+  port: Number(process.env.TYPEORM_PORT),
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
@@ -136,7 +135,7 @@ async function addPost(req, res) {
     throw {status: 400, message: "plz fill out 'contents, image_url'"};
   }
 
-  const answer = await dataSource.transaction(async (transactionalEntityManager) => {
+  await dataSource.transaction(async (transactionalEntityManager) => {
     // execute queries using transactionalEntityManager
     const posting = await transactionalEntityManager.query(
       `INSERT INTO postings(
@@ -387,7 +386,7 @@ async function findUser(userId) {
 
 async function authMiddleware(req, res, next) {
 	const token = req.headers.authorization;
-	const decodedToken = decodeToken(token);
+	const decodedToken = decodeToken(token) as JwtIDPayload;
   const userInfo = await findUser(decodedToken.id);
   req.userInfo = userInfo;
   next();
@@ -425,7 +424,7 @@ async function addLikePost(req, res) {
           likes_postings_users
         WHERE user_id = ? AND posting_id = ?
       `);
-  dataSource.query(queryText, [userId, postId])
+  await dataSource.query(queryText, [userId, postId])
   res.send(`success to ${like? "like" : "remove like"}`);
 }
 
@@ -507,3 +506,11 @@ app.listen(PORT, () => {
 });
 
 
+
+// JUST EXAMPLE FOR TYPE_선언.
+let BUILD_MODE_PRODUCTION  = true;
+if (BUILD_MODE_PRODUCTION) {
+}
+const TEST : TestType = {id : "hellow"};
+if (TEST) {
+}
