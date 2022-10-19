@@ -109,7 +109,7 @@ app.use((err, req, res, next) => {
 // register user
 async function addUser(req, res) {
   const { email, nickname, password, profile_image = 'none'} = req.body;
-  if (!email | !nickname | !password) {
+  if (!email || !nickname || !password) {
     throw {status: 400, message: "plz fill 'email, nickname, password"};
   }
 
@@ -132,7 +132,7 @@ async function addUser(req, res) {
 
 async function addPost(req, res) {
   const { contents, image_url, user_id} = req.body;
-  if (!contents | !image_url) {
+  if (!contents || !image_url) {
     throw {status: 400, message: "plz fill out 'contents, image_url'"};
   }
 
@@ -249,7 +249,7 @@ async function getPostsByUserId(req, res) {
 async function patchPost(req, res) {
   const postId = req.params.id;
   const { contents, image_url } = req.body;
-  if (!contents | !image_url) {
+  if (!contents || !image_url) {
     throw {status: 400, message: "plz fill out 'contents, image_url'"};
   }
 
