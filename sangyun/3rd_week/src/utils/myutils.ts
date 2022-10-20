@@ -11,4 +11,13 @@ function asyncWrap(asyncController : express.RequestHandler) {
   };
 }
 
-export default asyncWrap;
+function checkDataIsNotEmpty(targetData : Object) {
+  Object.keys(targetData).forEach(key => {
+    if (!targetData[key])
+      throw {status: 400, message: `plz fill ${key}`};
+  });
+}
+
+
+
+export {asyncWrap, checkDataIsNotEmpty};

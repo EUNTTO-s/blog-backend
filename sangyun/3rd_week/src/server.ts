@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import asyncWrap from './utils/async-wrap';
+import {asyncWrap, checkDataIsNotEmpty} from './utils/myutils';
 
 const app = express();
 app.use(express.json());
@@ -72,9 +72,8 @@ app.get('/test', asyncWrap(authMiddleware), asyncWrap(test));
 
 async function login(req: express.Request, res: express.Response) {
   const {email, password} = req.body;
-  if (!email || !password) {
-    throw {status: 400, message: 'plz fill out id, password'};
-  }
+  checkDataIsNotEmpty({email, password});
+
   // 매칭되는 유저가 있는 지 확인
   const [userInfo] = await dataSource.query(`
     SELECT
@@ -97,6 +96,7 @@ async function login(req: express.Request, res: express.Response) {
 
 // error handling 미들웨어
 app.use((err : MyError , req: express.Request, res: express.Response) => {
+  // 흐름상 에러가 검출되면 로그 표시 및 클라이언트에게 전달
   let responseInfo = err;
   if (err.sqlMessage) {
     console.log(err.sqlMessage);
@@ -106,12 +106,15 @@ app.use((err : MyError , req: express.Request, res: express.Response) => {
   res.status(responseInfo.status || 500).send({ message: responseInfo.message || '' });
 });
 
+//
+// 이하 기능 로직 함수 선언, 구현
+//
+
+
 // register user
 async function addUser(req: express.Request, res: express.Response) {
   const { email, nickname, password, profile_image = 'none'} = req.body;
-  if (!email || !nickname || !password) {
-    throw {status: 400, message: "plz fill 'email, nickname, password"};
-  }
+  checkDataIsNotEmpty({email, nickname, password});
 
   await dataSource.query(
       `INSERT INTO users(
@@ -132,9 +135,7 @@ async function addUser(req: express.Request, res: express.Response) {
 
 async function addPost(req: express.Request, res: express.Response) {
   const { contents, image_url, user_id} = req.body;
-  if (!contents || !image_url) {
-    throw {status: 400, message: "plz fill out 'contents, image_url'"};
-  }
+  checkDataIsNotEmpty({contents, image_url});
 
   await dataSource.transaction(async (transactionalEntityManager) => {
     // execute queries using transactionalEntityManager
@@ -249,9 +250,7 @@ async function getPostsByUserId(req: express.Request, res: express.Response) {
 async function patchPost(req: express.Request, res: express.Response) {
   const postId = req.params.id;
   const { contents, image_url } = req.body;
-  if (!contents || !image_url) {
-    throw {status: 400, message: "plz fill out 'contents, image_url'"};
-  }
+  checkDataIsNotEmpty({ contents, image_url });
 
   const answer = await dataSource.transaction(
     async (transactionalEntityManager) => {
@@ -432,6 +431,7 @@ async function addLikePost(req: express.Request, res: express.Response) {
 async function addCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {comment, postId} = req.body;
+  checkDataIsNotEmpty({comment, postId});
   console.log(`comment: `, comment);
   await dataSource.query(`
       INSERT INTO comments(
@@ -447,7 +447,8 @@ async function addCommentOnPost(req: express.Request, res: express.Response) {
 async function deleteCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {commentId} = req.body;
-  console.log(`commentId: `, commentId);
+  checkDataIsNotEmpty({commentId});
+
   const result = await dataSource.query(`
       DELETE FROM
         comments
@@ -464,7 +465,8 @@ async function deleteCommentOnPost(req: express.Request, res: express.Response) 
 async function updateCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {commentId, comment} = req.body;
-  console.log(`commentId: `, commentId);
+  checkDataIsNotEmpty({commentId, comment});
+
   const result = await dataSource.query(`
       UPDATE comments
         SET comment = ?
