@@ -57,10 +57,10 @@ app.delete('/post/comment', asyncWrap(authMiddleware), asyncWrap(deleteCommentOn
 
 
 // posting route
-app.post('/post', asyncWrap(addPost));
+app.post('/post', asyncWrap(authMiddleware), asyncWrap(addPost));
 app.get('/post', asyncWrap(getPostAll));
-app.patch('/post/:id', asyncWrap(patchPost));
-app.delete('/post/:id', asyncWrap(deletePost));
+app.patch('/post/:id', asyncWrap(authMiddleware), asyncWrap(patchPost));
+app.delete('/post/:id', asyncWrap(authMiddleware), asyncWrap(deletePost));
 app.get('/post/:id', asyncWrap(getPost));
 app.get('/post/user/:id', asyncWrap(getPostsByUserId));
 
@@ -87,6 +87,7 @@ async function login(req: express.Request, res: express.Response) {
   if (!userInfo) {
     throw {status: 404, message: '등록되지 않은 이메일이에요.'}
   }
+  // 비밀번호가 다른 지 확인
   else if (!bcrypt.compareSync(password, userInfo.password)) {
     throw {status: 404, message: '비밀번호가 달라요.'}
   }
@@ -96,6 +97,7 @@ async function login(req: express.Request, res: express.Response) {
 
 // error handling 미들웨어
 app.use((err : MyError , req: express.Request, res: express.Response) => {
+  console.log("ERROR LOG~~!:");
   // 흐름상 에러가 검출되면 로그 표시 및 클라이언트에게 전달
   let responseInfo = err;
   if (err.sqlMessage) {
@@ -116,6 +118,16 @@ async function addUser(req: express.Request, res: express.Response) {
   const { email, nickname, password, profile_image = 'none'} = req.body;
   checkDataIsNotEmpty({email, nickname, password});
 
+
+  // 1. 중복되는 유저 있는 지 확인
+  const [searchResult] = await dataSource.query(`
+    SELECT id FROM users WHERE email = '${email}'
+  `);
+  if (searchResult) {
+    throw {status: 400, message: '이미 해당 이메일이 등록되어있어요 '};
+  }
+
+  // 2. 중복되는 유저가 없으면 추가
   await dataSource.query(
       `INSERT INTO users(
                           email,
@@ -134,8 +146,10 @@ async function addUser(req: express.Request, res: express.Response) {
 };
 
 async function addPost(req: express.Request, res: express.Response) {
-  const { contents, image_url, user_id} = req.body;
-  checkDataIsNotEmpty({contents, image_url});
+  const { contents, image_url} = req.body;
+  const userId = req.userInfo.id;
+  // 1. 비어있는 지 확인
+  checkDataIsNotEmpty({contents, image_url, userId});
 
   await dataSource.transaction(async (transactionalEntityManager) => {
     // execute queries using transactionalEntityManager
@@ -145,7 +159,7 @@ async function addPost(req: express.Request, res: express.Response) {
                           user_id
                         ) VALUES (?, ?);
                         `,
-      [contents, user_id]
+      [contents, userId]
     );
     await transactionalEntityManager.query(
       `INSERT INTO posting_images(
@@ -250,8 +264,21 @@ async function getPostsByUserId(req: express.Request, res: express.Response) {
 async function patchPost(req: express.Request, res: express.Response) {
   const postId = req.params.id;
   const { contents, image_url } = req.body;
-  checkDataIsNotEmpty({ contents, image_url });
+  const userId = req.userInfo.id;
+  checkDataIsNotEmpty({ contents, image_url, userId });
 
+  // 수정하려는 게시글의 작성자가 맞는 지?
+  const searchResult = await dataSource.query(`
+    SELECT id
+      FROM postings
+    WHERE id = ? AND user_id = ?
+  `, [postId, userId]);
+
+  if (!searchResult) {
+    throw {status: 403, message: "해당 글 작성자만 변경할 수 있습니다"}
+  }
+
+  // 맞다면 변경
   const answer = await dataSource.transaction(
     async (transactionalEntityManager) => {
       // patch contents
@@ -288,6 +315,21 @@ async function patchPost(req: express.Request, res: express.Response) {
 
 async function deletePost(req: express.Request, res: express.Response) {
   const postId = req.params.id;
+  const userId = req.userInfo.id;
+
+  checkDataIsNotEmpty({postId, userId});
+
+  // 삭제하려는 게시글의 작성자가 맞는 지?
+  const searchResult = await dataSource.query(`
+    SELECT id
+      FROM postings
+    WHERE id = ? AND user_id = ?
+  `, [postId, userId]);
+
+  if (!searchResult) {
+    throw {status: 403, message: "해당 글 작성자만 삭제할 수 있습니다"}
+  }
+
 
   const answer = await dataSource.transaction(
     async (transactionalEntityManager) => {
@@ -389,6 +431,7 @@ async function authMiddleware(...[req, _, next] : Parameters<Expfunc>) : ReturnT
 	const decodedToken = decodeToken(token) as JwtIDPayload;
   const userInfo = await findUser(decodedToken.id);
   req.userInfo = userInfo;
+  console.log("CHECK 2");
   next();
 }
 
@@ -431,8 +474,14 @@ async function addLikePost(req: express.Request, res: express.Response) {
 async function addCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {comment, postId} = req.body;
-  checkDataIsNotEmpty({comment, postId});
-  console.log(`comment: `, comment);
+
+  // 1. 빈 값이 없는 지 확인
+  checkDataIsNotEmpty({comment, postId, userId});
+
+  // 2. 아이디가 존재하는 지 확인
+  findUser(userId);
+
+  // 3. 게시글 추가
   await dataSource.query(`
       INSERT INTO comments(
         comment,
@@ -447,7 +496,12 @@ async function addCommentOnPost(req: express.Request, res: express.Response) {
 async function deleteCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {commentId} = req.body;
-  checkDataIsNotEmpty({commentId});
+
+  // 1. 빈 값이 없는 지 확인
+  checkDataIsNotEmpty({commentId, userId});
+
+  // 2. 아이디가 존재하는 지 확인
+  findUser(userId);
 
   const result = await dataSource.query(`
       DELETE FROM
@@ -465,7 +519,12 @@ async function deleteCommentOnPost(req: express.Request, res: express.Response) 
 async function updateCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {commentId, comment} = req.body;
-  checkDataIsNotEmpty({commentId, comment});
+
+  // 1. 빈 값이 없는 지 확인
+  checkDataIsNotEmpty({commentId, comment, userId});
+
+  // 2. 아이디가 존재하는 지 확인
+  findUser(userId);
 
   const result = await dataSource.query(`
       UPDATE comments
