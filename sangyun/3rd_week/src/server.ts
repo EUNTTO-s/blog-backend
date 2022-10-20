@@ -392,7 +392,7 @@ async function authMiddleware(req, res, next) {
   next();
 }
 
-async function makeHash(password) {
+async function makeHash(password : string) {
   return await bcrypt.hash(password, 10)
 }
 
@@ -511,6 +511,6 @@ app.listen(PORT, () => {
 let BUILD_MODE_PRODUCTION  = true;
 if (BUILD_MODE_PRODUCTION) {
 }
-const TEST : TestType = {id : "hellow"};
+const TEST : Global_type = {id : "hellow"};
 if (TEST) {
 }
