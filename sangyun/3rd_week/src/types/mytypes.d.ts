@@ -3,7 +3,7 @@ import {Request, Response, NextFunction} from 'express';
 declare module "express" {
   export interface Request {
     /** Enable or disable file poster */
-    userInfo?: string;
+    userInfo?: {id: string};
 
     // Other FilePond plugin options here...
   }
@@ -20,6 +20,11 @@ declare global {
   interface Global_type {
         id: string;
   }
+  interface MyError  {
+    sqlMessage?: string;
+    status: number;
+    message?: string;
+  }
 
-  type ExpressFunction = (req: Request, res: Response, next: NextFunction) => void;
+  type Expfunc = (req: Request, res: Response, next: NextFunction) => Promise<any>;
 }

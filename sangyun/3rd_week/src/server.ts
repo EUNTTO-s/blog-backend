@@ -14,6 +14,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import { DataSource } from 'typeorm';
+
 // in .env file
 // TYPEORM_CONNECTION = mysql
 // TYPEORM_HOST = 127.0.0.1
@@ -69,7 +70,7 @@ app.post('/post/:id/like', asyncWrap(authMiddleware), asyncWrap(addLikePost));
 // test
 app.get('/test', asyncWrap(authMiddleware), asyncWrap(test));
 
-async function login(req, res) {
+async function login(req: express.Request, res: express.Response) {
   const {email, password} = req.body;
   if (!email || !password) {
     throw {status: 400, message: 'plz fill out id, password'};
@@ -95,7 +96,7 @@ async function login(req, res) {
 }
 
 // error handling 미들웨어
-app.use((err, req, res, next) => {
+app.use((err : MyError , req: express.Request, res: express.Response) => {
   let responseInfo = err;
   if (err.sqlMessage) {
     console.log(err.sqlMessage);
@@ -106,7 +107,7 @@ app.use((err, req, res, next) => {
 });
 
 // register user
-async function addUser(req, res) {
+async function addUser(req: express.Request, res: express.Response) {
   const { email, nickname, password, profile_image = 'none'} = req.body;
   if (!email || !nickname || !password) {
     throw {status: 400, message: "plz fill 'email, nickname, password"};
@@ -129,7 +130,7 @@ async function addUser(req, res) {
   res.status(201).json({ message: "successfully created" });
 };
 
-async function addPost(req, res) {
+async function addPost(req: express.Request, res: express.Response) {
   const { contents, image_url, user_id} = req.body;
   if (!contents || !image_url) {
     throw {status: 400, message: "plz fill out 'contents, image_url'"};
@@ -159,7 +160,7 @@ async function addPost(req, res) {
   res.status(201).json({ message: "successfully created" });
 }
 
-async function getPostAll(req, res) {
+async function getPostAll( req, res: express.Response) {
   const answer = await dataSource
     .query(
       `SELECT
@@ -200,7 +201,7 @@ async function getPostAll(req, res) {
   res.status(201).json({ data: answer });
 }
 
-async function getPostsByUserId(req, res) {
+async function getPostsByUserId(req: express.Request, res: express.Response) {
   const userId = req.params.id;
   const answer = await dataSource
   // 한 유저에 대한 포스트 리스트 찾기
@@ -245,7 +246,7 @@ async function getPostsByUserId(req, res) {
   res.status(201).json({ data: answer });
 }
 
-async function patchPost(req, res) {
+async function patchPost(req: express.Request, res: express.Response) {
   const postId = req.params.id;
   const { contents, image_url } = req.body;
   if (!contents || !image_url) {
@@ -286,7 +287,7 @@ async function patchPost(req, res) {
   res.status(200).json({data: answer});
 }
 
-async function deletePost(req, res) {
+async function deletePost(req: express.Request, res: express.Response) {
   const postId = req.params.id;
 
   const answer = await dataSource.transaction(
@@ -310,12 +311,12 @@ async function deletePost(req, res) {
   res.status(answer.status).json({ message: answer.message });
 }
 
-async function getPost(req, res) {
+async function getPost(req: express.Request, res: express.Response) {
   const userId = req.params.id;
   const answer = await getPostByPostId(userId);
   res.status(200).json({data: answer});
 }
-async function getPostByPostId(postId) {
+async function getPostByPostId(postId: string | number) {
   /*
   아래와 같은 값을 반환함.
   {
@@ -356,7 +357,7 @@ async function getPostByPostId(postId) {
     })
 }
 
-function decodeToken(token) {
+function decodeToken(token: string) {
   try {
     return jwt.verify(token, 'server_made_secret_key');
   } catch (err) {
@@ -366,7 +367,7 @@ function decodeToken(token) {
 }
 
 // 유저 정보 찾기
-async function findUser(userId) {
+async function findUser(userId: number | string) {
   let [userInfo] = await dataSource.query(`
     SELECT
       id,
@@ -384,7 +385,7 @@ async function findUser(userId) {
   return userInfo;
 }
 
-async function authMiddleware(req, res, next) {
+async function authMiddleware(...[req, _, next] : Parameters<Expfunc>) : ReturnType<Expfunc> {
 	const token = req.headers.authorization;
 	const decodedToken = decodeToken(token) as JwtIDPayload;
   const userInfo = await findUser(decodedToken.id);
@@ -396,12 +397,12 @@ async function makeHash(password : string) {
   return await bcrypt.hash(password, 10)
 }
 
-async function test(req, res) {
+async function test(...[req, res] : Parameters<Expfunc>) : ReturnType<Expfunc> {
   console.log(`userInfo: ${JSON.stringify(req.userInfo)}`);
   res.send("TEST");
 }
 
-async function addLikePost(req, res) {
+async function addLikePost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const postId = req.params.id;
   const {like} = req.body;
@@ -428,7 +429,7 @@ async function addLikePost(req, res) {
   res.send(`success to ${like? "like" : "remove like"}`);
 }
 
-async function addCommentOnPost(req, res) {
+async function addCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {comment, postId} = req.body;
   console.log(`comment: `, comment);
@@ -443,7 +444,7 @@ async function addCommentOnPost(req, res) {
   res.send(`success to add comment`);
 }
 
-async function deleteCommentOnPost(req, res) {
+async function deleteCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {commentId} = req.body;
   console.log(`commentId: `, commentId);
@@ -460,7 +461,7 @@ async function deleteCommentOnPost(req, res) {
   res.send(`success to add comment`);
 }
 
-async function updateCommentOnPost(req, res) {
+async function updateCommentOnPost(req: express.Request, res: express.Response) {
   const userId = req.userInfo.id;
   const {commentId, comment} = req.body;
   console.log(`commentId: `, commentId);
@@ -476,7 +477,7 @@ async function updateCommentOnPost(req, res) {
   res.send(`success to update comment`);
 }
 
-async function getCommentOnPost(req, res) {
+async function getCommentOnPost(req: express.Request, res: express.Response) {
   const commentId = req.params.id;
   console.log(`commentId: `, commentId);
   const [comment] = await dataSource.query(`
@@ -504,7 +505,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
-
 
 
 // JUST EXAMPLE FOR TYPE_선언.
