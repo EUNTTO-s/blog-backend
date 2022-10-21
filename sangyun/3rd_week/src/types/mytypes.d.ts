@@ -1,13 +1,16 @@
-import {Request, Response, NextFunction} from 'express';
-declare module "express" {
-  export interface Request {
-    /** Enable or disable file poster */
-    userInfo?: InfoType;
+import type {Request, Response, NextFunction} from 'express';
 
-    // Other FilePond plugin options here...
-  }
+type InfoType  = {
+  id: string,
+  email?: string,
+  nickname?: string
 }
-
+declare module "jsonwebtoken" {
+  interface UserInfoPayload extends JwtPayload, InfoType {
+  }
+  function verify(token: string, secretOrPublicKey: Secret, options?: VerifyOptions & { complete?: false }): UserInfoPayload;
+  function sign(payload: InfoType, secretOrPrivateKey: Secret, options?: SignOptions, ): string;
+}
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
@@ -15,15 +18,15 @@ declare global {
     }
   }
 
-  // FOR TEST
-  interface Global_type {
-        id: string;
+  namespace Express {
+    export interface Request {
+      userInfo?: InfoType;
+    }
   }
+
   interface MyError  {
     sqlMessage?: string;
     status: number;
     message?: string;
   }
-
-  type Expfunc = (req: Request, res: Response, next: NextFunction) => Promise<any>;
 }

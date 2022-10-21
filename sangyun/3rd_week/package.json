@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run build:live",
     "build": "tsc -p tsconfig.json",
-    "build:live": "nodemon --watch './src/**/*.ts' --exec \"ts-node\" src/server.ts",
+    "build:live": "nodemon --delay 500ms --watch './src/**/*.ts' --exec \"ts-node\" src/server.ts",
     "build:watch": "tsc -w -p tsconfig.json"
   },
   "author": "sangyun",

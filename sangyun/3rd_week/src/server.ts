@@ -118,7 +118,6 @@ const errorHandler: express.ErrorRequestHandler =
         console.log(err.sqlMessage);
         responseInfo = {status: 500, message: "failed"};
       }
-      // console.log("ERROR LOG:", responseInfo);
       console.log("err LOG:", err);
       res.status(responseInfo.status || 500).send({ message: responseInfo.message || '' });
     };
@@ -442,15 +441,15 @@ async function findUser(userId: number | string) {
   return userInfo;
 }
 
-async function authMiddleware(...[req, _, next] : Parameters<Expfunc>) : ReturnType<Expfunc> {
+async function authMiddleware(...[req, _, next] : Parameters<express.RequestHandler>) : Promise<any> {
 	const token = req.headers.authorization;
-	const decodedToken = decodeToken(token) as JwtIDPayload;
+	const decodedToken = decodeToken(token);
   const userInfo = await findUser(decodedToken.id);
   req.userInfo = userInfo;
   next();
 }
 
-async function adminMiddleware(...[req, _, next] : Parameters<Expfunc>) : ReturnType<Expfunc> {
+async function adminMiddleware(...[req, _, next] : Parameters<express.RequestHandler>) : Promise<any> {
   const userInfo = req.userInfo;
   if (userInfo.email != "sororiri@gmail.com") {
     throw {status: 403, message: "not permitted"};
@@ -462,7 +461,7 @@ async function makeHash(password : string) {
   return await bcrypt.hash(password, 10)
 }
 
-async function test(...[req, res] : Parameters<Expfunc>) : ReturnType<Expfunc> {
+async function test(...[req, res] : Parameters<express.RequestHandler>) : Promise<any> {
   console.log(`userInfo: ${JSON.stringify(req.userInfo)}`);
   res.send("TEST");
 }
@@ -594,7 +593,4 @@ app.listen(PORT, () => {
 // JUST EXAMPLE FOR TYPE_선언.
 let BUILD_MODE_PRODUCTION  = true;
 if (BUILD_MODE_PRODUCTION) {
-}
-const TEST : Global_type = {id : "hellow"};
-if (TEST) {
 }
