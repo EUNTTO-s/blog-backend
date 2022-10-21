@@ -41,6 +41,7 @@ dataSource.initialize().then(() => {
 
 // user route
 app.post('/user', asyncWrap(addUser));
+app.get('/user',  asyncWrap(authMiddleware),  asyncWrap(adminMiddleware), asyncWrap(getAllUser));
 // user login route
 app.post('/login', asyncWrap(login));
 
@@ -69,6 +70,17 @@ app.post('/post/:id/like', asyncWrap(authMiddleware), asyncWrap(addLikePost));
 
 // test
 app.get('/test', asyncWrap(authMiddleware), asyncWrap(test));
+
+async function getAllUser(req: express.Request, res: express.Response) {
+  const allUsers = await dataSource.query(`
+    SELECT
+      id,
+      email,
+      nickname
+    FROM users
+  `);
+  res.send(allUsers);
+}
 
 async function login(req: express.Request, res: express.Response) {
   const {email, password} = req.body;
@@ -435,7 +447,14 @@ async function authMiddleware(...[req, _, next] : Parameters<Expfunc>) : ReturnT
 	const decodedToken = decodeToken(token) as JwtIDPayload;
   const userInfo = await findUser(decodedToken.id);
   req.userInfo = userInfo;
-  console.log("CHECK 2");
+  next();
+}
+
+async function adminMiddleware(...[req, _, next] : Parameters<Expfunc>) : ReturnType<Expfunc> {
+  const userInfo = req.userInfo;
+  if (userInfo.email != "sororiri@gmail.com") {
+    throw {status: 403, message: "not permitted"};
+  }
   next();
 }
 

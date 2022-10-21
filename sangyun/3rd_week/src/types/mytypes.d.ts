@@ -1,9 +1,8 @@
 import {Request, Response, NextFunction} from 'express';
-
 declare module "express" {
   export interface Request {
     /** Enable or disable file poster */
-    userInfo?: {id: string};
+    userInfo?: InfoType;
 
     // Other FilePond plugin options here...
   }
