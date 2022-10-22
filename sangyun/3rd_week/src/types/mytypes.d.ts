@@ -23,10 +23,8 @@ declare global {
       userInfo?: InfoType;
     }
   }
-
-  interface MyError  {
+  interface MyError extends Error {
     sqlMessage?: string;
     status: number;
-    message?: string;
   }
 }

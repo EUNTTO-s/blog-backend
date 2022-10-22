@@ -71,7 +71,7 @@ app.post('/post/:id/like', asyncWrap(authMiddleware), asyncWrap(addLikePost));
 // test
 app.get('/test', asyncWrap(authMiddleware), asyncWrap(test));
 
-async function getAllUser(req: express.Request, res: express.Response) {
+async function getAllUser(_: any, res: express.Response) {
   const allUsers = await dataSource.query(`
     SELECT
       id,
@@ -110,13 +110,12 @@ async function login(req: express.Request, res: express.Response) {
 
 // error handling 미들웨어
 const errorHandler: express.ErrorRequestHandler =
-    (err: MyError, req, res, next) => {
-      console.log("ERROR LOG~~!:");
+    (err: MyError, _1, res, _2) => {
       // 흐름상 에러가 검출되면 로그 표시 및 클라이언트에게 전달
       let responseInfo = err;
       if (err.sqlMessage) {
         console.log(err.sqlMessage);
-        responseInfo = {status: 500, message: "failed"};
+        responseInfo = {...err, status: 500, message: "failed"};
       }
       console.log("err LOG:", err);
       res.status(responseInfo.status || 500).send({ message: responseInfo.message || '' });
@@ -190,7 +189,7 @@ async function addPost(req: express.Request, res: express.Response) {
   res.status(201).json({ message: "successfully created" });
 }
 
-async function getPostAll( req, res: express.Response) {
+async function getPostAll(_: any, res: express.Response) {
   const answer = await dataSource
     .query(
       `SELECT
