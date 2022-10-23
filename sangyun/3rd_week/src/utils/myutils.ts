@@ -1,7 +1,7 @@
 import express from 'express';
 
 function asyncWrap(asyncController : express.RequestHandler) {
-  return async (req, res, next) => {
+  return async (...[req, res, next] : Parameters<express.RequestHandler>) => {
 		  try {
         await asyncController(req, res, next)
       }
@@ -11,7 +11,7 @@ function asyncWrap(asyncController : express.RequestHandler) {
   };
 }
 
-function checkDataIsNotEmpty(targetData : Object) {
+function checkDataIsNotEmpty(targetData : {[key : string] : any}) {
   Object.keys(targetData).forEach(key => {
     if (!targetData[key])
       throw {status: 400, message: `plz fill ${key}`};
