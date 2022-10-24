@@ -1,10 +1,12 @@
+import {serviceInterface} from "./custom-module.d";
 
-import {ServiceInterface} from "custom-module";
+const sc : serviceInterface = {
 
-const sc : ServiceInterface = {
-  test(req, res) {
-    res.send("TEST");
-  },
+async test(req, res) {
+  res.send("TEST");
+  return "ttt";
+},
+
 };
 
 export default sc;

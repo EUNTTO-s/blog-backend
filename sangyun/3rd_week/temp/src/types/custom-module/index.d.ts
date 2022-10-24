@@ -1,4 +1,5 @@
 
+// declare ambient module
 declare module "custom-module" {
 
   type Request = import("express").Request;
