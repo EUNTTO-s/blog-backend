@@ -1,10 +1,4 @@
 import type {Request, Response, NextFunction} from 'express';
-
-type InfoType  = {
-  id: string,
-  email?: string,
-  nickname?: string
-}
 declare module "jsonwebtoken" {
   interface UserInfoPayload extends JwtPayload, InfoType {
   }
@@ -18,9 +12,25 @@ declare global {
     }
   }
 
+  type InfoType  = {
+    id: string,
+    email?: string,
+    nickname?: string,
+    password?: string,
+    profile_image?: string
+  }
+
+  export type UserInfo  = {
+    id?: string,
+    email?: string,
+    nickname?: string,
+    password?: string,
+    profile_image?: string
+  }
+
   namespace Express {
     export interface Request {
-      userInfo?: InfoType;
+      userInfo?: UserInfo;
     }
   }
   interface MyError extends Error {
