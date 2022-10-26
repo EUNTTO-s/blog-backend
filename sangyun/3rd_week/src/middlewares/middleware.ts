@@ -1,11 +1,11 @@
 import type express from 'express';
 import jwt from 'jsonwebtoken';
-import service from '../services/service'
+import service from '../services'
 
 async function authMiddleware(...[req, _, next] : Parameters<express.RequestHandler>) : Promise<any> {
 	const token = req.headers.authorization;
 	const decodedToken = decodeToken(token);
-  const userInfo = await service.findUserById(decodedToken.id);
+  const userInfo = await service.userSvc.findUserById(decodedToken.id);
   req.userInfo = userInfo;
   next();
 }
