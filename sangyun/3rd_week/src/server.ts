@@ -1,11 +1,18 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 dotenv.config();
-
 import router from './routers';
 
 const app = express();
 app.use(express.json());
+
+var corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions));
 
 import morgan from 'morgan';
 app.use(morgan('combined'));

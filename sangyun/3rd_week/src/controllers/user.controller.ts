@@ -19,7 +19,8 @@ async function addUser(req: express.Request, res: express.Response) {
   checkDataIsNotEmpty({email, nickname, password});
   const userInfo = {email, nickname, password, profile_image};
   await userSvc.addUser(userInfo);
-  res.status(201).json({ message: "successfully created" });
+  const token = await userSvc.login(email, password);
+  res.status(201).json({ message: "successfully created", token });
 }
 
 async function getAllUser(req: express.Request, res: express.Response) {
