@@ -12,4 +12,4 @@ ALTER TABLE `comments` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 
 -- migrate:down
-DROP TABLE `posting_images`
+DROP TABLE `comments`
