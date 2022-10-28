@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import morgan from 'morgan';
 import {createApp} from './app';
 
@@ -7,12 +6,6 @@ import {createApp} from './app';
 const app = createApp();
 app.use(express.json());
 
-var corsOptions = {
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200
-}
-
-app.use(cors(corsOptions));
 app.use(morgan('combined'));
 
 // init
