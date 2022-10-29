@@ -9,8 +9,14 @@ const dataSource = new DataSource({
   database: process.env.TYPEORM_DATABASE,
 });
 
-dataSource.initialize().then(() => {
-  console.log("Data Source has been initialized!");
-});
+const bTestMode = process.env.TEST_MODE;
+
+console.log("bTestMode: ", bTestMode);
+
+if (bTestMode=="FALSE") {
+  dataSource.initialize().then(() => {
+    console.log("Data Source has been initialized!");
+  });
+}
 
 export default dataSource;

@@ -1,12 +1,8 @@
-import express from 'express';
-import morgan from 'morgan';
 import {createApp} from './app';
 
 
 const app = createApp();
-app.use(express.json());
 
-app.use(morgan('combined'));
 
 // init
 const PORT = process.env.PORT || 5000;
