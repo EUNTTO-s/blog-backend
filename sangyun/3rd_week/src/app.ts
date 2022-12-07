@@ -4,6 +4,7 @@ dotenv.config();
 import morgan from 'morgan';
 import router  from "./routers";
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 export const createApp = () => {
   const app = express();
@@ -12,6 +13,7 @@ export const createApp = () => {
     optionsSuccessStatus: 200
   }
   app.use(cors(corsOptions));
+  app.use(cookieParser());
   app.use(express.json());
   app.use(morgan('combined'));
   app.use(express.json());

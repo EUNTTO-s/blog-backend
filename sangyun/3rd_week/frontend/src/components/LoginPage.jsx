@@ -37,6 +37,9 @@ const LoginPage = () => {
       <button type="submit" className="btn btn-success" ref={btn}>
         로그인
       </button>
+      <a id='kakao' href='http://localhost:5000/oauth/kakao/redirect'>
+      KAKAO~!
+      </a>
     </form>
   );
 }

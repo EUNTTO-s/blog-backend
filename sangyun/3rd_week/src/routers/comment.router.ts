@@ -16,9 +16,4 @@ router.patch('/post/comment', asyncWrap(middleware.authMiddleware), asyncWrap(cm
   // delete comment
 router.delete('/post/comment', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.deleteComment));
 
-// test
-router.get('/test', asyncWrap(middleware.authMiddleware), asyncWrap((req, res) => {
-  res.send("Test");
-}));
-
 export default router;
