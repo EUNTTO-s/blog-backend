@@ -18,6 +18,12 @@ const NoneUserNavItems = () => {
       text: "회원가입",
       class: nav_item,
     },
+    {
+      key: "upload",
+      to: "/file-upload",
+      text: "파일 업로드",
+      class: nav_item,
+    },
   ]
 
   return (
@@ -42,6 +48,12 @@ const UserNavItems = () => {
     {
       key: "logout",
       text: "로그아웃",
+      class: nav_item,
+    },
+    {
+      key: "upload",
+      to: "/file-upload",
+      text: "파일 업로드",
       class: nav_item,
     },
   ]

@@ -29,9 +29,23 @@ const register = async (email, password, nickname) => {
   }
 };
 
+const fileUpload = async (formdata) => {
+  const response = await axios_.post(
+    "/file-upload",
+    formdata,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  console.log("response: ", response);
+};
+
 const AuthService = {
   login,
-  register
+  register,
+  fileUpload,
 };
 
 export default AuthService;

@@ -14,5 +14,5 @@ router.delete('/post/:id', asyncWrap(middleware.authMiddleware), asyncWrap(postC
 router.get('/post/:id', asyncWrap(postCtl.getPostByPostId));
 router.get('/post/user/:id', asyncWrap(postCtl.getPostsByUserId));
 router.post('/post/:id/like', asyncWrap(middleware.authMiddleware), asyncWrap(postCtl.addLikePost));
-
+router.post('/file-upload', asyncWrap(postCtl.uploadFile));
 export default router;

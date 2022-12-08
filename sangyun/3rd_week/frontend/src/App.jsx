@@ -3,6 +3,7 @@ import './App.css';
 import Navber from './components/Navbar'
 import LoginPage from './components/LoginPage'
 import RegisterPage from './components/RegisterPage'
+import FileUploadPage from './components/FileUploadPage'
 import {
   Routes,
   Route,
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="file-upload" element={<FileUploadPage />} />
       </Routes>
     </div>
   );

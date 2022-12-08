@@ -1,9 +1,17 @@
 import express from 'express';
 import service_set from '../services'
-
 const {postSvc} = service_set;
-
 import {checkDataIsNotEmpty} from '../utils/myutils'
+import multer from 'multer';
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './')
+  },
+  filename: function (req, file, cb) {
+    cb(null, String(Date.now()) + '-' + file.originalname)
+  }
+})
+const upload = multer({ storage: storage });
 
 async function addPost(req: express.Request, res: express.Response) {
   const { contents, image_url} = req.body;
@@ -55,6 +63,11 @@ async function addLikePost(req: express.Request, res: express.Response) {
   res.send(`success to add like`);
 }
 
+async function uploadFile(req: express.Request, res: express.Response, next: express.NextFunction) {
+  upload.single('files')(req, null, () => {});
+  res.send(`success to add`);
+}
+
 async function test(...[req, res] : Parameters<express.RequestHandler>) : Promise<any> {
   console.log(`userInfo: ${JSON.stringify(req.userInfo)}`);
   res.send("TEST");
@@ -69,4 +82,5 @@ export default {
   getPostByPostId,
   getPostsByUserId,
   addLikePost,
+  uploadFile,
 }
