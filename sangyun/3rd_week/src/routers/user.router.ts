@@ -5,13 +5,7 @@ import {asyncWrap} from '../utils/myutils';
 
 const {userCtl} = controllers;
 
-
 const router = express.Router();
-
-router.use((req, res, next) => {
-  console.log("req.body:", req.body);
-  next();
-})
 
 // user route
 router.post('/user', asyncWrap(userCtl.addUser));
