@@ -14,7 +14,7 @@ CREATE TABLE `companies` (
 CREATE TABLE `company_posts` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `companies_id` integer,
-  `companies_name` varchar(100) NOT NULL,
+  `company_name` varchar(100) NOT NULL,
   `level_2_categories_id` integer NOT NULL,
   `company_img_url` varchar(100) NOT NULL,
   `company_short_desc` varchar(100) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE `company_posts` (
 CREATE TABLE `company_post_forms` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `companies_id` integer,
-  `companies_name` varchar(100),
+  `company_name` varchar(100),
   `level_2_categories_id` integer,
   `company_img_url` varchar(100),
   `company_short_desc` varchar(100),
