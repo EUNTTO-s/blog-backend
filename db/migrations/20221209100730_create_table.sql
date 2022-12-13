@@ -75,7 +75,8 @@ CREATE TABLE `fastfive_branches` (
 CREATE TABLE `company_residences` (
   `companies_id` integer PRIMARY KEY,
   `start_date` datetime NOT NULL,
-  `end_date` datetime NOT NULL
+  `end_date` datetime NOT NULL,
+  `created_at` datetime default now() NOT NULL
 );
 
 CREATE TABLE `comments` (

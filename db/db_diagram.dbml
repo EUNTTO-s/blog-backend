@@ -78,6 +78,7 @@ table company_residences as cpr {
   companies_id integer [ref: - cp.id, pk]
   start_date datetime [not null]
   end_date datetime [not null]
+  created_at "datetime default now()" [not null]
 }
 
 table comments as cmt {
