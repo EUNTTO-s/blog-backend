@@ -1,6 +1,7 @@
 import express, {Request, Response} from 'express';
 import { yellow, red, blue, green } from 'cli-color';
 import type { TokenIndexer } from 'morgan';
+import fs from 'fs';
 
 function asyncWrap(asyncController : express.RequestHandler) {
   return async (...[req, res, next] : Parameters<express.RequestHandler>) => {
@@ -59,8 +60,17 @@ function morganCustomFormat(tokens: TokenIndexer<Request, Response>, req: Reques
   ].join('');
 }
 
+function createFolder(folderName: string) {
+  try {
+    fs.readdirSync(folderName);
+  } catch (err) {
+    console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
+    fs.mkdirSync(folderName);
+  }
+}
 export {
   asyncWrap,
   checkDataIsNotEmpty,
   morganCustomFormat,
+  createFolder,
 };

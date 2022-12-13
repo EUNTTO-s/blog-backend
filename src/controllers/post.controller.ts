@@ -1,29 +1,68 @@
 import express from 'express';
 import service_set from '../services'
 const {postSvc} = service_set;
-import {checkDataIsNotEmpty} from '../utils/myutils'
-import multer from 'multer';
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './')
-  },
-  filename: function (req, file, cb) {
-    cb(null, String(Date.now()) + '-' + file.originalname)
-  }
-})
-const upload = multer({ storage: storage });
+import {checkDataIsNotEmpty, createFolder} from '../utils/myutils'
+import middleware from '../middlewares/middleware'
 
-async function addPost(req: express.Request, res: express.Response) {
-  const { contents, image_url} = req.body;
-  const userId = req.userInfo.id;
-  checkDataIsNotEmpty({contents, image_url, userId});
-  await postSvc.addPost(contents, image_url, userId);
-  res.status(201).json({ message: "successfully created" });
+createFolder('uploads');
+
+async function getPostForm(req: express.Request, res: express.Response) {
+  const {id} = req.params;
+  const posts = await postSvc.getPostForm({id});
+  res.status(201).json({ data: posts });
 }
 
-async function getAllPost(req: express.Request, res: express.Response) {
-  const posts = await postSvc.getAllPost();
+async function putPostForm(req: express.Request, res: express.Response) {
+  res.locals.fileupload = {};
+  res.locals.fileupload.fileUploadWasRequested = false;
+  console.log("fileupload: ", req.res.locals.fileupload);
+  const {
+    companiesId,
+    companyName,
+    companyContactAddress,
+    companyImgUrl,
+    companyInfoUrl,
+    companyLongDesc,
+    companyShortDesc,
+    fastfiveBenefitDesc,
+    fastfiveBranchesId,
+    homepageUrl,
+    level2CategoriesId,
+    mainBussinessTags,
+  } = req.body;
+
+  const postForm = {
+    companiesId,
+    companyName,
+    companyContactAddress,
+    companyImgUrl,
+    companyInfoUrl,
+    companyLongDesc,
+    companyShortDesc,
+    fastfiveBenefitDesc,
+    fastfiveBranchesId,
+    homepageUrl,
+    level2CategoriesId,
+    mainBussinessTags,
+    usersId: req.userInfo.id
+  };
+
+  const esentialItems = {
+    companiesId,
+    usersId: postForm.usersId,
+  }
+
+  checkDataIsNotEmpty(esentialItems);
+  const posts = await postSvc.putPostForm(postForm);
   res.status(201).json({ data: posts });
+}
+
+async function addPost(req: express.Request, res: express.Response) {
+  const { companiesId, usersId }: CompanyPostFormInput = req.body;
+  // const userId = req.userInfo.id;
+  checkDataIsNotEmpty({companiesId, usersId});
+  // await postSvc.addPost(contents, image_url, userId);
+  res.status(201).json({ message: "successfully created" });
 }
 
 async function updatePost(req: express.Request, res: express.Response) {
@@ -41,6 +80,10 @@ async function deletePost(req: express.Request, res: express.Response) {
   checkDataIsNotEmpty({postId, userId});
   await postSvc.deletePost(userId, postId);
   res.status(200).json({ message: "successfully deleted" });
+}
+
+async function getPost(req: express.Request, res: express.Response) {
+  res.send(`getPost`);
 }
 
 async function getPostByPostId(req: express.Request, res: express.Response) {
@@ -63,9 +106,12 @@ async function addLikePost(req: express.Request, res: express.Response) {
   res.send(`success to add like`);
 }
 
-async function uploadFile(req: express.Request, res: express.Response, next: express.NextFunction) {
-  upload.single('files')(req, null, () => {});
-  res.send(`success to add`);
+async function uploadFile(req: express.Request, res: express.Response) {
+  res.locals.fileupload = {};
+  res.locals.fileupload.fileUploadWasRequested = false;
+  middleware.upload.any()(req, null, () => {
+    res.send(`success to add`);
+  });
 }
 
 async function test(...[req, res] : Parameters<express.RequestHandler>) : Promise<any> {
@@ -74,13 +120,15 @@ async function test(...[req, res] : Parameters<express.RequestHandler>) : Promis
 }
 
 export default {
-  test,
+  putPostForm,
+  getPostForm,
   addPost,
-  getAllPost,
+  getPost,
   updatePost,
   deletePost,
   getPostByPostId,
   getPostsByUserId,
   addLikePost,
   uploadFile,
+  test,
 }
