@@ -57,8 +57,28 @@ const getMe = async (userId: number) => {
     return userInfo;
 };
 
+// 회원 등급 판별
+const getUserGrade = async (userId: number) => {
+    let grade: string;
+    // 일반 가입자 여부
+    const checkGeneralUserRating = await userDao.checkGeneralUserRating(userId);
+    if (!checkGeneralUserRating) {
+        grade = "일반 가입자";
+    }
+    // 일반 가입자가 아닐 시, 멤버 등급 여부
+    const checkMemberUserRating = await userDao.checkMemberUserRating(userId);
+    if (checkMemberUserRating) {
+        grade = "입주자";
+    } else if (checkGeneralUserRating && !checkMemberUserRating) {
+        grade = "퇴주자";
+    }
+
+    return grade;
+};
+
 export default {
     signUp,
     login,
     getMe,
+    getUserGrade,
 };

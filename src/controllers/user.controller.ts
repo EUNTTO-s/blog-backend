@@ -27,8 +27,16 @@ const getMe = async (req: express.Request, res: express.Response) => {
     res.status(200).json({ userInfo });
 };
 
+// 회원 등급 판별
+const getUserGrade = async (req: express.Request, res: express.Response) => {
+    const userId = req.userInfo.id;
+    const userGradeInfo = await user_Svc.getUserGrade(Number(userId));
+    res.status(200).json({ userGradeInfo });
+};
+
 export default {
     signUp,
     login,
     getMe,
+    getUserGrade,
 };
