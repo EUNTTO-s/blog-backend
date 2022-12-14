@@ -24,6 +24,7 @@ table company_posts as cpp {
   company_contact_address varchar(100) [not null]
   company_info_url varchar(100)
   fastfive_branches_id integer [ref: > fb.id, not null]
+  users_id integer [ref: - u.id, not null]
 }
 
 table company_post_forms as cpf {
