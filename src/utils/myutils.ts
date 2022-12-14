@@ -3,7 +3,7 @@ import { yellow, red, blue, green } from 'cli-color';
 import type { TokenIndexer } from 'morgan';
 import fs from 'fs';
 
-function asyncWrap(asyncController : express.RequestHandler) {
+const asyncWrap = (asyncController : express.RequestHandler) => {
   return async (...[req, res, next] : Parameters<express.RequestHandler>) => {
 		  try {
         await asyncController(req, res, next)
@@ -14,14 +14,14 @@ function asyncWrap(asyncController : express.RequestHandler) {
   };
 }
 
-function checkDataIsNotEmpty(targetData : {[key : string] : any}) {
+const checkDataIsNotEmpty = (targetData : {[key : string] : any}) => {
   Object.keys(targetData).forEach(key => {
     if (!targetData[key])
       throw {status: 400, message: `plz fill ${key}`};
   });
 }
 
-function bodyText(req: Request) {
+const bodyText = (req: Request) => {
   let bodyText = '';
   if (req.method !== 'GET') {
     bodyText = `${yellow('BODY\t|')}`;
@@ -37,7 +37,7 @@ function bodyText(req: Request) {
   return bodyText;
 }
 
-function morganCustomFormat(tokens: TokenIndexer<Request, Response>, req: Request, res: Response) {
+const morganCustomFormat = (tokens: TokenIndexer<Request, Response>, req: Request, res: Response) => {
   return [
     `\n= ${red('MESSAGE')} =`,
     '\n',
@@ -60,7 +60,7 @@ function morganCustomFormat(tokens: TokenIndexer<Request, Response>, req: Reques
   ].join('');
 }
 
-function createFolder(folderName: string) {
+const createFolder = (folderName: string) => {
   try {
     fs.readdirSync(folderName);
   } catch (err) {

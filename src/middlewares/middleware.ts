@@ -1,15 +1,14 @@
 import type express from "express";
 import jwt from "jsonwebtoken";
-// import service from "../services";
 
-async function authMiddleware(...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> {
+const authMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const token = req.headers.authorization;
     const decodedToken = decodeToken(token);
     req.userInfo = { id: decodedToken.id };
     next();
 }
 
-async function adminMiddleware(...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> {
+const adminMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const userInfo = req.userInfo;
     if (userInfo.email != "admin@gmail.com") {
         throw { status: 403, message: "not permitted" };
@@ -17,7 +16,7 @@ async function adminMiddleware(...[req, _, next]: Parameters<express.RequestHand
     next();
 }
 
-function decodeToken(token: string) {
+const decodeToken = (token: string) => {
     try {
         return jwt.verify(token, process.env.SECRET_KEY);
     } catch (err) {
@@ -41,7 +40,7 @@ const errorHandler: express.ErrorRequestHandler = (err: MyError, _1, res, _2) =>
 import multer from 'multer';
 import fs from 'fs';
 
-function fileFilter(req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) {
+const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const foldername = req.userInfo.id || 'test';
   console.log("file: ", file);
   if (!req.res.locals.fileupload) {
@@ -60,7 +59,6 @@ function fileFilter(req: express.Request, file: Express.Multer.File, cb: multer.
     fs.mkdirSync(`./uploads/${foldername}`);
   }
   req.res.locals.fileupload.fileUploadWasRequested = true;
-  // 파일의
   cb(null, true)
 }
 
@@ -70,7 +68,6 @@ const storage = multer.diskStorage({
     cb(null, `./uploads/${foldername}`)
   },
   filename: function (req, file, cb) {
-    // cb(null, String(Date.now()) + '-' + file.originalname)
     cb(null, file.originalname)
   },
 })

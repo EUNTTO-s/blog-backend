@@ -2,7 +2,7 @@ import daoset from '../models';
 
 const { postDao, companyDao } = daoset;
 
-async function putPostForm(postFormInput: CompanyPostFormInput) {
+const putPostForm = async (postFormInput: CompanyPostFormInput) => {
   let result;
   // 유저 정보 조회
     // TODO 정보 조회
@@ -29,11 +29,11 @@ async function putPostForm(postFormInput: CompanyPostFormInput) {
   return result;
 }
 
-async function getPostForm(serchOption?: PostFormSearchOption) {
+const getPostForm = async (serchOption?: PostFormSearchOption) => {
   return await postDao.getPostForm(serchOption);
 }
 
-async function updatePost(userId: string, postId:string, contents: string, imageUrl: string) {
+const updatePost = async (userId: string, postId:string, contents: string, imageUrl: string) => {
   // 유저 정보 조회
     // TODO 정보 조회
   // 작성 권한 확인
@@ -47,7 +47,7 @@ async function updatePost(userId: string, postId:string, contents: string, image
   return updatedPost;
 }
 
-async function deletePost(userId: string, postId:string) {
+const deletePost = async (userId: string, postId:string) => {
   // 유저 정보 조회
     // TODO 정보 조회
   // 작성 권한 확인
@@ -59,7 +59,7 @@ async function deletePost(userId: string, postId:string) {
   await postDao.deletePost(postId);
 }
 
-async function getPostByPostId(postId: string) {
+const getPostByPostId = async (postId: string) => {
   const post = await postDao.getPostByPostId(postId);
   if (!post) {
     throw {status: 404, message: "ID에 해당하는 게시글이 존재하지 않습니다."};
@@ -67,11 +67,11 @@ async function getPostByPostId(postId: string) {
   return post;
 }
 
-async function getPostsByUserId(userId: string) {
+const getPostsByUserId = async (userId: string) => {
   await postDao.getPostsByUserId(userId);
 }
 
-async function addLikePost(userId: string, postId: string) {
+const addLikePost = async (userId: string, postId: string) => {
   await postDao.addLikePost(userId, postId);
 }
 

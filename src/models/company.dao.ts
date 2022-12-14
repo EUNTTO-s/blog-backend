@@ -1,7 +1,7 @@
 import dataSource from './database';
 import {whereBuilder} from './builder/queryBuilder'
 
-async function createCompany(companyName: string) {
+const createCompany = async (companyName: string) => {
   return await dataSource.query(
     `
     INSERT INTO companies(
@@ -13,7 +13,7 @@ async function createCompany(companyName: string) {
   );
 }
 
-async function getCompanies(searchOption: CompanySerarchOption) {
+const getCompanies = async (searchOption: CompanySerarchOption) => {
   if (!searchOption)
     searchOption = {};
   let limit = 20;

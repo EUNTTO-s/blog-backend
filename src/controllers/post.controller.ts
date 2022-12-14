@@ -6,13 +6,13 @@ import middleware from '../middlewares/middleware'
 
 createFolder('uploads');
 
-async function getPostForm(req: express.Request, res: express.Response) {
+const getPostForm = async (req: express.Request, res: express.Response) => {
   const {id} = req.params;
   const posts = await postSvc.getPostForm({id});
   res.status(201).json({ data: posts });
 }
 
-async function putPostForm(req: express.Request, res: express.Response) {
+const putPostForm = async (req: express.Request, res: express.Response) => {
   res.locals.fileupload = {};
   res.locals.fileupload.fileUploadWasRequested = false;
   console.log("fileupload: ", req.res.locals.fileupload);
@@ -57,7 +57,7 @@ async function putPostForm(req: express.Request, res: express.Response) {
   res.status(201).json({ data: posts });
 }
 
-async function addPost(req: express.Request, res: express.Response) {
+const addPost = async (req: express.Request, res: express.Response) => {
   const { companiesId, usersId }: CompanyPostFormInput = req.body;
   // const userId = req.userInfo.id;
   checkDataIsNotEmpty({companiesId, usersId});
@@ -65,7 +65,7 @@ async function addPost(req: express.Request, res: express.Response) {
   res.status(201).json({ message: "successfully created" });
 }
 
-async function updatePost(req: express.Request, res: express.Response) {
+const updatePost = async (req: express.Request, res: express.Response) => {
   const postId = req.params.id;
   const { contents, image_url } = req.body;
   const userId = req.userInfo.id;
@@ -74,7 +74,7 @@ async function updatePost(req: express.Request, res: express.Response) {
   res.status(200).json({data: answer});
 }
 
-async function deletePost(req: express.Request, res: express.Response) {
+const deletePost = async (req: express.Request, res: express.Response) => {
   const postId = req.params.id;
   const userId = req.userInfo.id;
   checkDataIsNotEmpty({postId, userId});
@@ -82,31 +82,31 @@ async function deletePost(req: express.Request, res: express.Response) {
   res.status(200).json({ message: "successfully deleted" });
 }
 
-async function getPost(req: express.Request, res: express.Response) {
+const getPost = async (req: express.Request, res: express.Response) => {
   res.send(`getPost`);
 }
 
-async function getPostByPostId(req: express.Request, res: express.Response) {
+const getPostByPostId = async (req: express.Request, res: express.Response) => {
   const postId = req.params.id;
   checkDataIsNotEmpty({postId});
   const post = await postSvc.getPostByPostId(postId);
   res.status(200).json({data: post});
 }
 
-async function getPostsByUserId(req: express.Request, res: express.Response) {
+const getPostsByUserId = async (req: express.Request, res: express.Response) => {
   const userId = req.params.id;
   const posts = await postSvc.getPostsByUserId(userId);
   res.status(200).json({ data: posts });
 }
 
-async function addLikePost(req: express.Request, res: express.Response) {
+const addLikePost = async (req: express.Request, res: express.Response) => {
   const userId = req.userInfo.id;
   const postId = req.params.id;
   await postSvc.addLikePost(userId, postId);
   res.send(`success to add like`);
 }
 
-async function uploadFile(req: express.Request, res: express.Response) {
+const uploadFile = async (req: express.Request, res: express.Response) => {
   res.locals.fileupload = {};
   res.locals.fileupload.fileUploadWasRequested = false;
   middleware.upload.any()(req, null, () => {
@@ -114,7 +114,7 @@ async function uploadFile(req: express.Request, res: express.Response) {
   });
 }
 
-async function test(...[req, res] : Parameters<express.RequestHandler>) : Promise<any> {
+const test = async (...[req, res] : Parameters<express.RequestHandler>) : Promise<any> => {
   console.log(`userInfo: ${JSON.stringify(req.userInfo)}`);
   res.send("TEST");
 }

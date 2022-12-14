@@ -1,6 +1,6 @@
 import dataSource from './database';
 import {whereBuilder} from './builder/queryBuilder'
-async function updatePostForm(postForm: CompanyPostFormInput) {
+const updatePostForm = async (postForm: CompanyPostFormInput) => {
   const answer = await dataSource
     .query(
       `
@@ -36,7 +36,7 @@ async function updatePostForm(postForm: CompanyPostFormInput) {
   return answer;
 }
 
-async function createPostForm(postFormInput : CompanyPostFormInput) {
+const createPostForm = async (postFormInput : CompanyPostFormInput) => {
   const {
     companiesId = '',
     companyName = '',
@@ -93,7 +93,7 @@ async function createPostForm(postFormInput : CompanyPostFormInput) {
 };
 
 
-async function getPostForm(serchOption? : PostFormSearchOption) {
+const getPostForm = async (serchOption? : PostFormSearchOption) => {
   if (!serchOption)
     serchOption = {};
     const limit = 1;
@@ -225,7 +225,7 @@ async function getPostForm(serchOption? : PostFormSearchOption) {
   return answer;
 }
 
-async function getAllPost() {
+const getAllPost = async () => {
   const answer = await dataSource
     .query(
       `SELECT
@@ -265,7 +265,7 @@ async function getAllPost() {
   return answer;
 }
 
-async function getPostByPostId(postId: string | number) {
+const getPostByPostId = async (postId: string | number) => {
   /*
   아래와 같은 값을 반환함.
   {
@@ -308,7 +308,7 @@ async function getPostByPostId(postId: string | number) {
     })
 }
 
-async function updatePost(postId: string, contents: string, imageUrl: string) {
+const updatePost = async (postId: string, contents: string, imageUrl: string) => {
   return await dataSource.transaction(
     async (transactionalEntityManager) => {
       // patch contents
@@ -337,7 +337,7 @@ async function updatePost(postId: string, contents: string, imageUrl: string) {
   });
 }
 
-async function deletePost(postId: string) {
+const deletePost = async (postId: string) => {
   await dataSource.transaction(
     async (transactionalEntityManager) => {
       await transactionalEntityManager.query(
@@ -356,7 +356,7 @@ async function deletePost(postId: string) {
   });
 }
 
-async function getPostsByUserId(userId: string) {
+const getPostsByUserId = async (userId: string) => {
   return await dataSource
   // 한 유저에 대한 포스트 리스트 찾기
     .query(
@@ -398,7 +398,7 @@ async function getPostsByUserId(userId: string) {
     });
 }
 
-async function addLikePost(userId: string, postId: string) {
+const addLikePost = async (userId: string, postId: string) => {
   await dataSource.query(`
     INSERT INTO
       likes_postings_users(
