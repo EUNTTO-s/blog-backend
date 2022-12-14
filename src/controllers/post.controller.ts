@@ -13,8 +13,6 @@ const getPostForm = async (req: express.Request, res: express.Response) => {
 }
 
 const putPostForm = async (req: express.Request, res: express.Response) => {
-  res.locals.fileupload = {};
-  res.locals.fileupload.fileUploadWasRequested = false;
   console.log("fileupload: ", req.res.locals.fileupload);
   const {
     companiesId,

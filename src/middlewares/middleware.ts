@@ -47,7 +47,6 @@ const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.
     req.res.locals.fileupload = {};
   }
   req.body[file.fieldname] = file.originalname;
-  req.res.locals.fileupload[file.fieldname] = file.originalname;
   // 개별 회사 게시글마다의 폴더 생성
     // TODO 게시글 ID에 맞는 폴더명 생성
   if (!req.res.locals.fileupload.fileUploadWasRequested) {
