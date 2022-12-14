@@ -52,21 +52,83 @@ const findUserByEmail = async (email: string): Promise<UserInfo> => {
 
 // 유저 정보
 const findUserById = async (userId: number): Promise<UserInfo> => {
-    const [userInfo] = await dataSource.query(
-        `
+    const [userInfo] = await dataSource
+        .query(
+            `
           SELECT
-            id,
-            email,
-            username
+            users.id,
+            users.username,
+            users.email,
+          JSON_OBJECT(
+          'id',
+          companies.id,
+          'companyName',
+          companies.company_name,
+          'isCompanyMainMember',
+          company_members.is_main_member
+          ) AS company
           FROM
-            users
+            companies
+          JOIN company_members ON company_members.companies_id = companies.id
+          JOIN users ON users.id = company_members.users_id
           WHERE
-            id = ?
+            users.id = ?
         `,
+            [userId]
+        )
+        .then((users) => {
+            return [...users].map((user) => {
+                return { ...user, company: JSON.parse(user.company) };
+            });
+        });
+
+    return userInfo as UserInfo;
+};
+
+// 회원 등급 판별
+const checkGeneralUserRating = async (userId: number) => {
+    const [generalUser] = await dataSource.query(
+        `
+        SELECT
+          id,
+          companies_id,
+          users_id,
+          is_main_member
+        FROM
+          company_members
+        WHERE
+          users_id = ?
+      `,
         [userId]
     );
 
-    return userInfo as UserInfo;
+    return generalUser;
+};
+
+const checkMemberUserRating = async (userId: number) => {
+    const [memberUser] = await dataSource.query(
+        `
+        SELECT
+          companies.id,
+          companies.company_name,
+          company_members.users_id,
+          company_residences.start_date,
+          company_residences.end_date
+        FROM
+          companies
+        JOIN company_members ON company_members.companies_id = companies.id
+        JOIN company_residences ON company_residences.companies_id = companies.id
+        WHERE
+          start_date < now()
+        AND
+          end_date > now()
+        AND
+          users_id = ?
+    `,
+        [userId]
+    );
+
+    return memberUser;
 };
 
 export default {
@@ -74,4 +136,6 @@ export default {
     existUser,
     findUserByEmail,
     findUserById,
+    checkGeneralUserRating,
+    checkMemberUserRating,
 };
