@@ -1,11 +1,11 @@
-import cmtCtl from './comment.controller';
-import userCtl from './user.controller';
-import postCtl from './post.controller';
+import cmtCtl from "./comment.controller";
+import userCtl from "./user.controller";
+import postCtl from "./post.controller";
 
 const ctl_set = {
-  cmtCtl,
-  postCtl,
-  userCtl,
-}
+    cmtCtl,
+    postCtl,
+    userCtl,
+};
 
 export default ctl_set;
