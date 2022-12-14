@@ -11,8 +11,10 @@ const FileUploadPage = () => {
     <form className="FileUploadPage" onSubmit={(e) => {
       e.preventDefault();
       let formData = new FormData();
-      formData.append("files", file.current.files[0]);
       formData.append("fileDesc", fileDescription.current.value);
+
+      formData.append("files1", file.current.files[0]);
+      formData.append("files2", file.current.files[0]);
       for(var pair of formData.entries()) {
         console.log(pair[0]+', '+pair[1]);
       }

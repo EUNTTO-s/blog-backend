@@ -24,6 +24,12 @@ const NoneUserNavItems = () => {
       text: "파일 업로드",
       class: nav_item,
     },
+    {
+      key: "company-upload",
+      to: "/company-file-upload",
+      text: "회사 게시글 업로드",
+      class: nav_item,
+    },
   ]
 
   return (
