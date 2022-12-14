@@ -19,6 +19,11 @@ VALUES
     (12, '시청2호점'), (13, '신논현1호점'), (14, '신사점'), (15, '여의도점'), (16, '역삼1호점'), (16, '역삼2호점'), (16, '역삼3호점'), (16, '역삼4호점'), (17, '영등포점'),
     (18, '용산1호점'), (19, '을지로점'), (20, '합정점'), (21, '홍대1호점'), (21, '홍대2호점');
 
+INSERT INTO
+    `level_2_categories` (id, level_1_categories_id, category_name)
+VALUES
+    (1, 10011, 'default2');
+
 -- migrate:down
 TRUNCATE TABLE `level_1_categories`;
 TRUNCATE TABLE `locations`;
