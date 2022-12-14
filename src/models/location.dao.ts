@@ -1,16 +1,17 @@
 import dataSource from './database';
 
-const getAllLocations = async () : Promise<any> => {
+const getAllLocations = async () => {
     const result = await dataSource.query(`
         SELECT
-            *
+            id,
+            location_name
         FROM
             locations
     `) 
-    return result;
+    return result as {id: number, location_name: string};
 }
 
-const getAllBranches = async () : Promise<any> => {
+const getAllBranches = async () => {
     const result = await dataSource.query(`
         SELECT
 	        fastfive_branches.id,
@@ -20,10 +21,11 @@ const getAllBranches = async () : Promise<any> => {
 	        locations
         JOIN fastfive_branches ON fastfive_branches.locations_id = locations.id;
     `) 
-    return result;
+    return result as {id: number, location_name: string, branch_name: string};
 }
 
 export default {
     getAllLocations,
     getAllBranches
 }
+
