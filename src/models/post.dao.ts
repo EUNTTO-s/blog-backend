@@ -1,9 +1,8 @@
-import dataSource from './database';
-import {whereBuilder} from './builder/queryBuilder'
+import dataSource from "./database";
+import { whereBuilder } from "./builder/queryBuilder";
 const updatePostForm = async (postForm: CompanyPostFormInput) => {
-  const answer = await dataSource
-    .query(
-      `
+  const answer = await dataSource.query(
+    `
       UPDATE
         company_post_forms
       SET
@@ -19,38 +18,38 @@ const updatePostForm = async (postForm: CompanyPostFormInput) => {
         company_info_url = ?,
         fastfive_branches_id = ?
       `,
-      [
-        postForm.companyName,
-        postForm.level2CategoriesId,
-        postForm.companyImgUrl,
-        postForm.companyShortDesc,
-        postForm.homepageUrl,
-        postForm.mainBussinessTags,
-        postForm.companyLongDesc,
-        postForm.fastfiveBenefitDesc,
-        postForm.companyContactAddress,
-        postForm.companyInfoUrl,
-        postForm.fastfiveBranchesId,
-      ]
-    );
+    [
+      postForm.companyName,
+      postForm.level2CategoriesId,
+      postForm.companyImgUrl,
+      postForm.companyShortDesc,
+      postForm.homepageUrl,
+      postForm.mainBussinessTags,
+      postForm.companyLongDesc,
+      postForm.fastfiveBenefitDesc,
+      postForm.companyContactAddress,
+      postForm.companyInfoUrl,
+      postForm.fastfiveBranchesId,
+    ]
+  );
   return answer;
-}
+};
 
-const createPostForm = async (postFormInput : CompanyPostFormInput) => {
+const createPostForm = async (postFormInput: CompanyPostFormInput) => {
   const {
-    companiesId = '',
-    companyName = '',
-    level2CategoriesId = '',
-    companyImgUrl = '',
-    companyShortDesc = '',
-    homepageUrl = '',
-    mainBussinessTags = '',
-    companyLongDesc = '',
-    fastfiveBenefitDesc = '',
-    companyContactAddress = '',
-    companyInfoUrl = '',
-    fastfiveBranchesId = '',
-    usersId = ''
+    companiesId = "",
+    companyName = "",
+    level2CategoriesId = "",
+    companyImgUrl = "",
+    companyShortDesc = "",
+    homepageUrl = "",
+    mainBussinessTags = "",
+    companyLongDesc = "",
+    fastfiveBenefitDesc = "",
+    companyContactAddress = "",
+    companyInfoUrl = "",
+    fastfiveBranchesId = "",
+    usersId = "",
   } = postFormInput;
   const answer = await dataSource.query(
     `
@@ -86,18 +85,16 @@ const createPostForm = async (postFormInput : CompanyPostFormInput) => {
       homepageUrl,
       level2CategoriesId,
       mainBussinessTags,
-      usersId
+      usersId,
     ]
   );
   return answer;
 };
 
-
-const getPostForm = async (serchOption? : PostFormSearchOption) => {
-  if (!serchOption)
-    serchOption = {};
-    const limit = 1;
-  let { id, usersId, companiesId, } = serchOption;
+const getPostForm = async (serchOption?: PostFormSearchOption) => {
+  if (!serchOption) serchOption = {};
+  const limit = 1;
+  let { id, usersId, companiesId } = serchOption;
   const testText = `
   SELECT
     cpf.id,
@@ -145,13 +142,14 @@ const getPostForm = async (serchOption? : PostFormSearchOption) => {
     JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
     JOIN fastfive_branches 	AS fb ON fb.id = cpf.fastfive_branches_id
     JOIN locations 					AS loc ON loc.id = fb.locations_id
-    ${whereBuilder('cpf.id', id, true)}
-    ${whereBuilder('c.id', companiesId)}
-    ${whereBuilder('cpf.users_id', usersId)}
+    ${whereBuilder("cpf.id", id, true)}
+    ${whereBuilder("c.id", companiesId)}
+    ${whereBuilder("cpf.users_id", usersId)}
   LIMIT ${limit}
-  `
+  `;
   console.log("testText: ", testText);
-  const answer = await dataSource.query(
+  const answer = await dataSource
+    .query(
       `
 			SELECT
 				cpf.id,
@@ -199,22 +197,23 @@ const getPostForm = async (serchOption? : PostFormSearchOption) => {
 				JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
 				JOIN fastfive_branches 	AS fb ON fb.id = cpf.fastfive_branches_id
 				JOIN locations 					AS loc ON loc.id = fb.locations_id
-        ${whereBuilder('cpf.id', id, true)}
-        ${whereBuilder('c.id', companiesId)}
-        ${whereBuilder('cpf.users_id', usersId)}
+        ${whereBuilder("cpf.id", id, true)}
+        ${whereBuilder("c.id", companiesId)}
+        ${whereBuilder("cpf.users_id", usersId)}
 			LIMIT ${limit}
       `
-    ).then(list => {
+    )
+    .then((list) => {
       console.log("list: ", list);
-			list = [...list].map((item)=> {
-				return {
-									...item,
-									company: JSON.parse(item.company),
-									category: JSON.parse(item.category),
-									location: JSON.parse(item.location),
-									branch: JSON.parse(item.branch),
-								};
-			})
+      list = [...list].map((item) => {
+        return {
+          ...item,
+          company: JSON.parse(item.company),
+          category: JSON.parse(item.category),
+          location: JSON.parse(item.location),
+          branch: JSON.parse(item.branch),
+        };
+      });
       if (usersId || id) {
         let [item] = list;
         return item;
@@ -223,7 +222,7 @@ const getPostForm = async (serchOption? : PostFormSearchOption) => {
     });
 
   return answer;
-}
+};
 
 const getAllPost = async () => {
   const answer = await dataSource
@@ -256,14 +255,18 @@ const getAllPost = async () => {
       ) posts ON posts.user_id = users.id
 
       GROUP BY users.id
-  `)
+  `
+    )
     .then((answer) => {
-      return [...answer].map((userWithPost)=> {
-        return {...userWithPost, post_list: JSON.parse(userWithPost.post_list) }
-      })
+      return [...answer].map((userWithPost) => {
+        return {
+          ...userWithPost,
+          post_list: JSON.parse(userWithPost.post_list),
+        };
+      });
     });
   return answer;
-}
+};
 
 const getPostByPostId = async (postId: string | number) => {
   /*
@@ -296,69 +299,83 @@ const getPostByPostId = async (postId: string | number) => {
       ) pi ON pi.posting_id = postings.id
       WHERE postings.id = ?
       `,
-    [postId])
+      [postId]
+    )
     .then((answer) => {
       if (!answer.length)
-        throw {status: 404, message: "there is no matched result"};
+        throw { status: 404, message: "there is no matched result" };
 
       const post = answer[0].image_list && answer[0];
-      return {...post, image_list: JSON.parse(post.image_list)} as {
-        userId: number, userName: string, postingId: number, postingContent: string, postingImageUrl: string[]
-      }
-    })
-}
+      return { ...post, image_list: JSON.parse(post.image_list) } as {
+        userId: number;
+        userName: string;
+        postingId: number;
+        postingContent: string;
+        postingImageUrl: string[];
+      };
+    });
+};
 
-const updatePost = async (postId: string, contents: string, imageUrl: string) => {
-  return await dataSource.transaction(
-    async (transactionalEntityManager) => {
-      // patch contents
-      const result = await transactionalEntityManager.query(
-        `UPDATE postings
+const updatePost = async (
+  postId: string,
+  contents: string,
+  imageUrl: string
+) => {
+  return await dataSource.transaction(async (transactionalEntityManager) => {
+    // patch contents
+    const result = await transactionalEntityManager.query(
+      `UPDATE postings
             SET contents = ?
           WHERE postings.id = ?
         `,
-        [contents, postId]
-      );
-      // patch image_url
-          // 먼저 기존 image_url을 전부 지움
-      await transactionalEntityManager.query(
-        `DELETE FROM posting_images
-          WHERE posting_images.posting_id = ?;`
-        ,[postId]);
+      [contents, postId]
+    );
+    // patch image_url
+    // 먼저 기존 image_url을 전부 지움
+    await transactionalEntityManager.query(
+      `DELETE FROM posting_images
+          WHERE posting_images.posting_id = ?;`,
+      [postId]
+    );
 
-        // 이후 image_url을 업데이트함.
-      await transactionalEntityManager.query(
-        `INSERT INTO posting_images(
+    // 이후 image_url을 업데이트함.
+    await transactionalEntityManager.query(
+      `INSERT INTO posting_images(
           posting_id,
           image_url
-        ) VALUES (?, ?);`
-        ,[postId, imageUrl]);
-      return result;
+        ) VALUES (?, ?);`,
+      [postId, imageUrl]
+    );
+    return result;
   });
-}
+};
 
 const deletePost = async (postId: string) => {
-  await dataSource.transaction(
-    async (transactionalEntityManager) => {
-      await transactionalEntityManager.query(
-        `DELETE FROM posting_images
-        WHERE posting_images.posting_id = ?;`
-      ,[postId])
+  await dataSource.transaction(async (transactionalEntityManager) => {
+    await transactionalEntityManager.query(
+      `DELETE FROM posting_images
+        WHERE posting_images.posting_id = ?;`,
+      [postId]
+    );
 
-      const result = await transactionalEntityManager.query(
-        `DELETE FROM postings
-        WHERE postings.id = ?;`
-      ,[postId])
+    const result = await transactionalEntityManager.query(
+      `DELETE FROM postings
+        WHERE postings.id = ?;`,
+      [postId]
+    );
 
-      if (!result.affectedRows) {
-        throw {status: 404, message: "postID에 해당하는 포스트가 존재하지 않습니다"};
-      }
+    if (!result.affectedRows) {
+      throw {
+        status: 404,
+        message: "postID에 해당하는 포스트가 존재하지 않습니다",
+      };
+    }
   });
-}
+};
 
 const getPostsByUserId = async (userId: string) => {
   return await dataSource
-  // 한 유저에 대한 포스트 리스트 찾기
+    // 한 유저에 대한 포스트 리스트 찾기
     .query(
       `SELECT
       users.id AS user_id,
@@ -390,16 +407,21 @@ const getPostsByUserId = async (userId: string) => {
 
       GROUP BY users.id
   `,
-      [userId])
+      [userId]
+    )
     .then((answer) => {
-      return [...answer].map((userWithPost)=> {
-        return {...userWithPost, post_list: JSON.parse(userWithPost.post_list) }
-      })
+      return [...answer].map((userWithPost) => {
+        return {
+          ...userWithPost,
+          post_list: JSON.parse(userWithPost.post_list),
+        };
+      });
     });
-}
+};
 
 const addLikePost = async (userId: string, postId: string) => {
-  await dataSource.query(`
+  await dataSource.query(
+    `
     INSERT INTO
       likes_postings_users(
         user_id,
@@ -410,8 +432,10 @@ const addLikePost = async (userId: string, postId: string) => {
       UPDATE
         user_id=user_id,
         posting_id=posting_id
-  `, [userId, postId]);
-}
+  `,
+    [userId, postId]
+  );
+};
 
 export default {
   createPostForm,
@@ -424,4 +448,4 @@ export default {
   deletePost,
   getPostsByUserId,
   addLikePost,
-}
+};
