@@ -81,10 +81,12 @@ CREATE TABLE `company_residences` (
 
 CREATE TABLE `comments` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `comments_id` integer,
   `users_id` integer,
   `company_posts_id` integer,
   `comment_content` varchar(1000) NOT NULL,
+  `parents` integer default NULL,
+  `DEPTH` integer,
+  `SEQ` integer,
   `is_secret` tinyint DEFAULT 0,
   `created_at` datetime default now() NOT NULL
 );
@@ -143,8 +145,6 @@ ALTER TABLE `company_members` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`
 ALTER TABLE `fastfive_branches` ADD FOREIGN KEY (`locations_id`) REFERENCES `locations` (`id`);
 
 ALTER TABLE `company_residences` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
-
-ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`);
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
