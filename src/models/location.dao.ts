@@ -34,7 +34,7 @@ const findBranchById = async (branchId: number) => {
 	        locations
         JOIN fastfive_branches ON fastfive_branches.locations_id = locations.id
         WHERE
-            fastfive_branches.id = (?)
+            fastfive_branches.id = ?
     `, [branchId])
     return result as {id: number, location_name: string, branch_name: string};
 }

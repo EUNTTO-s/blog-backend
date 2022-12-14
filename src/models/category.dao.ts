@@ -23,7 +23,7 @@ const findCategoryById = async (categoryId: number) => {
         FROM
             level_1_categories
         WHERE
-            id = (?)
+            id = ?
     `, [categoryId])
     return result as {id: number, img_url: string, category_name: string, description: string};
 }
