@@ -24,7 +24,8 @@ CREATE TABLE `company_posts` (
   `fastfive_benefit_desc` varchar(100),
   `company_contact_address` varchar(100) NOT NULL,
   `company_info_url` varchar(100),
-  `fastfive_branches_id` integer NOT NULL
+  `fastfive_branches_id` integer NOT NULL,
+  `users_id` integer NOT NULL
 );
 
 CREATE TABLE `company_post_forms` (
@@ -84,9 +85,9 @@ CREATE TABLE `comments` (
   `users_id` integer,
   `company_posts_id` integer,
   `comment_content` varchar(1000) NOT NULL,
-  `parents` integer default NULL,
-  `DEPTH` integer,
-  `SEQ` integer,
+  `comments_id` integer default NULL,
+  `depth` integer,
+  `sequence` integer,
   `is_secret` tinyint DEFAULT 0,
   `created_at` datetime default now() NOT NULL
 );
@@ -127,6 +128,8 @@ ALTER TABLE `company_posts` ADD FOREIGN KEY (`companies_id`) REFERENCES `compani
 ALTER TABLE `company_posts` ADD FOREIGN KEY (`level_2_categories_id`) REFERENCES `level_2_categories` (`id`);
 
 ALTER TABLE `company_posts` ADD FOREIGN KEY (`fastfive_branches_id`) REFERENCES `fastfive_branches` (`id`);
+
+ALTER TABLE `company_posts` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `company_post_forms` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
 
