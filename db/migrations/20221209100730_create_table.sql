@@ -153,6 +153,8 @@ ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`company_posts_id`) REFERENCES `company_posts` (`id`);
 
+ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`);
+
 ALTER TABLE `admins` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `company_request` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
