@@ -1,4 +1,5 @@
 import dataSource from "./database";
+import { whereBuilder } from "./builder/queryBuilder";
 
 // 계정 생성
 const createUser = async (username: string, email: string, hashed_password: string) => {
@@ -32,32 +33,17 @@ const existUser = async (email: string): Promise<UserInfo> => {
     return user;
 };
 
-// 유저 존재 확인 체크
-const findUserByEmail = async (email: string): Promise<UserInfo> => {
-    const [userInfo] = await dataSource.query(
-        `
-          SELECT
-            id,
-            password
-          FROM
-            users
-          WHERE
-            email = ?
-        `,
-        [email]
-    );
-
-    return userInfo as UserInfo;
-};
-
 // 유저 정보
-const findUserById = async (userId: number): Promise<UserInfo> => {
+const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
+    let { userId, email, includePwd, memberSearch} = searchOption;
+    const memberSearchState = memberSearch? `AND company_members.id IS NOT NULL` : '';
     const [userInfo] = await dataSource
         .query(
             `
           SELECT
             users.id,
             users.username,
+            ${includePwd? 'users.password,' : ''}
             users.email,
           JSON_OBJECT(
           'id',
@@ -68,11 +54,16 @@ const findUserById = async (userId: number): Promise<UserInfo> => {
           company_members.is_main_member
           ) AS company
           FROM
+            users
+          LEFT JOIN
+            company_members
+            ON users.id = company_members.users_id
+          LEFT JOIN
             companies
-          JOIN company_members ON company_members.companies_id = companies.id
-          JOIN users ON users.id = company_members.users_id
-          WHERE
-            users.id = ?
+            ON company_members.companies_id = companies.id
+          ${whereBuilder("users.id", userId, true)}
+          ${whereBuilder("users.email", email)}
+          ${memberSearchState}
         `,
             [userId]
         )
@@ -134,8 +125,7 @@ const checkMemberUserRating = async (userId: number) => {
 export default {
     createUser,
     existUser,
-    findUserByEmail,
-    findUserById,
+    findUser,
     checkGeneralUserRating,
     checkMemberUserRating,
 };

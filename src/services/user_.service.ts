@@ -36,24 +36,25 @@ const login = async (email: string, password: string) => {
         throw { message: "아이디는 이메일 형식이여야 합니다." };
     }
     // 매칭되는 유저가 있는 지 확인
-    const findUserByEmail = await userDao.findUserByEmail(email);
+    const userInfo = await userDao.findUser({email, includePwd: true});
+    console.log("userInfo: ", userInfo);
     // 있으면 토큰 발행 없으면 에러
-    if (!findUserByEmail) {
+    if (!userInfo) {
         throw { status: 404, message: "아이디가 존재하지 않습니다." };
     }
     // 비밀번호가 다른 지 확인
-    else if (!bcrypt.compareSync(password, findUserByEmail.password)) {
+    else if (!bcrypt.compareSync(password, userInfo.password)) {
         throw { status: 404, message: "비밀번호가 일치하지 않습니다." };
     }
 
     // 토큰 생성
-    const token = jwt.sign({ id: findUserByEmail.id }, process.env.SECRET_KEY);
+    const token = jwt.sign({ id: userInfo.id }, process.env.SECRET_KEY);
     return token;
 };
 
 // 유저 정보
 const getMe = async (userId: number) => {
-    const userInfo = await userDao.findUserById(userId);
+    const userInfo = await userDao.findUser({userId});
     return userInfo;
 };
 
