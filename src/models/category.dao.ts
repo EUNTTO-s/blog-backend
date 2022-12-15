@@ -13,7 +13,7 @@ const getAllCategories = async () => {
     return result as {id: number, img_url: string, category_name: string, description: string};
 }
 
-const findCategoryById = async (categoryId: number) => {
+const findlv1CategoryById = async (categoryId: number) => {
     const [result] = await dataSource.query(`
         SELECT
             id,
@@ -28,8 +28,24 @@ const findCategoryById = async (categoryId: number) => {
     return result as {id: number, img_url: string, category_name: string, description: string};
 }
 
+const findlv2CategoryById = async (categoryId: number) => {
+  const [result] = await dataSource.query(`
+      SELECT
+        id,
+        level_1_categories_id,
+        category_name,
+        description
+      FROM
+        level_2_categories
+      WHERE
+        id = ?
+  `, [categoryId]);
+  return result;
+}
+
 export default {
     getAllCategories,
-    findCategoryById
+    findlv1CategoryById,
+    findlv2CategoryById,
 }
 

@@ -41,21 +41,20 @@ import multer from 'multer';
 import fs from 'fs';
 
 const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const foldername = req.userInfo.id || 'test';
+  const folderLocation = `./uploads/` + req.userInfo.id || 'test';
   console.log("file: ", file);
   if (!req.res.locals.fileupload) {
     req.res.locals.fileupload = {};
   }
-  req.body[file.fieldname] = file.originalname;
+  req.body[file.fieldname] = `${req.userInfo.id || 'test'}/${file.originalname}`;
   // 개별 회사 게시글마다의 폴더 생성
-    // TODO 게시글 ID에 맞는 폴더명 생성
   if (!req.res.locals.fileupload.fileUploadWasRequested) {
     try {
-      fs.rmdirSync(`./uploads/${foldername}`, {recursive: true});
+      fs.rmdirSync(`${folderLocation}`, {recursive: true});
     } catch (err) {
-      console.log("err: ", err);
+      console.log("nothing to delete");
     }
-    fs.mkdirSync(`./uploads/${foldername}`);
+    fs.mkdirSync(`${folderLocation}`);
   }
   req.res.locals.fileupload.fileUploadWasRequested = true;
   cb(null, true)

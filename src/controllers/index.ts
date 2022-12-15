@@ -1,11 +1,11 @@
 import cmtCtl from "./comment.controller";
 import userCtl from "./user.controller";
-import postCtl from "./post.controller";
+import postFormCtl from "./postForm.controller";
 
 const ctl_set = {
     cmtCtl,
-    postCtl,
     userCtl,
+    postFormCtl,
 };
 
 export default ctl_set;
