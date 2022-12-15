@@ -55,55 +55,6 @@ const putPostForm = async (req: express.Request, res: express.Response) => {
   res.status(201).json({ data: posts });
 }
 
-const addPost = async (req: express.Request, res: express.Response) => {
-  const { companiesId, usersId }: CompanyPostFormInput = req.body;
-  // const userId = req.userInfo.id;
-  checkDataIsNotEmpty({companiesId, usersId});
-  // await postSvc.addPost(contents, image_url, userId);
-  res.status(201).json({ message: "successfully created" });
-}
-
-const updatePost = async (req: express.Request, res: express.Response) => {
-  const postId = req.params.id;
-  const { contents, image_url } = req.body;
-  const userId = req.userInfo.id;
-  checkDataIsNotEmpty({ postId, contents, image_url, userId });
-  const answer = await postSvc.updatePost(userId, postId, contents, image_url);
-  res.status(200).json({data: answer});
-}
-
-const deletePost = async (req: express.Request, res: express.Response) => {
-  const postId = req.params.id;
-  const userId = req.userInfo.id;
-  checkDataIsNotEmpty({postId, userId});
-  await postSvc.deletePost(userId, postId);
-  res.status(200).json({ message: "successfully deleted" });
-}
-
-const getPost = async (req: express.Request, res: express.Response) => {
-  res.send(`getPost`);
-}
-
-const getPostByPostId = async (req: express.Request, res: express.Response) => {
-  const postId = req.params.id;
-  checkDataIsNotEmpty({postId});
-  const post = await postSvc.getPostByPostId(postId);
-  res.status(200).json({data: post});
-}
-
-const getPostsByUserId = async (req: express.Request, res: express.Response) => {
-  const userId = req.params.id;
-  const posts = await postSvc.getPostsByUserId(userId);
-  res.status(200).json({ data: posts });
-}
-
-const addLikePost = async (req: express.Request, res: express.Response) => {
-  const userId = req.userInfo.id;
-  const postId = req.params.id;
-  await postSvc.addLikePost(userId, postId);
-  res.send(`success to add like`);
-}
-
 const uploadFile = async (req: express.Request, res: express.Response) => {
   res.locals.fileupload = {};
   res.locals.fileupload.fileUploadWasRequested = false;
@@ -120,13 +71,6 @@ const test = async (...[req, res] : Parameters<express.RequestHandler>) : Promis
 export default {
   putPostForm,
   getPostForm,
-  addPost,
-  getPost,
-  updatePost,
-  deletePost,
-  getPostByPostId,
-  getPostsByUserId,
-  addLikePost,
   uploadFile,
   test,
 }
