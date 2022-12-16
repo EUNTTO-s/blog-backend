@@ -105,10 +105,6 @@ const getCommentCountByPostId = async (postId: number) => {
 }
 
 export default {
-//   addCommentOnPost,
-//   findCommentById,
-//   updateComment,
-//   deleteComment,
   addCommentOnPost,
   addCommentOnComment,
   getCommentOnPost,
