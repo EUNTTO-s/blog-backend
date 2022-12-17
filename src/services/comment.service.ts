@@ -62,19 +62,13 @@ const getCommentOnPost = async (postId: number, page: number ,token?: string) =>
 
   const result = await cmtDao.getCommentOnPost(postId, pagination);
   const postWriter: number = result[0].writer;
-  const KR_TIME_DIFF = 9 * 60 * 60 * 1000;
   
   result.forEach((item: any) => {
-    // 한국 표준시로 바꾸기
-    let tmpdate = new Date(item.created_at);
-    let tmpdate2 = tmpdate.getTime();
-    let kr_curr = new Date(tmpdate2 + KR_TIME_DIFF);
-  
-    let year = kr_curr.toISOString().slice(0,4);
+    let year = item.created_at.toISOString().slice(0,4);
     let month = item.created_at.toISOString().slice(5,7);
-    let day = kr_curr.toISOString().slice(8,10);
-    let hour = kr_curr.toISOString().slice(11,13);
-    let minute = kr_curr.toISOString().slice(14,16);
+    let day = item.created_at.toISOString().slice(8,10);
+    let hour = item.created_at.toISOString().slice(11,13);
+    let minute = item.created_at.toISOString().slice(14,16);
     let noon = Number(hour) > 12 ? '오후' : '오전';
     item.created_at = `${year}년 ${month}월 ${day}일 ${noon} ${hour}:${minute}`;
 
