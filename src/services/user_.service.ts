@@ -29,6 +29,15 @@ const signUp = async (username: string, email: string, password: string) => {
     return createUser;
 };
 
+// 이메일 중복 체크
+const isExistEmail = async (email: string) => {
+    const existUser = await userDao.existUser(email);
+    if (existUser) {
+        throw { status: 200, message: "이미 존재하는 이메일 입니다." };
+    } else if (!existUser) {
+        throw { status: 200, message: "사용 가능한 이메일 입니다." };
+    }
+};
 // 로그인
 const login = async (email: string, password: string) => {
     // 아이디가 email 형식이 아닐 때
@@ -79,6 +88,7 @@ const getUserGrade = async (userId: number) => {
 
 export default {
     signUp,
+    isExistEmail,
     login,
     getMe,
     getUserGrade,

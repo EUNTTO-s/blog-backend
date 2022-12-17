@@ -12,6 +12,14 @@ const signUp = async (req: express.Request, res: express.Response) => {
     res.status(201).json({ messsage: "USER_CREATED" });
 };
 
+// 이메일 중복 체크
+const isExistEmail = async (req: express.Request, res: express.Response) => {
+    const { email }: UserInputType = req.body;
+    checkDataIsNotEmpty({ email });
+    await user_Svc.isExistEmail(email);
+    res.status(200).json({ message: "AVAILABLE EMAIL" });
+};
+
 // 로그인
 const login = async (req: express.Request, res: express.Response) => {
     const { email, password }: UserInputType = req.body;
@@ -36,6 +44,7 @@ const getUserGrade = async (req: express.Request, res: express.Response) => {
 
 export default {
     signUp,
+    isExistEmail,
     login,
     getMe,
     getUserGrade,
