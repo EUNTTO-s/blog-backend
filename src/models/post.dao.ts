@@ -1,45 +1,7 @@
 import dataSource from "./database";
 import { whereBuilder } from "./builder/queryBuilder";
-const updatePostForm = async (postForm: CompanyPostFormInput) => {
-  const answer = await dataSource.query(
-    `
-      UPDATE
-        company_post_forms
-      SET
-        company_name = ?,
-        level_2_categories_id = ?,
-        company_img_url = ?,
-        company_short_desc = ?,
-        homepage_url = ?,
-        main_bussiness_tags = ?,
-        company_long_desc = ?,
-        fastfive_benefit_desc = ?,
-        company_contact_address = ?,
-        company_info_url = ?,
-        fastfive_branches_id = ?,
-        users_id = ?
-      WHERE users_id = ?
-      `,
-    [
-      postForm.companyName,
-      postForm.level2CategoriesId,
-      postForm.companyImgUrl,
-      postForm.companyShortDesc,
-      postForm.homepageUrl,
-      postForm.mainBussinessTags,
-      postForm.companyLongDesc,
-      postForm.fastfiveBenefitDesc,
-      postForm.companyContactAddress,
-      postForm.companyInfoUrl,
-      postForm.fastfiveBranchesId,
-      postForm.usersId,
-      postForm.usersId,
-    ]
-  );
-  return answer;
-};
 
-const createPostForm = async (postFormInput: CompanyPostFormInput) => {
+const createPost = async (postFormInput: CompanyPostInput) => {
   const {
     companiesId = "",
     companyName = "",
@@ -58,7 +20,7 @@ const createPostForm = async (postFormInput: CompanyPostFormInput) => {
   const answer = await dataSource.query(
     `
       INSERT INTO
-        company_post_forms(
+        company_posts(
           companies_id,
           company_name,
           company_contact_address,
@@ -95,25 +57,25 @@ const createPostForm = async (postFormInput: CompanyPostFormInput) => {
   return answer;
 };
 
-const getPostForm = async (serchOption?: PostFormSearchOption) => {
+const getPost = async (serchOption?: PostSearchOption) => {
   if (!serchOption) serchOption = {};
   const limit = 1;
-  let { id, usersId, companiesId } = serchOption;
+  let { id, usersId, companiesId, locationsId, categoriesLv1Id, categoriesLv2Id, offset = 10, page = 1 } = serchOption;
   const answer = await dataSource
     .query(
       `
 			SELECT
-				cpf.id,
-				cpf.company_name AS companyName,
-				cpf.company_img_url AS companyImgUrl,
-				cpf.company_short_desc AS companyShortDesc,
-				cpf.homepage_url AS homepageUrl,
-				cpf.main_bussiness_tags AS mainBussinessTags,
-				cpf.company_long_desc AS companyLongDesc,
-				cpf.fastfive_benefit_desc AS fastfiveBenefitDesc,
-				cpf.company_contact_address AS companyContactAddress,
-				cpf.company_info_url AS companyInfoUrl,
-				cpf.users_id AS usersId,
+				cp.id,
+				cp.company_name AS companyName,
+				cp.company_img_url AS companyImgUrl,
+				cp.company_short_desc AS companyShortDesc,
+				cp.homepage_url AS homepageUrl,
+				cp.main_bussiness_tags AS mainBussinessTags,
+				cp.company_long_desc AS companyLongDesc,
+				cp.fastfive_benefit_desc AS fastfiveBenefitDesc,
+				cp.company_contact_address AS companyContactAddress,
+				cp.company_info_url AS companyInfoUrl,
+				cp.users_id AS usersId,
 				JSON_OBJECT(
 					'id',
 					loc.id,
@@ -143,16 +105,19 @@ const getPostForm = async (serchOption?: PostFormSearchOption) => {
 					lv2_cate.category_name
 				) AS category
 			FROM
-				company_post_forms 			AS cpf
-				JOIN companies 					AS c ON c.id = cpf.companies_id
-				JOIN level_2_categories AS lv2_cate ON lv2_cate.id = cpf.level_2_categories_id
+        company_posts 			AS cp
+				JOIN companies 					AS c ON c.id = cp.companies_id
+				JOIN level_2_categories AS lv2_cate ON lv2_cate.id = cp.level_2_categories_id
 				JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
-				JOIN fastfive_branches 	AS fb ON fb.id = cpf.fastfive_branches_id
+				JOIN fastfive_branches 	AS fb ON fb.id = cp.fastfive_branches_id
 				JOIN locations 					AS loc ON loc.id = fb.locations_id
-        ${whereBuilder("cpf.id", id, true)}
+        ${whereBuilder("cp.id", id, true)}
         ${whereBuilder("c.id", companiesId)}
-        ${whereBuilder("cpf.users_id", usersId)}
-			LIMIT ${limit}
+        ${whereBuilder("cp.users_id", usersId)}
+        ${whereBuilder("loc.id", locationsId)}
+        ${whereBuilder("lv1_cate.id", categoriesLv1Id)}
+        ${whereBuilder("lv2_cate.id", categoriesLv2Id)}
+			LIMIT ${limit} OFFSET ${offset*(page -1)}
       `
     )
     .then((list) => {
@@ -180,8 +145,63 @@ const getPostForm = async (serchOption?: PostFormSearchOption) => {
   return answer;
 };
 
+const updatePost = async (postForm: CompanyPostFormInput) => {
+  const answer = await dataSource.query(
+    `
+      UPDATE
+        company_posts
+      SET
+        company_name = ?,
+        level_2_categories_id = ?,
+        company_img_url = ?,
+        company_short_desc = ?,
+        homepage_url = ?,
+        main_bussiness_tags = ?,
+        company_long_desc = ?,
+        fastfive_benefit_desc = ?,
+        company_contact_address = ?,
+        company_info_url = ?,
+        fastfive_branches_id = ?,
+        users_id = ?
+      WHERE users_id = ?
+      `,
+    [
+      postForm.companyName,
+      postForm.level2CategoriesId,
+      postForm.companyImgUrl,
+      postForm.companyShortDesc,
+      postForm.homepageUrl,
+      postForm.mainBussinessTags,
+      postForm.companyLongDesc,
+      postForm.fastfiveBenefitDesc,
+      postForm.companyContactAddress,
+      postForm.companyInfoUrl,
+      postForm.fastfiveBranchesId,
+      postForm.usersId,
+      postForm.usersId,
+    ]
+  );
+  return answer;
+};
+
+const deletePost = async (postId: string) => {
+  const answer = await dataSource.query(
+    `
+    DELETE FROM
+      company_posts
+    WHERE
+      id = ?
+      `,
+    [
+      postId
+    ]
+  );
+  return answer;
+};
+
 export default {
-  createPostForm,
-  updatePostForm,
-  getPostForm,
+  createPost,
+  getPost,
+  updatePost,
+  deletePost,
 };

@@ -1,6 +1,6 @@
 import daoset from '../models';
 
-const { postDao, companyDao, user_Dao, categoryDao, locationDao } = daoset;
+const { postFormDao, companyDao, user_Dao, categoryDao, locationDao } = daoset;
 
 const putPostForm = async (postFormInput: CompanyPostFormInput) => {
   let result;
@@ -27,29 +27,29 @@ const putPostForm = async (postFormInput: CompanyPostFormInput) => {
   }
 
   // 이미 작성 폼이 존재하는 지 확인
-  const postFormInfo = await postDao.getPostForm({usersId: postFormInput.usersId, companiesId: postFormInput.companiesId});
+  const postFormInfo = await postFormDao.getPostForm({usersId: postFormInput.usersId, companiesId: postFormInput.companiesId});
 
   // 유저가 입력하려는 회사의 대표멥버인지 확인
     // TODO
   // 존재하면 업데이트
   if (postFormInfo) {
-    result = await postDao.updatePostForm(postFormInput);
+    result = await postFormDao.updatePostForm(postFormInput);
   } else {
     // 그렇지 않으면 생성
-    result = await postDao.createPostForm(postFormInput);
+    result = await postFormDao.createPostForm(postFormInput);
   }
   return result;
 }
 
 const getPostForm = async (serchOption?: PostFormSearchOption) => {
   // 이미 작성 폼이 존재하는 지 확인
-  const postFormInfo = await postDao.getPostForm({usersId: serchOption.usersId, companiesId: serchOption.companiesId});
+  const postFormInfo = await postFormDao.getPostForm({usersId: serchOption.usersId, companiesId: serchOption.companiesId});
 
   if (serchOption.usersId !== postFormInfo.usersId) {
     throw {status: 404, message: "자신이 작성한 게시글만 볼 수 있습니다."};
   }
 
-  return await postDao.getPostForm(serchOption);
+  return await postFormDao.getPostForm(serchOption);
 }
 
 export default {

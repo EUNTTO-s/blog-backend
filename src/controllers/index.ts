@@ -4,6 +4,7 @@ import postCtl from "./post.controller";
 import cateCtl from "./category.controller";
 import locationCtl from "./location.controller";
 import postFormCtl from "./postForm.controller";
+import postCtl from "./post.controller";
 
 const ctl_set = {
     cmtCtl,
@@ -11,6 +12,7 @@ const ctl_set = {
     cateCtl,
     locationCtl
     postFormCtl,
+    postCtl,
 };
 
 export default ctl_set;

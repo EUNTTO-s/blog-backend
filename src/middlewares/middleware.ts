@@ -41,12 +41,11 @@ import multer from 'multer';
 import fs from 'fs';
 
 const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const folderLocation = `./uploads/` + req.userInfo.id || 'test';
-  console.log("file: ", file);
+  const folderLocation = `./uploads/` + req.originalUrl + '/' + req.userInfo.id || 'test';
   if (!req.res.locals.fileupload) {
     req.res.locals.fileupload = {};
   }
-  req.body[file.fieldname] = `${req.userInfo.id || 'test'}/${file.originalname}`;
+  req.body[file.fieldname] = `${req.originalUrl}/${req.userInfo.id || 'test'}/${file.originalname}`;
   // 개별 회사 게시글마다의 폴더 생성
   if (!req.res.locals.fileupload.fileUploadWasRequested) {
     try {
@@ -54,7 +53,7 @@ const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.
     } catch (err) {
       console.log("nothing to delete");
     }
-    fs.mkdirSync(`${folderLocation}`);
+    fs.mkdirSync(`${folderLocation}`, {recursive: true});
   }
   req.res.locals.fileupload.fileUploadWasRequested = true;
   cb(null, true)
@@ -63,7 +62,7 @@ const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const foldername = req.userInfo.id || 'test';
-    cb(null, `./uploads/${foldername}`)
+    cb(null, `./uploads${req.originalUrl}/${foldername}`)
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname)
