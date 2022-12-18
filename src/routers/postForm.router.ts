@@ -10,6 +10,6 @@ const router = express.Router();
 router.post('/file-upload', asyncWrap(postFormCtl.uploadFile));
 router.get('/post-form', asyncWrap(middleware.authMiddleware), asyncWrap(postFormCtl.getPostForm));
 router.get('/post-form/:id', asyncWrap(middleware.authMiddleware), asyncWrap(postFormCtl.getPostForm));
-router.put('/post-form', asyncWrap(middleware.authMiddleware), asyncWrap(middleware.upload.any()), asyncWrap(postFormCtl.putPostForm));
+router.put('/post-form', asyncWrap(middleware.authMiddleware), asyncWrap(middleware.upload.any()), middleware.removeFolderOnEmptyProperty, asyncWrap(postFormCtl.putPostForm));
 
 export default router;
