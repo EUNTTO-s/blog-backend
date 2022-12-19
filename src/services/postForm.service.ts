@@ -27,15 +27,21 @@ const putPostForm = async (postFormInput: CompanyPostFormInput) => {
   if (!userInfo) {
     throw {status: 404, message: "유저 ID에 해당하는 유저 정보가 존재하지 않습니다."};
   }
-  // 카테고리 정보 조회
-  const lv2CateInfo = await categoryDao.findlv2CategoryById(Number(postFormInput.level2CategoriesId));
-  if (!lv2CateInfo) {
-    throw {status: 404, message: "카테고리 ID에 해당하는 카테고리 정보가 존재하지 않습니다."};
+
+  if (postFormInput.level2CategoriesId) {
+    // 카테고리 정보 조회
+    const lv2CateInfo = await categoryDao.findlv2CategoryById(Number(postFormInput.level2CategoriesId));
+    if (!lv2CateInfo) {
+      throw {status: 404, message: "카테고리 ID에 해당하는 카테고리 정보가 존재하지 않습니다."};
+    }
   }
-  // 패스트파이브 입점 정보 조회
-  const branchInfo = await locationDao.findBranchById(Number(postFormInput.fastfiveBranchesId));
-  if (!branchInfo) {
-    throw {status: 404, message: "브랜치 ID에 해당하는 브랜치 정보가 존재하지 않습니다."};
+
+  if (postFormInput.fastfiveBranchesId) {
+    // 패스트파이브 입점 정보 조회
+    const branchInfo = await locationDao.findBranchById(Number(postFormInput.fastfiveBranchesId));
+    if (!branchInfo) {
+      throw {status: 404, message: "브랜치 ID에 해당하는 브랜치 정보가 존재하지 않습니다."};
+    }
   }
 
   // 이미 작성 폼이 존재하는 지 확인

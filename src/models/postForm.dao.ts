@@ -1,9 +1,9 @@
 import dataSource from "./database";
 import { whereBuilder, setBuilder} from "./builder/queryBuilder";
 const updatePostForm = async (postForm: CompanyPostFormInput) => {
-  const propertyArray : [string, string][] = [
+  const propertyArray : [string, string, boolean?][] = [
     ['company_name',          postForm.companyName],
-    ['level_2_categories_id', postForm.level2CategoriesId],
+    ['level_2_categories_id', postForm.level2CategoriesId, true],
     ['company_short_desc',    postForm.companyShortDesc],
     ['homepage_url',          postForm.homepageUrl],
     ['main_bussiness_tags',   postForm.mainBussinessTags],
@@ -11,7 +11,7 @@ const updatePostForm = async (postForm: CompanyPostFormInput) => {
     ['fastfive_benefit_desc', postForm.fastfiveBenefitDesc],
     ['company_img_url',       postForm.companyImgUrl],
     ['company_info_url',      postForm.companyInfoUrl],
-    ['users_id',              postForm.usersId],
+    ['users_id',              postForm.usersId, true],
   ]
   const [stateOfSet, filterdValueArr] = setBuilder(propertyArray);
   const answer = await dataSource.query(
@@ -73,9 +73,9 @@ const createPostForm = async (postFormInput: CompanyPostFormInput) => {
       companyLongDesc,
       companyShortDesc,
       fastfiveBenefitDesc,
-      fastfiveBranchesId,
+      fastfiveBranchesId || null,
       homepageUrl,
-      level2CategoriesId,
+      level2CategoriesId || null,
       mainBussinessTags,
       usersId,
     ]
@@ -133,10 +133,10 @@ const getPostForm = async (serchOption?: PostFormSearchOption) => {
 			FROM
 				company_post_forms 			AS cpf
 				JOIN companies 					AS c ON c.id = cpf.companies_id
-				JOIN level_2_categories AS lv2_cate ON lv2_cate.id = cpf.level_2_categories_id
-				JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
-				JOIN fastfive_branches 	AS fb ON fb.id = cpf.fastfive_branches_id
-				JOIN locations 					AS loc ON loc.id = fb.locations_id
+				LEFT JOIN level_2_categories AS lv2_cate ON lv2_cate.id = cpf.level_2_categories_id
+				LEFT JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
+				LEFT JOIN fastfive_branches 	AS fb ON fb.id = cpf.fastfive_branches_id
+				LEFT JOIN locations 					AS loc ON loc.id = fb.locations_id
         ${whereBuilder("cpf.id", id, true)}
         ${whereBuilder("c.id", companiesId)}
         ${whereBuilder("cpf.users_id", usersId)}
