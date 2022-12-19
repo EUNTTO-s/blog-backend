@@ -4,6 +4,7 @@ import user_Svc from "./user_.service";
 import cateSvc from "./category.service";
 import postFormSvc from "./postForm.service";
 import postSvc from "./post.service";
+import companySvc from "./company.service";
 
 const svc_set = {
     cmtSvc,
@@ -12,6 +13,7 @@ const svc_set = {
     user_Svc,
     cateSvc,
     postFormSvc,
+    companySvc,
 };
 
 export default svc_set;
