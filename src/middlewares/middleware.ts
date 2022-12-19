@@ -1,15 +1,14 @@
 import type express from "express";
 import jwt from "jsonwebtoken";
-// import service from "../services";
 
-async function authMiddleware(...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> {
+const authMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const token = req.headers.authorization;
     const decodedToken = decodeToken(token);
     req.userInfo = { id: decodedToken.id };
     next();
 }
 
-async function adminMiddleware(...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> {
+const adminMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const userInfo = req.userInfo;
     if (userInfo.email != "admin@gmail.com") {
         throw { status: 403, message: "not permitted" };
@@ -17,7 +16,7 @@ async function adminMiddleware(...[req, _, next]: Parameters<express.RequestHand
     next();
 }
 
-function decodeToken(token: string) {
+const decodeToken = (token: string) => {
     try {
         return jwt.verify(token, process.env.SECRET_KEY);
     } catch (err) {
@@ -38,8 +37,43 @@ const errorHandler: express.ErrorRequestHandler = (err: MyError, _1, res, _2) =>
     res.status(responseInfo.status || 500).send({ message: responseInfo.message || "" });
 };
 
+import multer from 'multer';
+import fs from 'fs';
+
+const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  const folderLocation = `./uploads/` + req.userInfo.id || 'test';
+  console.log("file: ", file);
+  if (!req.res.locals.fileupload) {
+    req.res.locals.fileupload = {};
+  }
+  req.body[file.fieldname] = `${req.userInfo.id || 'test'}/${file.originalname}`;
+  // 개별 회사 게시글마다의 폴더 생성
+  if (!req.res.locals.fileupload.fileUploadWasRequested) {
+    try {
+      fs.rmdirSync(`${folderLocation}`, {recursive: true});
+    } catch (err) {
+      console.log("nothing to delete");
+    }
+    fs.mkdirSync(`${folderLocation}`);
+  }
+  req.res.locals.fileupload.fileUploadWasRequested = true;
+  cb(null, true)
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const foldername = req.userInfo.id || 'test';
+    cb(null, `./uploads/${foldername}`)
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  },
+})
+const upload = multer({ storage: storage, fileFilter });
+
 export default {
     authMiddleware,
     adminMiddleware,
     errorHandler,
+    upload,
 };

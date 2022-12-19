@@ -24,7 +24,8 @@ CREATE TABLE `company_posts` (
   `fastfive_benefit_desc` varchar(100),
   `company_contact_address` varchar(100) NOT NULL,
   `company_info_url` varchar(100),
-  `fastfive_branches_id` integer NOT NULL
+  `fastfive_branches_id` integer NOT NULL,
+  `users_id` integer NOT NULL
 );
 
 CREATE TABLE `company_post_forms` (
@@ -81,10 +82,12 @@ CREATE TABLE `company_residences` (
 
 CREATE TABLE `comments` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `comments_id` integer,
   `users_id` integer,
   `company_posts_id` integer,
   `comment_content` varchar(1000) NOT NULL,
+  `comments_id` integer default NULL,
+  `depth` integer,
+  `sequence` integer,
   `is_secret` tinyint DEFAULT 0,
   `created_at` datetime default now() NOT NULL
 );
@@ -126,6 +129,8 @@ ALTER TABLE `company_posts` ADD FOREIGN KEY (`level_2_categories_id`) REFERENCES
 
 ALTER TABLE `company_posts` ADD FOREIGN KEY (`fastfive_branches_id`) REFERENCES `fastfive_branches` (`id`);
 
+ALTER TABLE `company_posts` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
+
 ALTER TABLE `company_post_forms` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
 
 ALTER TABLE `company_post_forms` ADD FOREIGN KEY (`level_2_categories_id`) REFERENCES `level_2_categories` (`id`);
@@ -144,11 +149,11 @@ ALTER TABLE `fastfive_branches` ADD FOREIGN KEY (`locations_id`) REFERENCES `loc
 
 ALTER TABLE `company_residences` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
 
-ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`);
-
 ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`company_posts_id`) REFERENCES `company_posts` (`id`);
+
+ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`);
 
 ALTER TABLE `admins` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
