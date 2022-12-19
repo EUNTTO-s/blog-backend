@@ -1,19 +1,21 @@
 import express from 'express';
 import service_set from '../services'
 const {postSvc} = service_set;
-import {checkDataIsNotEmpty, createFolder} from '../utils/myutils'
-import middleware from '../middlewares/middleware'
+import {checkDataIsNotEmpty,} from '../utils/myutils'
 
-createFolder('uploads');
-
-const getPostForm = async (req: express.Request, res: express.Response) => {
+const getPost = async (req: express.Request, res: express.Response) => {
   const {id} = req.params;
-  const posts = await postSvc.getPostForm({id});
-  res.status(201).json({ data: posts });
+  const searchOption : PostSearchOption = {
+    ...req.query,
+    id,
+    usersId: req.query.ourGruop? req.userInfo.id : undefined
+  };
+  console.log("searchOption: ", searchOption);
+  const posts = await postSvc.getPost(searchOption);
+  res.status(200).json(posts);
 }
 
-const putPostForm = async (req: express.Request, res: express.Response) => {
-  console.log("fileupload: ", req.res.locals.fileupload);
+const putPost = async (req: express.Request, res: express.Response) => {
   const {
     companiesId,
     companyName,
@@ -42,35 +44,33 @@ const putPostForm = async (req: express.Request, res: express.Response) => {
     homepageUrl,
     level2CategoriesId,
     mainBussinessTags,
-    usersId: req.userInfo.id
+    usersId: req.userInfo.id,
   };
 
   const esentialItems = {
     companiesId,
     usersId: postForm.usersId,
+    level2CategoriesId,
+    companyName,
+    companyShortDesc,
+    mainBussinessTags,
+    companyContactAddress,
+    fastfiveBranchesId,
   }
 
   checkDataIsNotEmpty(esentialItems);
-  const posts = await postSvc.putPostForm(postForm);
-  res.status(201).json({ data: posts });
+  await postSvc.putPost(postForm);
+  res.status(200).json({ message: "PUT SUCCESS" });
 }
 
-const uploadFile = async (req: express.Request, res: express.Response) => {
-  res.locals.fileupload = {};
-  res.locals.fileupload.fileUploadWasRequested = false;
-  middleware.upload.any()(req, null, () => {
-    res.send(`success to add`);
-  });
-}
-
-const test = async (...[req, res] : Parameters<express.RequestHandler>) : Promise<any> => {
-  console.log(`userInfo: ${JSON.stringify(req.userInfo)}`);
-  res.send("TEST");
+const deletePost = async (req: express.Request, res: express.Response) => {
+  const {id : postId} = req.params;
+  await postSvc.deletePost(req.userInfo.id, postId);
+  res.status(200).json({ message: "DELETE SUCCESS" });
 }
 
 export default {
-  putPostForm,
-  getPostForm,
-  uploadFile,
-  test,
+  putPost,
+  getPost,
+  deletePost,
 }
