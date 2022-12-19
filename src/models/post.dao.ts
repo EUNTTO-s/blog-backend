@@ -60,71 +60,84 @@ const createPost = async (postFormInput: CompanyPostInput) => {
 const getPost = async (serchOption?: PostSearchOption) => {
   if (!serchOption) serchOption = {};
   const limit = 1;
-  let { id, usersId, companiesId, locationsId, categoriesLv1Id, categoriesLv2Id, offset = 10, page = 1 } = serchOption;
+  let {
+    id,
+    usersId,
+    companiesId,
+    locationsId,
+    categoriesLv1Id,
+    categoriesLv2Id,
+    offset = 10,
+    page = 1,
+  } = serchOption;
   const answer = await dataSource
     .query(
       `
-			SELECT
-				cp.id,
-				cp.company_name AS companyName,
-				cp.company_img_url AS companyImgUrl,
-				cp.company_short_desc AS companyShortDesc,
-				cp.homepage_url AS homepageUrl,
-				cp.main_bussiness_tags AS mainBussinessTags,
-				cp.company_long_desc AS companyLongDesc,
-				cp.fastfive_benefit_desc AS fastfiveBenefitDesc,
-				cp.company_contact_address AS companyContactAddress,
-				cp.company_info_url AS companyInfoUrl,
-				cp.users_id AS usersId,
-				JSON_OBJECT(
-					'id',
-					loc.id,
-					'locationName',
-					loc.location_name
-				) AS location,
-				JSON_OBJECT(
-					'id',
-					fb.id,
-					'branchName',
-					fb.branch_name
-				) AS branch,
-				JSON_OBJECT(
-					'id',
-					c.id,
-					'companyName',
-					c.company_name
-				) AS company,
-				JSON_OBJECT(
-					'lv1Id',
-					lv1_cate.id,
-					'lv1Name',
-					lv1_cate.category_name,
-					'lv2Id',
-					lv2_cate.id,
-					'lv2Name',
-					lv2_cate.category_name
-				) AS category
-			FROM
+      SELECT
+        cp.id,
+        cp.company_name AS companyName,
+        cp.company_img_url AS companyImgUrl,
+        cp.company_short_desc AS companyShortDesc,
+        cp.homepage_url AS homepageUrl,
+        cp.main_bussiness_tags AS mainBussinessTags,
+        cp.company_long_desc AS companyLongDesc,
+        cp.fastfive_benefit_desc AS fastfiveBenefitDesc,
+        cp.company_contact_address AS companyContactAddress,
+        cp.company_info_url AS companyInfoUrl,
+        cp.users_id AS usersId,
+        JSON_OBJECT(
+          'id',
+          loc.id,
+          'locationName',
+          loc.location_name
+        ) AS location,
+        JSON_OBJECT(
+          'id',
+          fb.id,
+          'branchName',
+          fb.branch_name
+        ) AS branch,
+        JSON_OBJECT(
+          'id',
+          c.id,
+          'companyName',
+          c.company_name
+        ) AS company,
+        JSON_OBJECT(
+          'lv1Id',
+          lv1_cate.id,
+          'lv1Name',
+          lv1_cate.category_name,
+          'lv2Id',
+          lv2_cate.id,
+          'lv2Name',
+          lv2_cate.category_name
+        ) AS category
+      FROM
         company_posts 			AS cp
-				JOIN companies 					AS c ON c.id = cp.companies_id
-				JOIN level_2_categories AS lv2_cate ON lv2_cate.id = cp.level_2_categories_id
-				JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
-				JOIN fastfive_branches 	AS fb ON fb.id = cp.fastfive_branches_id
-				JOIN locations 					AS loc ON loc.id = fb.locations_id
+        JOIN companies 					AS c ON c.id = cp.companies_id
+        JOIN level_2_categories AS lv2_cate ON lv2_cate.id = cp.level_2_categories_id
+        JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
+        JOIN fastfive_branches 	AS fb ON fb.id = cp.fastfive_branches_id
+        JOIN locations 					AS loc ON loc.id = fb.locations_id
         ${whereBuilder("cp.id", id, true)}
         ${whereBuilder("c.id", companiesId)}
         ${whereBuilder("cp.users_id", usersId)}
         ${whereBuilder("loc.id", locationsId)}
         ${whereBuilder("lv1_cate.id", categoriesLv1Id)}
         ${whereBuilder("lv2_cate.id", categoriesLv2Id)}
-			LIMIT ${limit} OFFSET ${offset*(page -1)}
+      LIMIT ${limit} OFFSET ${offset * (page - 1)}
       `
     )
     .then((list) => {
       list = [...list].map((item) => {
-        const domain = 'http://localhost:5500';
-        const companyImgUrl = item.companyImgUrl? `${domain}${item.companyImgUrl}` : '';
-        const companyInfoUrl = item.companyInfoUrl? `${domain}${item.companyInfoUrl}` : '';
+        const domain = "http://localhost:5500";
+        const companyImgUrl = item.companyImgUrl
+          ? `${domain}${item.companyImgUrl}`
+          : "";
+        const companyInfoUrl = item.companyInfoUrl
+          ? `${domain}${item.companyInfoUrl}`
+          : "";
         return {
           ...item,
           company: JSON.parse(item.company),
@@ -192,9 +205,7 @@ const deletePost = async (postId: string) => {
     WHERE
       id = ?
       `,
-    [
-      postId
-    ]
+    [postId]
   );
   return answer;
 };
