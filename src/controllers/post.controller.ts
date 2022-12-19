@@ -5,9 +5,10 @@ import {checkDataIsNotEmpty,} from '../utils/myutils'
 
 const getPost = async (req: express.Request, res: express.Response) => {
   const {id} = req.params;
-  const searchOption = {
+  const searchOption : PostSearchOption = {
     ...req.query,
     id,
+    usersId: req.query.ourGruop? req.userInfo.id : undefined
   };
   console.log("searchOption: ", searchOption);
   const posts = await postSvc.getPost(searchOption);

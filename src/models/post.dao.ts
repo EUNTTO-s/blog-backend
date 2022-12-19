@@ -62,7 +62,6 @@ const getPost = async (serchOption?: PostSearchOption) => {
   const limit = 1;
   let {
     id,
-    usersId,
     companiesId,
     locationsId,
     categoriesLv1Id,
@@ -122,7 +121,6 @@ const getPost = async (serchOption?: PostSearchOption) => {
         JOIN locations 					AS loc ON loc.id = fb.locations_id
         ${whereBuilder("cp.id", id, true)}
         ${whereBuilder("c.id", companiesId)}
-        ${whereBuilder("cp.users_id", usersId)}
         ${whereBuilder("loc.id", locationsId)}
         ${whereBuilder("lv1_cate.id", categoriesLv1Id)}
         ${whereBuilder("lv2_cate.id", categoriesLv2Id)}
@@ -148,7 +146,7 @@ const getPost = async (serchOption?: PostSearchOption) => {
           companyInfoUrl,
         };
       });
-      if (usersId || id) {
+      if (companiesId || id) {
         let [item] = list;
         return item;
       }

@@ -29,4 +29,5 @@ interface PostSearchOption extends PostFormSearchOption {
   categoriesLv2Id?: string,
   page?: number,
   offset?: number,
+  ourGruop?: boolean,
 }

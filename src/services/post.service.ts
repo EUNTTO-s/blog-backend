@@ -55,6 +55,15 @@ const putPost = async (postInput: CompanyPostFormInput) => {
 }
 
 const getPost = async (serchOption?: PostSearchOption) => {
+  if (serchOption.ourGruop) {
+      // 해당 회사의 메인 멤버인지 확인
+      const companyMemberInfo = await postFormDao.getCompanyMemberByUserId(serchOption.usersId);
+      console.log("companyMemberInfo: ", companyMemberInfo);
+      if (!companyMemberInfo) {
+        throw {status: 404, message: "해당 유저는 멤버 그룹에 존재하지 않습니다"};
+      }
+      serchOption.companiesId = companyMemberInfo.companiesId;
+  }
   return await postDao.getPost(serchOption);
 }
 
