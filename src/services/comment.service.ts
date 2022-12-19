@@ -61,24 +61,22 @@ const getCommentOnPost = async (postId: number, page: number ,token?: string) =>
   const pagination: number = ((Number(page) - 1) * 20);
 
   const result = await cmtDao.getCommentOnPost(postId, pagination);
-  const postWriter: number = result[0].writer;
+  const postWriter = await cmtDao.getPostWriter(postId);
   
   result.forEach((item: any) => {
-    let year = item.created_at.toISOString().slice(0,4);
-    let month = item.created_at.toISOString().slice(5,7);
-    let day = item.created_at.toISOString().slice(8,10);
-    let hour = item.created_at.toISOString().slice(11,13);
-    let minute = item.created_at.toISOString().slice(14,16);
-    let noon = Number(hour) > 12 ? '오후' : '오전';
-    item.created_at = `${year}년 ${month}월 ${day}일 ${noon} ${hour}:${minute}`;
-
     // 비밀 댓글에 대한 열람 권한이 없을 시
-    if(item.is_secret === 1 && item.users_id !== user_id && postWriter !== user_id) item.comment_content = "이 댓글은 작성자만 볼 수 있습니다."
+    if(item.is_secret === 1 && item.users_id !== user_id && postWriter.users_id !== user_id) item.comment_content = "이 댓글은 작성자만 볼 수 있습니다."
+
+    if(item.users_id !== user_id) {
+      item.auth = 0;
+    } else {
+      item.auth = 1;
+    }
   })
   return result;
 }
 
-const updateComment = async (userId: number, commentId: number, comment: string) => {
+const updateComment = async (userId: number, commentId: number, comment: string, is_secret: number) => {
   // 유저가 존재하는지 확인
   const existUser = await userDao.findUserById(userId);
   if (!existUser) {
@@ -96,7 +94,7 @@ const updateComment = async (userId: number, commentId: number, comment: string)
     throw {status: 400, message: '수정 권한이 없습니다'}
   }
 
-  await cmtDao.updateComment(commentId, comment);
+  await cmtDao.updateComment(commentId, comment, is_secret);
 }
 
 const deleteComment = async (userId: number, commentId: number) => {

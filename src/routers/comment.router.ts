@@ -6,11 +6,11 @@ import {asyncWrap} from '../utils/myutils';
 const {cmtCtl} = controllers;
 const router = express.Router();
 
-router.post('/post/addCommentOnPost', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.addCommentOnPost));
+router.post('/post/commentOnPost', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.addCommentOnPost));
 
-router.post('/post/addCommentOnComment', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.addCommentOnComment));
+router.post('/post/commentOnComment', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.addCommentOnComment));
 
-router.get('/post/:id/:page', asyncWrap(cmtCtl.getCommentOnPost));
+router.get('/post/:id', asyncWrap(cmtCtl.getCommentOnPost));
 
 router.patch('/post/comment', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.updateComment));
 

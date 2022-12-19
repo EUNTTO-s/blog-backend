@@ -20,17 +20,17 @@ const addCommentOnComment = async (req: express.Request, res: express.Response) 
 
 const getCommentOnPost = async (req: express.Request, res: express.Response) => {
   const postId = req.params.id;
-  const page = req.params.page;
+  const { page } = req.query;
   const token = req.headers.authorization;
   const result = token === undefined ? await cmtSvc.getCommentOnPost(Number(postId), Number(page)): await cmtSvc.getCommentOnPost(Number(postId), Number(page), token);
-  res.json(result);
+  res.json({length: result.length, data: result});
 }
 
 const updateComment = async (req: express.Request, res: express.Response) => {
   const userId = req.userInfo.id;
-  const {comment, commentId}: CommentInputType = req.body;
+  const {comment, commentId, is_secret}: CommentInputType = req.body;
   checkDataIsNotEmpty({userId, commentId, comment});
-  await cmtSvc.updateComment(Number(userId), commentId, comment);
+  await cmtSvc.updateComment(Number(userId), commentId, comment, is_secret);
   res.json({message : "COMMENT UPDATE"});
 }
 

@@ -39,8 +39,7 @@ const getCommentOnPost = async (postId: number, pagenation: number): Promise<any
       cmt.depth,
       cmt.sequence,
       cmt.created_at,
-      cmt.is_secret,
-      cp.users_id as writer
+      cmt.is_secret
     FROM
       comments as cmt
     JOIN company_posts as cp ON cp.id = cmt.company_posts_id
@@ -51,12 +50,19 @@ const getCommentOnPost = async (postId: number, pagenation: number): Promise<any
   return result as CommentType;
 }
 
-const updateComment = async (commentId: number, comment: string) => {
+const updateComment = async (commentId: number, comment: string, is_secret: number) => {
   await dataSource.query(`
     UPDATE comments
       SET comment_content = ?
-    WHERE id = ?
+    WHERE
+      id = ?
   `, [comment, commentId]);
+  await dataSource.query(`
+    UPDATE comments
+      SET is_secret = ?
+    WHERE
+      id = ?
+  `, [is_secret])
 }
 
 const deleteComment = async (commentId: number) => {
@@ -104,6 +110,18 @@ const getCommentCountByPostId = async (postId: number) => {
   return result as {count: number}
 }
 
+const getPostWriter = async (postId: number) => {
+  const [result] = await dataSource.query(`
+    SELECT
+      users_id
+    FROM
+      company_posts
+    WHERE
+      id = ?
+  `, [postId])
+  return result as {users_id: number}
+}
+
 export default {
   addCommentOnPost,
   addCommentOnComment,
@@ -112,5 +130,6 @@ export default {
   deleteComment,
   findUserByCommentId,
   findSEQByCommentId,
-  getCommentCountByPostId
+  getCommentCountByPostId,
+  getPostWriter,
 }
