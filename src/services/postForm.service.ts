@@ -45,9 +45,30 @@ const getPostForm = async (serchOption?: PostFormSearchOption) => {
   // 이미 작성 폼이 존재하는 지 확인
   const postFormInfo = await postFormDao.getPostForm({usersId: serchOption.usersId, companiesId: serchOption.companiesId});
 
-  if (serchOption.usersId !== postFormInfo.usersId) {
-    throw {status: 404, message: "자신이 작성한 게시글만 볼 수 있습니다."};
+  if (!postFormInfo) {
+    const companyMemberInfo = await postFormDao.getCompanyMemberByUserId(serchOption.usersId);
+    if (!companyMemberInfo) {
+      throw {status: 404, message: "해당 유저는 멤버 그룹에 존재하지 않아 임시 게시물 수정 권한이 없습니다."};
+    }
+    // 아무 정보도 없을 시 default value 전달
+    return {
+      "companyName": "",
+      "companyImgUrl": "",
+      "companyShortDesc": "",
+      "homepageUrl": "",
+      "mainBussinessTags": "",
+      "companyLongDesc": "",
+      "fastfiveBenefitDesc": "",
+      "companyContactAddress": "",
+      "companyInfoUrl": "",
+      "company": companyMemberInfo.company,
+    };
   }
+  // TODO
+    // 메인 멤버만 작성할 수 있도록 수정 필요
+  // if (serchOption.usersId !== postFormInfo.usersId) {
+  //   throw {status: 404, message: "자신이 작성한 게시글만 볼 수 있습니다."};
+  // }
 
   return await postFormDao.getPostForm(serchOption);
 }

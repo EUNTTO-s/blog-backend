@@ -168,8 +168,39 @@ const getPostForm = async (serchOption?: PostFormSearchOption) => {
   return answer;
 };
 
+const getCompanyMemberByUserId = async (userId: string) => {
+  const [companyMember] = await dataSource
+    .query(
+      `
+      SELECT
+        cpm.companies_id,
+        cpm.users_id,
+        cpm.is_main_member,
+        JSON_OBJECT(
+          'id',
+          cp.id,
+          'companyName',
+          cp.company_name
+        ) AS company
+      FROM
+        company_members AS cpm
+      JOIN
+        companies AS cp
+      ON
+        cp.id = cpm.companies_id
+      WHERE
+        users_id = ?
+      `, [userId]
+    )
+  if (!companyMember) {
+    return companyMember;
+  }
+  return {...companyMember, company: JSON.parse(companyMember.company || "")};
+}
+
 export default {
   createPostForm,
   updatePostForm,
   getPostForm,
+  getCompanyMemberByUserId,
 };
