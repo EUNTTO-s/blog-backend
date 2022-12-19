@@ -12,5 +12,6 @@ router.post("/signup", asyncWrap(userCtl.signUp));
 router.post("/login", asyncWrap(userCtl.login));
 router.get("/user", asyncWrap(middleware.authMiddleware), asyncWrap(userCtl.getMe));
 router.get("/admin", asyncWrap(middleware.authMiddleware), asyncWrap(middleware.adminMiddleware), asyncWrap(userCtl.getMe));
+router.get("/grade", asyncWrap(middleware.authMiddleware), asyncWrap(userCtl.getUserGrade));
 
 export default router;
