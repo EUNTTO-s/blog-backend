@@ -22,4 +22,4 @@ router.patch('/category2/updateCategory', asyncWrap(middleware.authMiddleware), 
 
 router.delete('/category2/deleteCategory', asyncWrap(middleware.authMiddleware), asyncWrap(cateCtl.deleteLevel_2_Category));
 
-export default router;
+ export default router;
