@@ -90,57 +90,57 @@ const getPostForm = async (serchOption?: PostFormSearchOption) => {
   const answer = await dataSource
     .query(
       `
-			SELECT
-				cpf.id,
-				cpf.company_name AS companyName,
-				cpf.company_img_url AS companyImgUrl,
-				cpf.company_short_desc AS companyShortDesc,
-				cpf.homepage_url AS homepageUrl,
-				cpf.main_bussiness_tags AS mainBussinessTags,
-				cpf.company_long_desc AS companyLongDesc,
-				cpf.fastfive_benefit_desc AS fastfiveBenefitDesc,
-				cpf.company_contact_address AS companyContactAddress,
-				cpf.company_info_url AS companyInfoUrl,
-				cpf.users_id AS usersId,
-				JSON_OBJECT(
-					'id',
-					loc.id,
-					'locationName',
-					loc.location_name
-				) AS location,
-				JSON_OBJECT(
-					'id',
-					fb.id,
-					'branchName',
-					fb.branch_name
-				) AS branch,
-				JSON_OBJECT(
-					'id',
-					c.id,
-					'companyName',
-					c.company_name
-				) AS company,
-				JSON_OBJECT(
-					'lv1Id',
-					lv1_cate.id,
-					'lv1Name',
-					lv1_cate.category_name,
-					'lv2Id',
-					lv2_cate.id,
-					'lv2Name',
-					lv2_cate.category_name
-				) AS category
-			FROM
-				company_post_forms 			AS cpf
-				JOIN companies 					AS c ON c.id = cpf.companies_id
-				LEFT JOIN level_2_categories AS lv2_cate ON lv2_cate.id = cpf.level_2_categories_id
-				LEFT JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
-				LEFT JOIN fastfive_branches 	AS fb ON fb.id = cpf.fastfive_branches_id
-				LEFT JOIN locations 					AS loc ON loc.id = fb.locations_id
+      SELECT
+        cpf.id,
+        cpf.company_name AS companyName,
+        cpf.company_img_url AS companyImgUrl,
+        cpf.company_short_desc AS companyShortDesc,
+        cpf.homepage_url AS homepageUrl,
+        cpf.main_bussiness_tags AS mainBussinessTags,
+        cpf.company_long_desc AS companyLongDesc,
+        cpf.fastfive_benefit_desc AS fastfiveBenefitDesc,
+        cpf.company_contact_address AS companyContactAddress,
+        cpf.company_info_url AS companyInfoUrl,
+        cpf.users_id AS usersId,
+        JSON_OBJECT(
+          'id',
+          loc.id,
+          'locationName',
+          loc.location_name
+        ) AS location,
+        JSON_OBJECT(
+          'id',
+          fb.id,
+          'branchName',
+          fb.branch_name
+        ) AS branch,
+        JSON_OBJECT(
+          'id',
+          c.id,
+          'companyName',
+          c.company_name
+        ) AS company,
+        JSON_OBJECT(
+          'lv1Id',
+          lv1_cate.id,
+          'lv1Name',
+          lv1_cate.category_name,
+          'lv2Id',
+          lv2_cate.id,
+          'lv2Name',
+          lv2_cate.category_name
+        ) AS category
+      FROM
+        company_post_forms 			AS cpf
+        JOIN companies 					AS c ON c.id = cpf.companies_id
+        LEFT JOIN level_2_categories AS lv2_cate ON lv2_cate.id = cpf.level_2_categories_id
+        LEFT JOIN level_1_categories AS lv1_cate ON lv1_cate.id = lv2_cate.level_1_categories_id
+        LEFT JOIN fastfive_branches 	AS fb ON fb.id = cpf.fastfive_branches_id
+        LEFT JOIN locations 					AS loc ON loc.id = fb.locations_id
         ${whereBuilder("cpf.id", id, true)}
         ${whereBuilder("c.id", companiesId)}
         ${whereBuilder("cpf.users_id", usersId)}
-			LIMIT ${limit}
+      LIMIT ${limit}
       `
     )
     .then((list) => {
