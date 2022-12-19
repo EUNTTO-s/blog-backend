@@ -2,7 +2,7 @@ import dataSource from './database';
 
 const getAllCategories = async () => {
     const result = await dataSource.query(`
-    SELECT 
+    SELECT
 	    level_1_categories.id,
         level_1_categories.category_name as category,
         JSON_ARRAYAGG
@@ -27,7 +27,7 @@ const findCategoryById = async (categoryId: number) => {
             level_1_categories
         WHERE
             id = ?
-    `, [cateogryId]);
+    `, [categoryId]);
     return result as {id: number, img_url: string, category_name: string, description: string};
 }
 
@@ -112,6 +112,21 @@ const deleteLevel_2_Category = async(categoryId: number) => {
     `, [categoryId])
 }
 
+const findlv2CategoryById = async (categoryId: number) => {
+  const [result] = await dataSource.query(`
+      SELECT
+        id,
+        level_1_categories_id,
+        category_name,
+        description
+      FROM
+        level_2_categories
+      WHERE
+        id = ?
+  `, [categoryId]);
+  return result;
+}
+
 export default {
     getAllCategories,
     findCategoryById,
@@ -121,6 +136,7 @@ export default {
     updateCategoryImg,
     createLevel_2_Category,
     updateLevel_2_Category,
-    deleteLevel_2_Category
+    deleteLevel_2_Category,
+    findlv2CategoryById,
 }
 

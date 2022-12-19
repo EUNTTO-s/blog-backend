@@ -5,7 +5,7 @@ const userDao = daoset.user_Dao;
 
 const addCommentOnPost = async (userId: number, postId: number, comment: string, is_secret: number) => {
   // 유저가 존재하는지 확인
-  const existUser = await userDao.findUserById(userId);
+  const existUser = await userDao.findUser({userId});
   if (!existUser) {
     throw {status: 400, message: '해당 유저가 존재하지 않습니다'}
   }
@@ -27,7 +27,7 @@ const addCommentOnPost = async (userId: number, postId: number, comment: string,
 
 const addCommentOnComment = async (userId: number, postId: number, commentId: number, comment: string, is_secret: number) => {
   // 유저가 존재하는지 확인
-  const existUser = await userDao.findUserById(userId);
+  const existUser = await userDao.findUser({userId});
   if (!existUser) {
     throw {status: 400, message: '해당 유저가 존재하지 않습니다'}
   }
@@ -62,7 +62,7 @@ const getCommentOnPost = async (postId: number, page: number ,token?: string) =>
 
   const result = await cmtDao.getCommentOnPost(postId, pagination);
   const postWriter = await cmtDao.getPostWriter(postId);
-  
+
   result.forEach((item: any) => {
     // 비밀 댓글에 대한 열람 권한이 없을 시
     if(item.is_secret === 1 && item.users_id !== user_id && postWriter.users_id !== user_id) {
@@ -81,7 +81,7 @@ const getCommentOnPost = async (postId: number, page: number ,token?: string) =>
 
 const updateComment = async (userId: number, commentId: number, comment: string, is_secret: number) => {
   // 유저가 존재하는지 확인
-  const existUser = await userDao.findUserById(userId);
+  const existUser = await userDao.findUser({userId});
   if (!existUser) {
     throw {status: 400, message: '해당 유저가 존재하지 않습니다'}
   }
@@ -101,7 +101,7 @@ const updateComment = async (userId: number, commentId: number, comment: string,
 }
 
 const deleteComment = async (userId: number, commentId: number) => {
-  const existUser = await userDao.findUserById(Number(userId));
+  const existUser = await userDao.findUser({userId});
   if(!existUser) {
     throw {status: 400, message: '해당 유저가 존재하지 않습니다'}
   }
