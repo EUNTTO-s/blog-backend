@@ -1,6 +1,7 @@
 import daoset from '../models';
 
-const { postDao, companyDao, user_Dao, categoryDao, locationDao } = daoset;
+const { postDao, companyDao, user_Dao, categoryDao, locationDao, postFormDao } =
+  daoset;
 
 const putPost = async (postInput: CompanyPostFormInput) => {
   let result;
@@ -9,6 +10,18 @@ const putPost = async (postInput: CompanyPostFormInput) => {
   if (!companyInfo) {
     throw {status: 404, message: "회사 ID에 해당하는 회사 정보가 존재하지 않습니다."};
   }
+
+  // 해당 회사의 메인 멤버인지 확인
+  const companyMemberInfo = await postFormDao.getCompanyMemberByUserId(postInput.usersId);
+
+  if (!companyMemberInfo) {
+    throw {status: 404, message: "해당 유저는 멤버 그룹에 존재하지 않아 게시물 수정 권한이 없습니다."};
+  }
+
+  if ((!companyMemberInfo.isMainMember) || (companyMemberInfo.companiesId != postInput.companiesId)) {
+    throw {status: 403, message: "해당 회사에 대한 메인멤버가 아닙니다."};
+  }
+
   // 유저 정보 조회
   const userInfo = await user_Dao.findUser({userId: Number(postInput.usersId)});
   if (!userInfo) {

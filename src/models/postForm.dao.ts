@@ -173,9 +173,9 @@ const getCompanyMemberByUserId = async (userId: string) => {
     .query(
       `
       SELECT
-        cpm.companies_id,
-        cpm.users_id,
-        cpm.is_main_member,
+        cpm.companies_id AS companiesId,
+        cpm.users_id AS usersId,
+        cpm.is_main_member AS isMainMember,
         JSON_OBJECT(
           'id',
           cp.id,
