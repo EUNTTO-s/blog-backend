@@ -34,6 +34,7 @@ const getCommentOnPost = async (postId: number, pagenation: number): Promise<any
     SELECT
       cmt.id,
       cmt.users_id,
+      users.username,
       cmt.comment_content,
       cmt.comments_id,
       cmt.depth,
@@ -43,6 +44,7 @@ const getCommentOnPost = async (postId: number, pagenation: number): Promise<any
     FROM
       comments as cmt
     JOIN company_posts as cp ON cp.id = cmt.company_posts_id
+    JOIN users ON users.id = cmt.users_id
     WHERE cmt.company_posts_id = ?
     ORDER BY IF(ISNULL(cmt.comments_id), cmt.id, cmt.comments_id), sequence
     LIMIT ${pagenation}, 20
@@ -62,13 +64,22 @@ const updateComment = async (commentId: number, comment: string, is_secret: numb
       SET is_secret = ?
     WHERE
       id = ?
-  `, [is_secret])
+  `, [is_secret, commentId])
+}
+
+const changeCommentToDelete = async (commentId: number) => {
+  await dataSource.query(`
+    UPDATE comments
+      SET comment_content = '삭제된 메세지입니다'
+    WHERE
+      id = ?
+  `, [commentId])
 }
 
 const deleteComment = async (commentId: number) => {
   await dataSource.query(`
-    DELETE
-      FROM comments
+    DELETE FROM
+      comments
     WHERE
       id = ?
   `, [commentId])
@@ -122,14 +133,28 @@ const getPostWriter = async (postId: number) => {
   return result as {users_id: number}
 }
 
+const getLengthOnPost = async (postId: number) => {
+  const [result] = await dataSource.query(`
+    SELECT
+      count(*) as len
+    FROM
+      comments
+    WHERE
+      company_posts_id = ?
+  `, [postId])
+  return result
+}
+
 export default {
   addCommentOnPost,
   addCommentOnComment,
   getCommentOnPost,
   updateComment,
+  changeCommentToDelete,
   deleteComment,
   findUserByCommentId,
   findSEQByCommentId,
   getCommentCountByPostId,
   getPostWriter,
+  getLengthOnPost,
 }

@@ -56,7 +56,7 @@ const getCommentOnPost = async (postId: number, page: number ,token?: string) =>
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY)
     user_id = Number(decodedToken.id);
   }
-  
+
   // 페이지네이션을 위한 연산
   const pagination: number = ((Number(page) - 1) * 20);
 
@@ -65,7 +65,10 @@ const getCommentOnPost = async (postId: number, page: number ,token?: string) =>
   
   result.forEach((item: any) => {
     // 비밀 댓글에 대한 열람 권한이 없을 시
-    if(item.is_secret === 1 && item.users_id !== user_id && postWriter.users_id !== user_id) item.comment_content = "이 댓글은 작성자만 볼 수 있습니다."
+    if(item.is_secret === 1 && item.users_id !== user_id && postWriter.users_id !== user_id) {
+      console.log(1);
+      item.comment_content = "이 댓글은 작성자만 볼 수 있습니다."
+    }
 
     if(item.users_id !== user_id) {
       item.auth = 0;
@@ -108,8 +111,13 @@ const deleteComment = async (userId: number, commentId: number) => {
   if (Number(commentWriter.users_id) !== userId) {
     throw {status: 400, message: '삭제 권한이 없습니다'}
   }
+  const discription = await cmtDao.findSEQByCommentId(commentId);
+  discription.SEQ === 1 ? await cmtDao.deleteComment(commentId) : await cmtDao.changeCommentToDelete(commentId);
+}
 
-  await cmtDao.deleteComment(commentId);
+const getLengthOnPost = async (postId: number) => {
+  const result = await cmtDao.getLengthOnPost(postId);
+  return result.len
 }
 
 export default {
@@ -117,5 +125,6 @@ export default {
   addCommentOnComment,
   getCommentOnPost,
   updateComment,
-  deleteComment
+  deleteComment,
+  getLengthOnPost,
 }
