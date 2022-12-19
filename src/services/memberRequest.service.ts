@@ -16,7 +16,7 @@ const getMemberList = async (MemberInput: MemberRequestInput) => {
     // 대표 멤버 판단
     const isMainMember = await memberRequestDao.isMainMember(MemberInput.userId);
     if (!isMainMember) {
-        throw { status: 404, message: "접근 권한이 없습니다." };
+        throw { status: 403, message: "접근 권한이 없습니다." };
     }
     const memberList = await memberRequestDao.getMemberList(MemberInput.userId);
     return memberList;

@@ -1,4 +1,4 @@
 interface MemberRequestInput {
     companiesId?: string;
-    userId?: string;
+    userId: string;
 }

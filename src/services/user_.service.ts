@@ -32,13 +32,7 @@ const signUp = async (username: string, email: string, password: string) => {
 // 이메일 중복 체크
 const isExistEmail = async (email: string) => {
     const existUser = await userDao.existUser(email);
-    let checkEmail: boolean;
-
-    if (existUser) {
-        checkEmail = false;
-    } else if (!existUser) {
-        checkEmail = true;
-    }
+    const checkEmail = existUser ? true : false;
 
     return checkEmail;
 };

@@ -1,7 +1,7 @@
 interface CompanyRequestInput {
-    companyName?: string;
+    companyName: string;
     companyId?: string;
-    startDate?: string;
-    endDate?: string;
-    userId?: string;
+    startDate: string;
+    endDate: string;
+    userId: string;
 }

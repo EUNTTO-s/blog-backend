@@ -29,7 +29,7 @@ const getCompanyId = async (companyName: string) => {
     return companyId;
 };
 
-const createCompanyMember = async (companyId: string, userId: string) => {
+const createCompanyMainMember = async (companyId: string, userId: string) => {
     await dataSource.query(
         `
         INSERT INTO
@@ -39,6 +39,19 @@ const createCompanyMember = async (companyId: string, userId: string) => {
           (?, ?, ?)
         `,
         [companyId, userId, 1]
+    );
+};
+
+const createCompanyMember = async (companyId: string, userId: string) => {
+    await dataSource.query(
+        `
+      INSERT INTO
+        company_members
+        (companies_id, users_id, is_main_member)
+      VALUES
+        (?, ?, ?)
+      `,
+        [companyId, userId, 0]
     );
 };
 
@@ -81,6 +94,7 @@ const getCompanies = async (searchOption: CompanySerarchOption) => {
 export default {
     createCompany,
     getCompanyId,
+    createCompanyMainMember,
     createCompanyMember,
     createCompanyResidences,
     getCompanies,

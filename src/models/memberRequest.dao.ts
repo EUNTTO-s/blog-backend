@@ -53,13 +53,13 @@ const getMemberList = async (userId: string) => {
         FROM
           member_join_request
         JOIN
-        users
+          users
         ON users.id = member_join_request.users_id
         JOIN
-        company_members
+          company_members
         ON company_members.companies_id = member_join_request.companies_id
         JOIN
-        companies
+          companies
         ON companies.id = member_join_request.companies_id
         WHERE
           company_members.users_id = ?

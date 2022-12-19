@@ -5,7 +5,7 @@ const { companyRequestDao, companyDao } = daoset;
 const createCompany = async (CompanyInput: CompanyRequestInput) => {
     const isExistCompany = await companyDao.getCompanies({ companyName: CompanyInput.companyName });
     if (isExistCompany) {
-        throw { status: 404, message: "이미 등록된 회사 입니다." };
+        throw { status: 400, message: "이미 등록된 회사 입니다." };
     }
     await companyRequestDao.createRequestCompany(CompanyInput);
 };
@@ -20,7 +20,7 @@ const getCompanyList = async () => {
 const approveCompany = async (companyName: string, startDate: string, endDate: string, userId: string) => {
     await companyDao.createCompany(companyName);
     const [getCompanyId] = await companyDao.getCompanyId(companyName);
-    await companyDao.createCompanyMember(getCompanyId.id, userId);
+    await companyDao.createCompanyMainMember(getCompanyId.id, userId);
     await companyDao.createCompanyResidences(getCompanyId.id, startDate, endDate);
 };
 

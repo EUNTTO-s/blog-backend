@@ -11,6 +11,6 @@ const router = express.Router();
 router.post("/member-request", asyncWrap(middleware.authMiddleware), asyncWrap(memberRequestCtl.createMember));
 router.get("/member-request", asyncWrap(middleware.authMiddleware), asyncWrap(memberRequestCtl.getMemberList));
 router.post("/member", asyncWrap(middleware.authMiddleware), asyncWrap(memberRequestCtl.approveMember));
-router.delete("/member", asyncWrap(middleware.authMiddleware), asyncWrap(memberRequestCtl.refuseMember));
+router.delete("/member-request", asyncWrap(middleware.authMiddleware), asyncWrap(memberRequestCtl.refuseMember));
 
 export default router;
