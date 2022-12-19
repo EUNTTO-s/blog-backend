@@ -1,40 +1,28 @@
 import dataSource from "./database";
-import { whereBuilder } from "./builder/queryBuilder";
+import { whereBuilder, setBuilder} from "./builder/queryBuilder";
 const updatePostForm = async (postForm: CompanyPostFormInput) => {
+  const propertyArray : [string, string][] = [
+    ['company_name',          postForm.companyName],
+    ['level_2_categories_id', postForm.level2CategoriesId],
+    ['company_short_desc',    postForm.companyShortDesc],
+    ['homepage_url',          postForm.homepageUrl],
+    ['main_bussiness_tags',   postForm.mainBussinessTags],
+    ['company_long_desc',     postForm.companyLongDesc],
+    ['fastfive_benefit_desc', postForm.fastfiveBenefitDesc],
+    ['company_img_url',       postForm.companyImgUrl],
+    ['company_info_url',      postForm.companyInfoUrl],
+    ['users_id',              postForm.usersId],
+  ]
+  const [stateOfSet, filterdValueArr] = setBuilder(propertyArray);
   const answer = await dataSource.query(
     `
       UPDATE
         company_post_forms
       SET
-        company_name = ?,
-        level_2_categories_id = ?,
-        company_img_url = ?,
-        company_short_desc = ?,
-        homepage_url = ?,
-        main_bussiness_tags = ?,
-        company_long_desc = ?,
-        fastfive_benefit_desc = ?,
-        company_contact_address = ?,
-        company_info_url = ?,
-        fastfive_branches_id = ?,
-        users_id = ?
+        ${stateOfSet}
       WHERE users_id = ?
       `,
-    [
-      postForm.companyName,
-      postForm.level2CategoriesId,
-      postForm.companyImgUrl,
-      postForm.companyShortDesc,
-      postForm.homepageUrl,
-      postForm.mainBussinessTags,
-      postForm.companyLongDesc,
-      postForm.fastfiveBenefitDesc,
-      postForm.companyContactAddress,
-      postForm.companyInfoUrl,
-      postForm.fastfiveBranchesId,
-      postForm.usersId,
-      postForm.usersId,
-    ]
+    [...filterdValueArr, postForm.usersId]
   );
   return answer;
 };
