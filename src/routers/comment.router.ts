@@ -6,14 +6,14 @@ import {asyncWrap} from '../utils/myutils';
 const {cmtCtl} = controllers;
 const router = express.Router();
 
-// comments route
-  // create comment
-router.post('/post/comment', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.addCommentOnPost));
-  // read comment
-router.get('/post/comment/:id', asyncWrap(cmtCtl.findCommentById));
-  // update comment
+router.post('/post/commentOnPost', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.addCommentOnPost));
+
+router.post('/post/commentOnComment', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.addCommentOnComment));
+
+router.get('/post/:id', asyncWrap(cmtCtl.getCommentOnPost));
+
 router.patch('/post/comment', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.updateComment));
-  // delete comment
+
 router.delete('/post/comment', asyncWrap(middleware.authMiddleware), asyncWrap(cmtCtl.deleteComment));
 
 export default router;
