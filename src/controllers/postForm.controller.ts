@@ -8,12 +8,12 @@ createFolder('uploads');
 
 const getPostForm = async (req: express.Request, res: express.Response) => {
   const {id} = req.params;
-  const posts = await postSvc.getPostForm({id});
-  res.status(201).json({ data: posts });
+  const usersId = req.userInfo.id;
+  const posts = await postSvc.getPostForm({id, usersId});
+  res.status(200).json(posts);
 }
 
 const putPostForm = async (req: express.Request, res: express.Response) => {
-  console.log("fileupload: ", req.res.locals.fileupload);
   const {
     companiesId,
     companyName,
@@ -51,13 +51,11 @@ const putPostForm = async (req: express.Request, res: express.Response) => {
   }
 
   checkDataIsNotEmpty(esentialItems);
-  const posts = await postSvc.putPostForm(postForm);
-  res.status(201).json({ data: posts });
+  await postSvc.putPostForm(postForm);
+  res.status(200).json({ message: "PUT SUCCESS" });
 }
 
 const uploadFile = async (req: express.Request, res: express.Response) => {
-  res.locals.fileupload = {};
-  res.locals.fileupload.fileUploadWasRequested = false;
   middleware.upload.any()(req, null, () => {
     res.send(`success to add`);
   });

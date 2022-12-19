@@ -7,9 +7,8 @@ INSERT INTO
 admins (users_id)
 VALUES (1);
 
-
 -- migrate:down
 SET foreign_key_checks = 0;
-TRUNCATE TABLE `users`;
 TRUNCATE TABLE `admins`;
+TRUNCATE TABLE `users`;
 SET foreign_key_checks = 1;

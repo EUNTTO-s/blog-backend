@@ -22,5 +22,4 @@ router.patch("/branch", asyncWrap(middleware.authMiddleware), asyncWrap(location
 
 router.delete("/branch", asyncWrap(middleware.authMiddleware), asyncWrap(locationCtl.deleteBranch));
 
-
 export default router;
