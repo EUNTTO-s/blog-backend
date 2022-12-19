@@ -32,11 +32,15 @@ const signUp = async (username: string, email: string, password: string) => {
 // 이메일 중복 체크
 const isExistEmail = async (email: string) => {
     const existUser = await userDao.existUser(email);
+    let checkEmail: boolean;
+
     if (existUser) {
-        throw { status: 200, message: "이미 존재하는 이메일 입니다." };
+        checkEmail = false;
     } else if (!existUser) {
-        throw { status: 200, message: "사용 가능한 이메일 입니다." };
+        checkEmail = true;
     }
+
+    return checkEmail;
 };
 // 로그인
 const login = async (email: string, password: string) => {
@@ -45,7 +49,7 @@ const login = async (email: string, password: string) => {
         throw { message: "아이디는 이메일 형식이여야 합니다." };
     }
     // 매칭되는 유저가 있는 지 확인
-    const userInfo = await userDao.findUser({email, includePwd: true});
+    const userInfo = await userDao.findUser({ email, includePwd: true });
     console.log("userInfo: ", userInfo);
     // 있으면 토큰 발행 없으면 에러
     if (!userInfo) {
@@ -57,13 +61,13 @@ const login = async (email: string, password: string) => {
     }
 
     // 토큰 생성
-    const token = jwt.sign({ id: userInfo.id }, process.env.SECRET_KEY);
+    const token = jwt.sign({ id: userInfo.id, email: userInfo.email }, process.env.SECRET_KEY);
     return token;
 };
 
 // 유저 정보
 const getMe = async (userId: number) => {
-    const userInfo = await userDao.findUser({userId});
+    const userInfo = await userDao.findUser({ userId });
     return userInfo;
 };
 

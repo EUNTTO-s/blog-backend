@@ -16,8 +16,8 @@ const signUp = async (req: express.Request, res: express.Response) => {
 const isExistEmail = async (req: express.Request, res: express.Response) => {
     const { email }: UserInputType = req.body;
     checkDataIsNotEmpty({ email });
-    await user_Svc.isExistEmail(email);
-    res.status(200).json({ message: "AVAILABLE EMAIL" });
+    const duplicateEmail = await user_Svc.isExistEmail(email);
+    res.status(200).json({ duplicateEmail });
 };
 
 // 로그인

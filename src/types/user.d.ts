@@ -6,9 +6,10 @@ interface UserInputType {
 }
 
 interface UserSearchOption {
-  userId?: number,
-  email?: string,
-  memberSearch?: boolean,
-  includePwd?: boolean,
-  limit?: number,
+    userId?: number;
+    email?: string;
+    memberSearch?: boolean;
+    mainMemberSearch?: boolean;
+    includePwd?: boolean;
+    limit?: number;
 }
