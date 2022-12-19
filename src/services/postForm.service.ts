@@ -47,8 +47,6 @@ const putPostForm = async (postFormInput: CompanyPostFormInput) => {
   // 이미 작성 폼이 존재하는 지 확인
   const postFormInfo = await postFormDao.getPostForm({usersId: postFormInput.usersId, companiesId: postFormInput.companiesId});
 
-  // 유저가 입력하려는 회사의 대표멥버인지 확인
-    // TODO
   // 존재하면 업데이트
   if (postFormInfo) {
     result = await postFormDao.updatePostForm(postFormInput);
