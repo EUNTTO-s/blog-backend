@@ -5,7 +5,6 @@ import cateCtl from "./category.controller";
 import locationCtl from "./location.controller";
 import postFormCtl from "./postForm.controller";
 
-
 const ctl_set = {
     cmtCtl,
     userCtl,
