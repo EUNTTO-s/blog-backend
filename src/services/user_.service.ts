@@ -29,6 +29,13 @@ const signUp = async (username: string, email: string, password: string) => {
     return createUser;
 };
 
+// 이메일 중복 체크
+const isExistEmail = async (email: string) => {
+    const existUser = await userDao.existUser(email);
+    const checkEmail = existUser ? true : false;
+
+    return checkEmail;
+};
 // 로그인
 const login = async (email: string, password: string) => {
     // 아이디가 email 형식이 아닐 때
@@ -36,7 +43,7 @@ const login = async (email: string, password: string) => {
         throw { message: "아이디는 이메일 형식이여야 합니다." };
     }
     // 매칭되는 유저가 있는 지 확인
-    const userInfo = await userDao.findUser({email, includePwd: true});
+    const userInfo = await userDao.findUser({ email, includePwd: true });
     console.log("userInfo: ", userInfo);
     // 있으면 토큰 발행 없으면 에러
     if (!userInfo) {
@@ -48,13 +55,13 @@ const login = async (email: string, password: string) => {
     }
 
     // 토큰 생성
-    const token = jwt.sign({ id: userInfo.id }, process.env.SECRET_KEY);
+    const token = jwt.sign({ id: userInfo.id, email: userInfo.email }, process.env.SECRET_KEY);
     return token;
 };
 
 // 유저 정보
 const getMe = async (userId: number) => {
-    const userInfo = await userDao.findUser({userId});
+    const userInfo = await userDao.findUser({ userId });
     return userInfo;
 };
 
@@ -79,6 +86,7 @@ const getUserGrade = async (userId: number) => {
 
 export default {
     signUp,
+    isExistEmail,
     login,
     getMe,
     getUserGrade,
