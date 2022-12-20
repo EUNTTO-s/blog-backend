@@ -52,12 +52,12 @@ const putPostForm = async (req: express.Request, res: express.Response) => {
 
   checkDataIsNotEmpty(esentialItems);
   await postFormSvc.putPostForm(postForm);
-  res.status(200).json({ message: "PUT SUCCESS" });
+  res.status(200).json({ message: "PUT_SUCCESS" });
 }
 
 const uploadFile = async (req: express.Request, res: express.Response) => {
   middleware.upload.any()(req, null, () => {
-    res.send(`success to add`);
+    res.send(`ADD_SUCCESS`);
   });
 }
 

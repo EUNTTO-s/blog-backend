@@ -60,13 +60,13 @@ const putPost = async (req: express.Request, res: express.Response) => {
 
   checkDataIsNotEmpty(esentialItems);
   await postSvc.putPost(postForm);
-  res.status(200).json({ message: "PUT SUCCESS" });
+  res.status(200).json({ message: "PUT_SUCCESS" });
 }
 
 const deletePost = async (req: express.Request, res: express.Response) => {
   const {id : postId} = req.params;
   await postSvc.deletePost(req.userInfo.id, postId);
-  res.status(200).json({ message: "DELETE SUCCESS" });
+  res.status(200).json({ message: "DELETE_SUCCESS" });
 }
 
 export default {

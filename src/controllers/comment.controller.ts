@@ -9,7 +9,7 @@ const addCommentOnPost = async (req: express.Request, res: express.Response) => 
   const {comment, postId, is_secret}: CommentInputType = req.body;
   checkDataIsNotEmpty({userId, comment, postId});
   await cmtSvc.addCommentOnPost(Number(userId), postId, comment, is_secret);
-  res.json({message : "COMMENT CREATED"});
+  res.json({message : "COMMENT_CREATED"});
 }
 
 const addCommentOnComment = async (req: express.Request, res: express.Response) => {
@@ -18,7 +18,7 @@ const addCommentOnComment = async (req: express.Request, res: express.Response) 
   console.log(is_secret);
   checkDataIsNotEmpty({userId, comment, postId, commentId})
   await cmtSvc.addCommentOnComment(Number(userId), postId, commentId, comment, is_secret);
-  res.json({message : "COMMENT CREATED"});
+  res.json({message : "COMMENT_CREATED"});
 }
 
 const getCommentOnPost = async (req: express.Request, res: express.Response) => {
@@ -34,7 +34,7 @@ const updateComment = async (req: express.Request, res: express.Response) => {
   const userId = req.userInfo.id;
   const {comment, commentId, is_secret}: CommentInputType = req.body;
   await cmtSvc.updateComment(Number(userId), commentId, comment, is_secret);
-  res.json({message : "COMMENT UPDATE"});
+  res.json({message : "COMMENT_UPDATED"});
 }
 
 const deleteComment = async (req: express.Request, res:express.Response) => {
@@ -42,7 +42,7 @@ const deleteComment = async (req: express.Request, res:express.Response) => {
   const {commentId}: CommentInputType = req.body;
   checkDataIsNotEmpty({userId, commentId});
   await cmtSvc.deleteComment(Number(userId), commentId);
-  res.json({message : "COMMENT DELETE"})
+  res.json({message : "COMMENT_DELETED"})
 }
 
 export default {
