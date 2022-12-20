@@ -1,7 +1,7 @@
 import daoset from '../models';
 import jwt from "jsonwebtoken";
 const cmtDao = daoset.cmtDao;
-const userDao = daoset.user_Dao;
+const userDao = daoset.userDao;
 
 const addCommentOnPost = async (userId: number, postId: number, comment: string, is_secret: number) => {
   // 유저가 존재하는지 확인

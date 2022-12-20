@@ -1,6 +1,6 @@
 import daoset from '../models';
 
-const { postDao, companyDao, user_Dao, categoryDao, locationDao, postFormDao } =
+const { postDao, companyDao, userDao, categoryDao, locationDao, postFormDao } =
   daoset;
 
 const putPost = async (postInput: CompanyPostFormInput) => {
@@ -23,7 +23,7 @@ const putPost = async (postInput: CompanyPostFormInput) => {
   }
 
   // 유저 정보 조회
-  const userInfo = await user_Dao.findUser({userId: Number(postInput.usersId)});
+  const userInfo = await userDao.findUser({userId: Number(postInput.usersId)});
   if (!userInfo) {
     throw {status: 404, message: "유저 ID에 해당하는 유저 정보가 존재하지 않습니다."};
   }
