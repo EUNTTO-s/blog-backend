@@ -96,7 +96,9 @@ const checkGeneralUserRating = async (userId: number) => {
     return generalUser;
 };
 
-const checkMemberUserRating = async (userId: number) => {
+const checkMemberUserRating = async (userId: number, checkPreInner?: boolean) => {
+    let state = checkPreInner ? "start_date > now()" : "start_date < now()";
+
     const [memberUser] = await dataSource.query(
         `
         SELECT
@@ -110,7 +112,7 @@ const checkMemberUserRating = async (userId: number) => {
         JOIN company_members ON company_members.companies_id = companies.id
         JOIN company_residences ON company_residences.companies_id = companies.id
         WHERE
-          start_date < now()
+          ${state}
         AND
           end_date > now()
         AND
