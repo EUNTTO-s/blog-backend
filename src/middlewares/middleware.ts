@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 const authMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const token = req.headers.authorization;
-    let decodedToken = decodeToken(token);
+    let decodedToken;
     try {
         decodedToken = decodeToken(token);
     } catch {

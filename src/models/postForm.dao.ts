@@ -12,6 +12,8 @@ const updatePostForm = async (postForm: CompanyPostFormInput) => {
     ['company_img_url',       postForm.companyImgUrl],
     ['company_info_url',      postForm.companyInfoUrl],
     ['users_id',              postForm.usersId, true],
+    ['company_contact_address', postForm.companyContactAddress],
+    ['fastfive_branches_id', postForm.fastfiveBranchesId, true],
   ]
   const [stateOfSet, filterdValueArr] = setBuilder(propertyArray);
   const answer = await dataSource.query(
