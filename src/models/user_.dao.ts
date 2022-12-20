@@ -35,15 +35,15 @@ const existUser = async (email: string): Promise<UserInfo> => {
 
 // 유저 정보
 const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
-    let { userId, email, includePwd, memberSearch} = searchOption;
-    const memberSearchState = memberSearch? `AND company_members.id IS NOT NULL` : '';
+    let { userId, email, includePwd, memberSearch } = searchOption;
+    const memberSearchState = memberSearch ? `AND company_members.id IS NOT NULL` : "";
     const [userInfo] = await dataSource
         .query(
             `
           SELECT
             users.id,
             users.username,
-            ${includePwd? 'users.password,' : ''}
+            ${includePwd ? "users.password," : ""}
             users.email,
           JSON_OBJECT(
           'id',

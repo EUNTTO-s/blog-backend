@@ -5,17 +5,18 @@ import jwt from "jsonwebtoken";
 const authMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const token = req.headers.authorization;
     const decodedToken = decodeToken(token);
-    req.userInfo = { id: decodedToken.id };
+    req.userInfo = { id: decodedToken.id, email: decodedToken.email };
+    console.log(req.userInfo);
     next();
-}
+};
 
 const adminMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const userInfo = req.userInfo;
     if (userInfo.email != "admin@gmail.com") {
-        throw { status: 403, message: "not permitted" };
+        throw { status: 403, message: "접근 권한이 없습니다." };
     }
     next();
-}
+};
 
 const decodeToken = (token: string) => {
     try {
@@ -24,7 +25,7 @@ const decodeToken = (token: string) => {
         console.log(`err: ${err}`);
         throw { status: 401, message: "unauthorized" };
     }
-}
+};
 
 // error handling 미들웨어
 const errorHandler: express.ErrorRequestHandler = (err: MyError, _1, res, _2) => {
@@ -38,8 +39,8 @@ const errorHandler: express.ErrorRequestHandler = (err: MyError, _1, res, _2) =>
     res.status(responseInfo.status || 500).send({ message: responseInfo.message || "" });
 };
 
-import multer from 'multer';
-import fs from 'fs';
+import multer from "multer";
+import fs from "fs";
 
 const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (!req.res.locals.fileupload) {
@@ -73,8 +74,8 @@ const storage = multer.diskStorage({
     cb(null, file.originalname)
   },
 })
-const upload = multer({ storage: storage, fileFilter });
 
+const upload = multer({ storage: storage, fileFilter });
 
 const removeFolderOnEmptyProperty = (req: Request, res: Response, next: NextFunction) => {
   const uploadFieldNames = ['companyInfoUrl', 'companyImgUrl'];

@@ -4,7 +4,9 @@ import postFormDao from "./postForm.dao";
 import cmtDao from "./comment.dao";
 import categoryDao from "./category.dao";
 import locationDao from "./location.dao";
-import companyDao from './company.dao';
+import companyDao from "./company.dao";
+import memberRequestDao from "./memberRequest.dao";
+import companyRequestDao from "./companyRequest.dao";
 import postDao from "./post.dao";
 
 const dao_set = {
@@ -15,6 +17,8 @@ const dao_set = {
     categoryDao,
     locationDao,
     companyDao,
+    memberRequestDao,
+    companyRequestDao,
     postDao,
 };
 
