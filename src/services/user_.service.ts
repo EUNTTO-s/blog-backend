@@ -80,6 +80,11 @@ const getUserGrade = async (userId: number) => {
     } else if (checkGeneralUserRating && !checkMemberUserRating) {
         grade = "퇴주자";
     }
+    const memberUserPreInnerInfo = await userDao.checkMemberUserRating(userId, true);
+
+    if (memberUserPreInnerInfo) {
+        grade = "입주 예정자";
+    }
 
     return grade;
 };
