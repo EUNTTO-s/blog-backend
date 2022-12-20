@@ -92,10 +92,25 @@ const removeFolderOnEmptyProperty = (req: Request, res: Response, next: NextFunc
   next();
 }
 
+const removeFolder = (req: Request, res: Response, next: NextFunction) => {
+  const uploadFieldNames = ['companyInfoUrl', 'companyImgUrl'];
+  const target = `./uploads${req.originalUrl}/${req.userInfo.id}`;
+  uploadFieldNames.forEach((fieldName) => {
+    try {
+      fs.rmdirSync(`${target}/${fieldName}`, {recursive: true});
+    } catch (err) {
+      console.log("nothing to delete");
+    }
+  })
+  next();
+}
+
+
 export default {
     authMiddleware,
     adminMiddleware,
     errorHandler,
     upload,
     removeFolderOnEmptyProperty,
+    removeFolder,
 };

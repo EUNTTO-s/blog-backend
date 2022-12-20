@@ -28,7 +28,7 @@ const putPostForm = async (postFormInput: CompanyPostFormInput) => {
     throw {status: 404, message: "유저 ID에 해당하는 유저 정보가 존재하지 않습니다."};
   }
 
-  if (postFormInput.level2CategoriesId) {
+  if (postFormInput.level2CategoriesId && postFormInput.level2CategoriesId != "") {
     // 카테고리 정보 조회
     const lv2CateInfo = await categoryDao.findlv2CategoryById(Number(postFormInput.level2CategoriesId));
     if (!lv2CateInfo) {
@@ -36,7 +36,7 @@ const putPostForm = async (postFormInput: CompanyPostFormInput) => {
     }
   }
 
-  if (postFormInput.fastfiveBranchesId) {
+  if (postFormInput.fastfiveBranchesId && postFormInput.fastfiveBranchesId != "") {
     // 패스트파이브 입점 정보 조회
     const branchInfo = await locationDao.findBranchById(Number(postFormInput.fastfiveBranchesId));
     if (!branchInfo) {
