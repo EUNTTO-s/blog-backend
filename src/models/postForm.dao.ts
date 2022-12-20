@@ -85,7 +85,7 @@ const createPostForm = async (postFormInput: CompanyPostFormInput) => {
 
 const getPostForm = async (serchOption?: PostFormSearchOption) => {
   if (!serchOption) serchOption = {};
-  const limit = 1;
+  const limit = 50;
   let { id, usersId, companiesId } = serchOption;
   const answer = await dataSource
     .query(
