@@ -13,7 +13,7 @@ CREATE TABLE `companies` (
 
 CREATE TABLE `company_posts` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `companies_id` integer,
+  `companies_id` integer NOT NULL,
   `company_name` varchar(100) NOT NULL,
   `level_2_categories_id` integer NOT NULL,
   `company_img_url` varchar(100) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE `company_posts` (
 
 CREATE TABLE `company_post_forms` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `companies_id` integer,
+  `companies_id` integer NOT NULL,
   `company_name` varchar(100),
   `level_2_categories_id` integer,
   `company_img_url` varchar(100),
@@ -48,7 +48,7 @@ CREATE TABLE `company_post_forms` (
 
 CREATE TABLE `level_1_categories` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `img_url` varchar(150) NOT NULL,
+  `img_url` varchar(500) NOT NULL,
   `category_name` varchar(150) UNIQUE NOT NULL,
   `description` varchar(150)
 );
@@ -56,7 +56,7 @@ CREATE TABLE `level_1_categories` (
 CREATE TABLE `level_2_categories` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `level_1_categories_id` integer,
-  `category_name` varchar(150) UNIQUE NOT NULL,
+  `category_name` varchar(150) NOT NULL,
   `description` varchar(150)
 );
 
@@ -82,13 +82,13 @@ CREATE TABLE `company_residences` (
 
 CREATE TABLE `comments` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `comments_id` integer,
   `users_id` integer,
   `company_posts_id` integer,
   `comment_content` varchar(1000) NOT NULL,
-  `comments_id` integer default NULL,
+  `is_secret` tinyint DEFAULT 0,
   `depth` integer,
   `sequence` integer,
-  `is_secret` tinyint DEFAULT 0,
   `created_at` datetime default now() NOT NULL
 );
 
@@ -149,11 +149,11 @@ ALTER TABLE `fastfive_branches` ADD FOREIGN KEY (`locations_id`) REFERENCES `loc
 
 ALTER TABLE `company_residences` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
 
+ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`);
+
 ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`company_posts_id`) REFERENCES `company_posts` (`id`);
-
-ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`);
 
 ALTER TABLE `admins` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 

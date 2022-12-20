@@ -12,7 +12,7 @@ table companies as cp {
 
 table company_posts as cpp {
   id integer [pk, increment]
-  companies_id integer [ref: > cp.id]
+  companies_id integer [ref: > cp.id, not null]
   company_name varchar(100) [not null]
   level_2_categories_id integer [ref: > lv2_cate.id, not null]
   company_img_url varchar(100) [not null]
@@ -29,7 +29,7 @@ table company_posts as cpp {
 
 table company_post_forms as cpf {
   id integer [pk, increment]
-  companies_id integer [ref: > cp.id]
+  companies_id integer [ref: > cp.id, not null]
   company_name varchar(100)
   level_2_categories_id integer [ref: > lv2_cate.id]
   company_img_url varchar(100)
@@ -47,7 +47,7 @@ table company_post_forms as cpf {
 
 table level_1_categories as lv1_cate {
   id integer [pk, increment]
-  img_url varchar(150) [not null]
+  img_url varchar(500) [not null]
   category_name varchar(150) [not null, unique]
   description varchar(150)
 }
@@ -55,7 +55,7 @@ table level_1_categories as lv1_cate {
 table level_2_categories as lv2_cate {
   id integer [pk, increment]
   level_1_categories_id integer [ref: > lv1_cate.id]
-  category_name varchar(150) [not null, unique]
+  category_name varchar(150) [not null]
   description varchar(150)
 }
 
@@ -89,6 +89,8 @@ table comments as cmt {
   company_posts_id integer [ref: > cpp.id]
   comment_content varchar(1000) [not null]
   is_secret tinyint [default: 0]
+  depth integer
+  sequence integer
   created_at "datetime default now()" [not null]
 }
 
