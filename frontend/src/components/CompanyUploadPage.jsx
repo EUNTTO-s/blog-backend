@@ -17,6 +17,8 @@ const InputItem = (label, id, ref, type = 'text') => {
   );
 }
 
+
+
 const CompanyUploadPage = () => {
   const btn = useRef();
   const companyId = useRef();
@@ -108,30 +110,38 @@ const CompanyUploadPage = () => {
     },
   ]
 
+  // setInterval(() => {
+  //   summit();
+  // }, 5000);
+
+  const summit = (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    let formData = new FormData();
+    formData.append("companiesId", companyId.current.value);
+    formData.append("companyName", companyName.current.value);
+    formData.append("companyLongDesc", longDesc.current.value);
+    formData.append("companyShortDesc", shortDesc.current.value);
+    formData.append("fastfiveBenefitDesc", fastfiveBenefitDesc.current.value);
+    formData.append("fastfiveBranchesId", fastfiveBranchId.current.value);
+    formData.append("homepageUrl", homepageUrl.current.value);
+    formData.append("level2CategoriesId", level2CategoriesId.current.value);
+    formData.append("mainBussinessTags", mainBussinessTags.current.value);
+    formData.append("companyContactAddress", companyAddress.current.value);
+    formData.append("companyInfoUrl", companyInfoFile.current.files[0]);
+    formData.append("companyImgUrl", companyImgFile.current.files[0]);
+
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ", " + pair[1]);
+    }
+    Auth.PostUpload(formData);
+  };
+
   return (
     <form
       className="CompanyUploadPage"
-      onSubmit={(e) => {
-        e.preventDefault();
-        let formData = new FormData();
-        formData.append("companiesId", companyId.current.value);
-        formData.append("companyName", companyName.current.value);
-        formData.append("companyLongDesc", longDesc.current.value);
-        formData.append("companyShortDesc", shortDesc.current.value);
-        formData.append("fastfiveBenefitDesc", fastfiveBenefitDesc.current.value);
-        formData.append("fastfiveBranchesId", fastfiveBranchId.current.value);
-        formData.append("homepageUrl", homepageUrl.current.value);
-        formData.append("level2CategoriesId", level2CategoriesId.current.value);
-        formData.append("mainBussinessTags", mainBussinessTags.current.value);
-        formData.append("companyContactAddress", companyAddress.current.value);
-        formData.append("companyInfoUrl", companyInfoFile.current.files[0]);
-        formData.append("companyImgUrl", companyImgFile.current.files[0]);
-
-        for (var pair of formData.entries()) {
-          console.log(pair[0] + ", " + pair[1]);
-        }
-        Auth.PostUpload(formData);
-      }}
+      onSubmit={summit}
     >
       <label className="title"> 파일 업로드 </label>
       <br />

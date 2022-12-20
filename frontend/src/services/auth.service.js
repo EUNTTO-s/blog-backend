@@ -49,6 +49,7 @@ const PostUpload = async (formdata) => {
     {
       headers: {
         "Content-Type": "multipart/form-data",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjcxNDY0MjE3fQ.dMRIq1OlZBUl3Yi3nvUF4nTVjVw3auwGdG3IB-yvn0g"
       },
     }
   );
