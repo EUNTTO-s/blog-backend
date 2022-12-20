@@ -7,6 +7,7 @@ import cateRouter from "./category.router";
 import locationRouter from "./location.router";
 import postFormRouter from './postForm.router';
 import postRouter from './post.router';
+import companyRouter from './company.router';
 import middleware from "../middlewares/middleware";
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.use("", cateRouter);
 router.use("", locationRouter);
 router.use('', postFormRouter);
 router.use('', postRouter);
+router.use('', companyRouter);
 router.use(express.static(__dirname + '/../../uploads'));
 router.use(middleware.errorHandler);
 
