@@ -12,8 +12,12 @@ const getAllCategories = async () => {
 	    level_1_categories
     JOIN level_2_categories ON level_2_categories.level_1_categories_id = level_1_categories.id
     GROUP BY level_1_categories.id, level_1_categories.category_name
-    `);
-    return result as {id: number, category: string};
+    `).then(list => {
+      return [...list].map(category => {
+        return {...category, subCategory: JSON.parse(category.subCategory)};
+      })
+    });
+    return result;
 }
 
 const findCategoryById = async (categoryId: number) => {
