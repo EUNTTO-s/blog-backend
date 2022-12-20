@@ -59,7 +59,7 @@ const createPost = async (postFormInput: CompanyPostInput) => {
 
 const getPost = async (serchOption?: PostSearchOption) => {
   if (!serchOption) serchOption = {};
-  const limit = 1;
+  const limit = 50;
   let {
     id,
     companiesId,
