@@ -5,6 +5,8 @@ const getAllCategories = async () => {
     SELECT
 	    level_1_categories.id,
         level_1_categories.category_name as category,
+        level_1_categories.img_url,
+        level_1_categories.description,
         JSON_ARRAYAGG
             (JSON_OBJECT
                 ("id",level_2_categories.id, "category", level_2_categories.category_name)) as subCategory
@@ -76,7 +78,7 @@ const updateCategoryImg = async(img_url:string, categoryId: number) => {
         UPDATE level_1_categories
             SET level_1_categories.img_url = ?
         WHERE
-            level_1_cateogories.id = ?
+            id = ?
     `, [img_url, categoryId])
 }
 
