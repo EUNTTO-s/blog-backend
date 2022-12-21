@@ -70,7 +70,7 @@ const createCompanyResidences = async (companyId: string, startDate: string, end
 
 const getCompanies = async (searchOption: CompanySerarchOption) => {
     if (!searchOption) searchOption = {};
-    let limit = 20;
+    let limit = 100;
     let { id, companyName } = searchOption;
     const query = `
     SELECT
