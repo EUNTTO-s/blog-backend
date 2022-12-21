@@ -39,7 +39,7 @@ const putPost = async (postInput: CompanyPostFormInput) => {
   }
 
   // 이미 작성 폼이 존재하는 지 확인
-  const postInfo = await postDao.getPost({usersId: postInput.usersId, companiesId: postInput.companiesId});
+  const postInfo = await postDao.getPost({companiesId: postInput.companiesId});
 
   // 존재하면 업데이트
   if (postInfo) {
