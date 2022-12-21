@@ -139,13 +139,13 @@ ALTER TABLE `company_post_forms` ADD FOREIGN KEY (`fastfive_branches_id`) REFERE
 
 ALTER TABLE `company_post_forms` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
-ALTER TABLE `level_2_categories` ADD FOREIGN KEY (`level_1_categories_id`) REFERENCES `level_1_categories` (`id`);
+ALTER TABLE `level_2_categories` ADD FOREIGN KEY (`level_1_categories_id`) REFERENCES `level_1_categories` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `company_members` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
 
 ALTER TABLE `company_members` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
-ALTER TABLE `fastfive_branches` ADD FOREIGN KEY (`locations_id`) REFERENCES `locations` (`id`);
+ALTER TABLE `fastfive_branches` ADD FOREIGN KEY (`locations_id`) REFERENCES `locations` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `company_residences` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
 
@@ -153,7 +153,7 @@ ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`i
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
-ALTER TABLE `comments` ADD FOREIGN KEY (`company_posts_id`) REFERENCES `company_posts` (`id`);
+ALTER TABLE `comments` ADD FOREIGN KEY (`company_posts_id`) REFERENCES `company_posts` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `admins` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
