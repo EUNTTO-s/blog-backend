@@ -4,7 +4,7 @@ const getAllCategories = async () => {
     const result = await dataSource.query(`
     SELECT
 	    level_1_categories.id,
-        level_1_categories.category_name as category,
+        level_1_categories.category_name,
         level_1_categories.img_url,
         level_1_categories.description,
         JSON_ARRAYAGG
