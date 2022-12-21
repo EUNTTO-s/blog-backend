@@ -9,7 +9,6 @@ interface UserSearchOption {
     userId?: number;
     email?: string;
     memberSearch?: boolean;
-    mainMemberSearch?: boolean;
     includePwd?: boolean;
     limit?: number;
 }
