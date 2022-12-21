@@ -1,6 +1,6 @@
 table users as u {
   id integer [pk, increment]
-  username varchar(100) [not null]
+  username varchar(100) [not null] 
   email varchar(100) [not null, unique]
   password varchar(100) [not null]
 }
@@ -54,7 +54,7 @@ table level_1_categories as lv1_cate {
 
 table level_2_categories as lv2_cate {
   id integer [pk, increment]
-  level_1_categories_id integer [ref: > lv1_cate.id]
+  level_1_categories_id integer
   category_name varchar(150) [not null]
   description varchar(150)
 }
@@ -72,7 +72,7 @@ table company_members as cpm {
 table fastfive_branches as fb {
   id integer [pk, increment]
   branch_name varchar(150) [not null]
-  locations_id integer [ref: > locations.id]
+  locations_id integer 
 }
 
 table company_residences as cpr {
@@ -86,7 +86,7 @@ table comments as cmt {
   id integer [pk, increment]
   comments_id integer [ref: > cmt.id]
   users_id integer [ref: > u.id]
-  company_posts_id integer [ref: > cpp.id]
+  company_posts_id integer
   comment_content varchar(1000) [not null]
   is_secret tinyint [default: 0]
   depth integer
@@ -122,3 +122,7 @@ table member_join_request as mjr {
   companies_id integer [ref: > cp.id]
   created_at "datetime default now()" [not null]
 }
+
+ref: cmt.company_posts_id > cpp.id [delete: cascade]
+ref: fb.locations_id > locations.id [delete: cascade]
+ref: lv2_cate.level_1_categories_id > lv1_cate.id [delete: cascade]
