@@ -23,8 +23,9 @@ const getMemberList = async (MemberInput: MemberRequestInput) => {
 };
 
 // 멤버 요청 승인
-const approveMember = async (companyId: string, userId: string) => {
+const approveMember = async (companyId: string, userId: string, requestId: string) => {
     await companyDao.createCompanyMember(companyId, userId);
+    await memberRequestDao.refuseMember(requestId);
 };
 
 // 멤버 요청 거절

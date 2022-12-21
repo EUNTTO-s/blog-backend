@@ -4,4 +4,5 @@ interface CompanyRequestInput {
     startDate: string;
     endDate: string;
     userId: string;
+    requestId?: string;
 }

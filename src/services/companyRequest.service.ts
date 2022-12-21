@@ -17,11 +17,12 @@ const getCompanyList = async () => {
 };
 
 // 회사 요청 승인
-const approveCompany = async (companyName: string, startDate: string, endDate: string, userId: string) => {
+const approveCompany = async (companyName: string, startDate: string, endDate: string, userId: string, requestId: string) => {
     await companyDao.createCompany(companyName);
     const [getCompanyId] = await companyDao.getCompanyId(companyName);
     await companyDao.createCompanyMainMember(getCompanyId.id, userId);
     await companyDao.createCompanyResidences(getCompanyId.id, startDate, endDate);
+    await companyRequestDao.refuseCompany(requestId);
 };
 
 // 회사 요청 거절

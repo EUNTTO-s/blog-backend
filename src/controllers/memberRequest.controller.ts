@@ -23,11 +23,10 @@ const getMemberList = async (req: express.Request, res: express.Response) => {
 
 // 멤버 요청 승인
 const approveMember = async (req: express.Request, res: express.Response) => {
-    const { companyId }: CompanyRequestInput = req.body;
-    const userId = req.userInfo.id;
-    checkDataIsNotEmpty({ companyId, userId });
+    const { companyId, userId, requestId }: CompanyRequestInput = req.body;
+    checkDataIsNotEmpty({ companyId, userId, requestId });
 
-    await memberRequestSvc.approveMember(companyId, userId);
+    await memberRequestSvc.approveMember(companyId, userId, requestId);
     res.status(201).json({ message: "APPROVE_SUCCESSFULLY" });
 };
 // 멤버 요청 거절

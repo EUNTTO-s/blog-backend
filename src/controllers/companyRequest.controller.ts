@@ -21,11 +21,10 @@ const getCompanyList = async (req: express.Request, res: express.Response) => {
 
 // 회사 요청 승인
 const approveCompany = async (req: express.Request, res: express.Response) => {
-    const { companyName, startDate, endDate }: CompanyRequestInput = req.body;
-    const userId = req.userInfo.id;
-    checkDataIsNotEmpty({ companyName, startDate, endDate, userId });
+    const { companyName, startDate, endDate, userId, requestId }: CompanyRequestInput = req.body;
+    checkDataIsNotEmpty({ companyName, startDate, endDate, userId, requestId });
 
-    await companyRequestSvc.approveCompany(companyName, startDate, endDate, userId);
+    await companyRequestSvc.approveCompany(companyName, startDate, endDate, userId, requestId);
     res.status(201).json({ message: "APPROVE_SUCCESSFULLY" });
 };
 // 회사 요청 거절
