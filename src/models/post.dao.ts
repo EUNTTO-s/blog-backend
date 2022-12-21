@@ -59,14 +59,13 @@ const createPost = async (postFormInput: CompanyPostInput) => {
 
 const getPost = async (serchOption?: PostSearchOption) => {
   if (!serchOption) serchOption = {};
-  const limit = 50;
   let {
     id,
     companiesId,
     locationsId,
     categoriesLv1Id,
     categoriesLv2Id,
-    offset = 10,
+    offset = 50,
     page = 1,
   } = serchOption;
   const answer = await dataSource
@@ -124,7 +123,7 @@ const getPost = async (serchOption?: PostSearchOption) => {
         ${whereBuilder("loc.id", locationsId)}
         ${whereBuilder("lv1_cate.id", categoriesLv1Id)}
         ${whereBuilder("lv2_cate.id", categoriesLv2Id)}
-      LIMIT ${limit} OFFSET ${offset * (page - 1)}
+      LIMIT ${offset} OFFSET ${offset * (page - 1)}
       `
     )
     .then((list) => {

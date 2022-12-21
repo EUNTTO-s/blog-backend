@@ -72,9 +72,7 @@ const deletePost = async (userId: string ,postId: string) => {
   if (!postInfo) {
     throw {status: 404, message: "포스트 ID에 해당하는 포스트가 존재하지 않습니다."};
   }
-  if (postInfo.usersId != userId) {
-    throw {status: 404, message: "해당 게시글을 삭제할 수 있는 권한이 없습니다."};
-  }
+
   return await postDao.deletePost(postId);
 }
 
