@@ -3,10 +3,9 @@ import service_set from "../services";
 const { cateSvc } = service_set;
 
 const createCategory = async (req: express.Request, res: express.Response) => {
-    const userId = req.userInfo.id;
-    const { img_url, category_name, description } = req.body;
-    await cateSvc.createCategory(Number(userId), img_url, category_name, description);
-    res.json({message : "CREATE_CATEGORY"})
+    const { categoryId, img_url } = req.body;
+    await cateSvc.updateCategoryImg(1, categoryId, img_url);
+    res.json({message : "CREATE_CATEGORY"});
 }
 
 const getAllCategories = async (req: express.Request, res: express.Response) => {
@@ -28,11 +27,13 @@ const deleteCategory = async (req: express.Request, res: express.Response) => {
     res.json({message : "DELETE_CATEGORY"})
 }
 
-const updateCategoryImg = async (req: express.Request, res:express.Response) => {
+const updateCategoryImg = async (req: express.Request, res:express.Response, next: express.NextFunction) => {
     const userId = req.userInfo.id;
     const { categoryId, img_url } = req.body;
+
     await cateSvc.updateCategoryImg(Number(userId), categoryId, img_url);
     res.json({message : "UPDATE_CATEGORY_IMG"})
+    next();
 }
 
 const createLevel_2_Category = async (req: express.Request, res: express.Response) => {
@@ -64,5 +65,5 @@ export default {
     updateCategoryImg,
     createLevel_2_Category,
     updateLevel_2_Category,
-    deleteLevel_2_Category
+    deleteLevel_2_Category,
 }

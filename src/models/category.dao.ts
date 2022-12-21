@@ -16,7 +16,12 @@ const getAllCategories = async () => {
     GROUP BY level_1_categories.id, level_1_categories.category_name
     `).then(list => {
       return [...list].map(category => {
-        return {...category, subCategory: JSON.parse(category.subCategory)};
+        const domain = "http://localhost:5500";
+        return {
+          ...category,
+          subCategory: JSON.parse(category.subCategory),
+          img_url: category.img_url.startsWith("http") ? category.img_url : domain + category.img_url
+        };
       })
     });
     return result;
@@ -143,6 +148,21 @@ const findlv2CategoryById = async (categoryId: number) => {
   return result;
 }
 
+const findCategoryByCateName = async (categoryName: string) => {
+  const [result] = await dataSource.query(`
+      SELECT
+          id,
+          img_url,
+          category_name,
+          description
+      FROM
+          level_1_categories
+      WHERE
+          category_name = ?
+  `, [categoryName]);
+  return result as {id: number, img_url: string, category_name: string, description: string};
+}
+
 export default {
     getAllCategories,
     getCateLv1Length,
@@ -155,5 +175,6 @@ export default {
     updateLevel_2_Category,
     deleteLevel_2_Category,
     findlv2CategoryById,
+    findCategoryByCateName,
 }
 

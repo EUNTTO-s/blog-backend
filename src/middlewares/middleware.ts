@@ -1,6 +1,8 @@
 import type express from "express";
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import service_set from "../services";
+const { cateSvc } = service_set;
 
 const authMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const token = req.headers.authorization;
@@ -70,6 +72,53 @@ const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.
     cb(null, true);
 };
 
+const categoryFilter = async (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  if (!req.res.locals.fileupload) {
+      req.res.locals.fileupload = {};
+  }
+  // multer에서 새로 변경된 카테고리 URL을 body 에 져장.
+  // process에서 이전 카테고리 URL을 body에 저장.
+  // 이후, 이전 URL의 파일을 제거.
+
+  let categoryId;
+  if (req.method == 'POST') {
+    const { category_name, description } = req.body;
+    let cate  = await cateSvc.getCategory_1_byCateName(category_name);
+    if (cate) {
+      cb(new Error('ALREADY_EXIST_CATEGORY_NAME'));
+    }
+    try {
+      await cateSvc.createCategory(1, "hi", category_name, description);
+      cate  = await cateSvc.getCategory_1_byCateName(category_name);
+    } catch (e) {
+      cb(new Error('FAILD_CREATE_CATEGORY'));
+    }
+    categoryId = cate.id;
+    req.body.categoryId = cate.id;
+  } else {
+    categoryId = req.body.categoryId;
+  }
+
+  const baseUrl = '/category';
+
+  const uploadRootFolder = "./uploads";
+  const fileSpecificFolder = `${baseUrl}/${categoryId || "test"}/${file.fieldname}`;
+  const folderLocation = `${uploadRootFolder}${fileSpecificFolder}`;
+  // folderLocation는 다른 함수에서 파일 저장 위치를 설정할 때 사용됨.
+  req.res.locals.fileupload.folderLocation = folderLocation;
+  // body값에 저장하여 DB에 url을 저장하기 위해 사용됨.
+  req.body[file.fieldname] = `${fileSpecificFolder}/${file.originalname}`;
+
+  // 파일을 저장할 폴더 생성
+  try {
+      fs.rmdirSync(`${folderLocation}`, { recursive: true });
+  } catch (err) {
+      console.log("nothing to delete");
+  }
+  fs.mkdirSync(`${folderLocation}`, { recursive: true });
+  cb(null, true);
+};
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const { folderLocation } = req.res.locals.fileupload;
@@ -81,6 +130,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage, fileFilter });
+const categoryUpload = multer({ storage: storage, fileFilter: categoryFilter });
 
 const removeFolderOnEmptyProperty = (req: Request, res: Response, next: NextFunction) => {
     const uploadFieldNames = ["companyInfoUrl", "companyImgUrl"];
@@ -114,6 +164,8 @@ export default {
     adminMiddleware,
     errorHandler,
     upload,
+    categoryUpload,
     removeFolderOnEmptyProperty,
     removeFolder,
+    categoryFilter,
 };
