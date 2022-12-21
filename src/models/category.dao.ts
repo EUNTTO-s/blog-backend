@@ -22,6 +22,16 @@ const getAllCategories = async () => {
     return result;
 }
 
+const getCateLv1Length = async() => {
+    const [result] = await dataSource.query(`
+        SELECT
+            max(id) as max
+        FROM
+            level_1_categories
+    `)
+    return result as {max: number}
+}
+
 const findCategoryById = async (categoryId: number) => {
     const [result] = await dataSource.query(`
         SELECT
@@ -82,16 +92,16 @@ const updateCategoryImg = async(img_url:string, categoryId: number) => {
     `, [img_url, categoryId])
 }
 
-const createLevel_2_Category = async(level_1_categories_id: number, category_name: string, description: string) => {
+const createLevel_2_Category = async(level_1_categories_id: number, category_name: string) => {
     await dataSource.query(`
         INSERT INTO
             level_2_categories (
                 level_1_categories_id,
-                category_name,
-                description)
+                category_name
+            )
         VALUES
-            (?, ?, ?)
-    `, [level_1_categories_id, category_name, description]);
+            (?, ?)
+    `, [level_1_categories_id, category_name]);
 }
 
 const updateLevel_2_Category = async(categoryId: number, category_name?: string, description?: string) => {
@@ -135,6 +145,7 @@ const findlv2CategoryById = async (categoryId: number) => {
 
 export default {
     getAllCategories,
+    getCateLv1Length,
     findCategoryById,
     createCategory,
     updateCategory,

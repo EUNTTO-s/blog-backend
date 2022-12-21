@@ -5,6 +5,10 @@ const createCategory = async (userId: number, img_url: string, category_name: st
         throw {status: 400, message: "권한이 없습니다"}
     }
     await cateDao.createCategory(img_url, category_name, description);
+
+    const lv1_len = await cateDao.getCateLv1Length();
+    await cateDao.createLevel_2_Category(lv1_len.max, '일반');
+
 }
 
 const getAllCategories = async () => {
@@ -37,7 +41,7 @@ const createLevel_2_Category = async (userId: number, level_1_categories_id: num
     if (userId !== 1) {
         throw {status: 400, message: "권한이 없습니다"}
     }
-    await cateDao.createLevel_2_Category(level_1_categories_id, category_name, description);
+    await cateDao.createLevel_2_Category(level_1_categories_id, category_name);
 }
 
 const updateLevel_2_Category = async (userId: number, categoryId: number, category_name?: string, description?: string) => {
