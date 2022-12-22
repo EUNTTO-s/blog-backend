@@ -6,11 +6,11 @@
         "test:before": "dbmate -e TEST_DATABASE_URL up",
         "test": "DOTENV_CONFIG_PATH=.env.test jest --setupFiles=dotenv/config",
         "start": "npm run build:live",
-        "build": "tsc -p tsconfig.json",
+        "build": "tsc -p tsconfig.json && cp -r uploads ./build",
         "build:live": "nodemon --delay 500ms --watch './src/**/*.ts' --exec \"ts-node\" src/server.ts",
         "runbothserver": "concurrently \"npm run start\" \"npm run start --prefix frontend\"",
         "build:watch": "tsc -w -p tsconfig.json",
-        "distribute": "npm i && pm2 start build/src/server.js --name fastfive-backend -i max",
+        "distribute": "npm i && npm run build && pm2 start build/src/server.js --name fastfive-backend -i max",
         "distribute-stop": "pm2 del fastfive-backend"
     },
     "author": "sangyun, kihyeon, wooryeong",
