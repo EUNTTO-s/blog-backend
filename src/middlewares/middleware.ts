@@ -54,7 +54,7 @@ const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.
         req.res.locals.fileupload = {};
     }
 
-    const uploadRootFolder = "./uploads";
+    const uploadRootFolder = `${__dirname}/../../uploads`;
     const fileSpecificFolder = `${req.originalUrl}/${req.userInfo.id || "test"}/${file.fieldname}`;
     const folderLocation = `${uploadRootFolder}${fileSpecificFolder}`;
     // folderLocation는 다른 함수에서 파일 저장 위치를 설정할 때 사용됨.
@@ -101,9 +101,10 @@ const categoryFilter = async (req: express.Request, file: Express.Multer.File, c
 
   const baseUrl = '/category';
 
-  const uploadRootFolder = "./uploads";
+  const uploadRootFolder = `${__dirname}/../../uploads`;
   const fileSpecificFolder = `${baseUrl}/${categoryId || "test"}/${file.fieldname}`;
   const folderLocation = `${uploadRootFolder}${fileSpecificFolder}`;
+
   // folderLocation는 다른 함수에서 파일 저장 위치를 설정할 때 사용됨.
   req.res.locals.fileupload.folderLocation = folderLocation;
   // body값에 저장하여 DB에 url을 저장하기 위해 사용됨.
@@ -134,7 +135,7 @@ const categoryUpload = multer({ storage: storage, fileFilter: categoryFilter });
 
 const removeFolderOnEmptyProperty = (req: Request, res: Response, next: NextFunction) => {
     const uploadFieldNames = ["companyInfoUrl", "companyImgUrl"];
-    const target = `./uploads${req.originalUrl}/${req.userInfo.id}`;
+    const target = `${__dirname}/../../uploads${req.originalUrl}/${req.userInfo.id}`;
     uploadFieldNames.forEach((fieldName) => {
         if (req.body[fieldName] != "") return;
         try {
@@ -148,7 +149,7 @@ const removeFolderOnEmptyProperty = (req: Request, res: Response, next: NextFunc
 
 const removeFolder = (req: Request, res: Response, next: NextFunction) => {
     const uploadFieldNames = ["companyInfoUrl", "companyImgUrl"];
-    const target = `./uploads${req.originalUrl}/${req.userInfo.id}`;
+    const target = `${__dirname}/../../uploads${req.originalUrl}/${req.userInfo.id}`;
     uploadFieldNames.forEach((fieldName) => {
         try {
             fs.rmdirSync(`${target}/${fieldName}`, { recursive: true });
