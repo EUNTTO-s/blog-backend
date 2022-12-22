@@ -88,7 +88,7 @@ const categoryFilter = async (req: express.Request, file: Express.Multer.File, c
       cb(new Error('ALREADY_EXIST_CATEGORY_NAME'));
     }
     try {
-      await cateSvc.createCategory(1, "hi", category_name, description);
+      await cateSvc.createCategory("TEMP", category_name, description);
       cate  = await cateSvc.getCategory_1_byCateName(category_name);
     } catch (e) {
       cb(new Error('FAILD_CREATE_CATEGORY'));

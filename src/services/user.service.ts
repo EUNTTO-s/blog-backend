@@ -32,10 +32,9 @@ const signUp = async (username: string, email: string, password: string) => {
 // 이메일 중복 체크
 const isExistEmail = async (email: string) => {
     const existUser = await userDao.existUser(email);
-    const checkEmail = existUser ? true : false;
-
-    return checkEmail;
+    return !!existUser;
 };
+
 // 로그인
 const login = async (email: string, password: string) => {
     // 아이디가 email 형식이 아닐 때

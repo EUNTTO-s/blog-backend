@@ -1,5 +1,10 @@
 import dataSource from './database';
 
+const commentDepth = {
+  FIRST : 1,
+  SECOND : 2
+  }
+
 const addCommentOnPost = async (userId: number, postId: number, comment: string, is_secret: number) => {
   await dataSource.query(`
     INSERT INTO comments (
@@ -11,7 +16,7 @@ const addCommentOnPost = async (userId: number, postId: number, comment: string,
       is_secret
     )
     VALUES (?, ?, ?, ?, ?, ?)`
-  , [userId, postId, comment, 1, 1, is_secret])
+  , [userId, postId, comment, commentDepth.FIRST, 1, is_secret])
 }
 
 const addCommentOnComment = async (userId: number, postId: number, commentId: number, comment: string, SEQ: number, is_secret: number) => {
@@ -26,10 +31,10 @@ const addCommentOnComment = async (userId: number, postId: number, commentId: nu
       is_secret
     )
     VALUES (?, ?, ?, ?, ?, ?, ?)`
-  , [userId, postId, comment, commentId, 2, SEQ + 1, is_secret])
+  , [userId, postId, comment, commentId, commentDepth.SECOND, SEQ + 1, is_secret])
 }
 
-const getCommentOnPost = async (postId: number, pagenation: number): Promise<any> => {
+const getCommentOnPost = async (postId: number, pagenation: number, dataLength: number = 20): Promise<any> => {
   const result = await dataSource.query(`
     SELECT
       cmt.id,
@@ -47,7 +52,7 @@ const getCommentOnPost = async (postId: number, pagenation: number): Promise<any
     JOIN users ON users.id = cmt.users_id
     WHERE cmt.company_posts_id = ?
     ORDER BY IF(ISNULL(cmt.comments_id), cmt.id, cmt.comments_id), sequence
-    LIMIT ${pagenation}, 20
+    LIMIT ${pagenation}, ${dataLength}
   `, [postId])
   return result as CommentType;
 }

@@ -1,5 +1,4 @@
-import daoset from "../models";
-const { companyRequestDao, companyDao } = daoset;
+import { companyRequestDao, companyDao } from "../models";
 
 // 회사 요청 보내기
 const createCompany = async (CompanyInput: CompanyRequestInput) => {

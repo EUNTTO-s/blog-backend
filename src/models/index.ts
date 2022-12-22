@@ -21,3 +21,4 @@ const dao_set = {
 };
 
 export default dao_set;
+export { companyDao, companyRequestDao };

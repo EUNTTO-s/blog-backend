@@ -39,7 +39,6 @@ const refuseCompany = async (requestId: string) => {
           company_request
         WHERE
           id = ?
-      
         `,
         [requestId]
     );

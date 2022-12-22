@@ -1,7 +1,5 @@
 import daoset from '../models';
-import jwt from "jsonwebtoken";
-const cmtDao = daoset.cmtDao;
-const userDao = daoset.userDao;
+const { cmtDao, userDao } = daoset;
 
 const addCommentOnPost = async (userId: number, postId: number, comment: string, is_secret: number) => {
   // 유저가 존재하는지 확인
@@ -49,14 +47,7 @@ const addCommentOnComment = async (userId: number, postId: number, commentId: nu
   await cmtDao.addCommentOnComment(userId, postId, commentId, comment, SEQ.SEQ , is_secret);
 }
 
-const getCommentOnPost = async (postId: number, page: number ,token?: string) => {
-  // 토큰이 있을 때 토큰에 해당하는 user_id 받아오고 없을 시 user_id = undefined
-  let user_id: number;
-  if(token !== undefined) {
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY)
-    user_id = Number(decodedToken.id);
-  }
-
+const getCommentOnPost = async (userId: string, postId: number, page: number) => {
   // 페이지네이션을 위한 연산
   const pagination: number = ((Number(page) - 1) * 20);
 
@@ -65,12 +56,12 @@ const getCommentOnPost = async (postId: number, page: number ,token?: string) =>
 
   result.forEach((item: any) => {
     // 비밀 댓글에 대한 열람 권한이 없을 시
-    if(item.is_secret === 1 && item.users_id !== user_id && postWriter.users_id !== user_id) {
+    if(item.is_secret === 1 && item.users_id !== userId && postWriter.users_id !== Number(userId)) {
       console.log(1);
       item.comment_content = "이 댓글은 작성자만 볼 수 있습니다."
     }
 
-    if(item.users_id !== user_id) {
+    if(item.users_id !== userId) {
       item.auth = 0;
     } else {
       item.auth = 1;
@@ -109,7 +100,7 @@ const deleteComment = async (userId: number, commentId: number) => {
   // 유저 권한 확인
   const commentWriter = await cmtDao.findUserByCommentId(commentId);
   if (Number(commentWriter.users_id) !== userId) {
-    throw {status: 400, message: '삭제 권한이 없습니다'}
+    throw {status: 403, message: '삭제 권한이 없습니다'}
   }
   const discription = await cmtDao.findSEQByCommentId(commentId);
   discription.SEQ === 1 ? await cmtDao.deleteComment(commentId) : await cmtDao.changeCommentToDelete(commentId);

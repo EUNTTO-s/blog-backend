@@ -23,7 +23,6 @@ const putPostForm = async (postFormInput: CompanyPostFormInput) => {
 
   // 유저 정보 조회
   const userInfo = await userDao.findUser({userId: Number(postFormInput.usersId)});
-  console.log("userInfo: ", userInfo);
   if (!userInfo) {
     throw {status: 404, message: "유저 ID에 해당하는 유저 정보가 존재하지 않습니다."};
   }
