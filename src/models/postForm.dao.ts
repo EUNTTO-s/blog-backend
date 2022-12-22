@@ -147,7 +147,7 @@ const getPostForm = async (serchOption?: PostFormSearchOption) => {
     )
     .then((list) => {
       list = [...list].map((item) => {
-        const domain = 'http://localhost:5500';
+        const domain = `${process.env.HOST_URL}:${process.env.PORT}`;
         const companyImgUrl = item.companyImgUrl? `${domain}${item.companyImgUrl}` : '';
         const companyInfoUrl = item.companyInfoUrl? `${domain}${item.companyInfoUrl}` : '';
         return {

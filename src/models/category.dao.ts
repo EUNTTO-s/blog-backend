@@ -16,7 +16,7 @@ const getAllCategories = async () => {
     GROUP BY level_1_categories.id, level_1_categories.category_name
     `).then(list => {
       return [...list].map(category => {
-        const domain = "http://localhost:5500";
+        const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
         return {
           ...category,
           subCategory: JSON.parse(category.subCategory),
