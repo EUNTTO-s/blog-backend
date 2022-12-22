@@ -16,14 +16,14 @@ CREATE TABLE `company_posts` (
   `companies_id` integer NOT NULL,
   `company_name` varchar(100) NOT NULL,
   `level_2_categories_id` integer NOT NULL,
-  `company_img_url` varchar(100) NOT NULL,
+  `company_img_url` varchar(1000) NOT NULL,
   `company_short_desc` varchar(100) NOT NULL,
-  `homepage_url` varchar(100),
+  `homepage_url` varchar(1000),
   `main_bussiness_tags` varchar(300) NOT NULL,
   `company_long_desc` varchar(1000),
   `fastfive_benefit_desc` varchar(100),
   `company_contact_address` varchar(100) NOT NULL,
-  `company_info_url` varchar(100),
+  `company_info_url` varchar(1000),
   `fastfive_branches_id` integer NOT NULL,
   `users_id` integer NOT NULL
 );
@@ -33,14 +33,14 @@ CREATE TABLE `company_post_forms` (
   `companies_id` integer NOT NULL,
   `company_name` varchar(100),
   `level_2_categories_id` integer,
-  `company_img_url` varchar(100),
+  `company_img_url` varchar(1000),
   `company_short_desc` varchar(100),
-  `homepage_url` varchar(100),
+  `homepage_url` varchar(1000),
   `main_bussiness_tags` varchar(300),
   `company_long_desc` varchar(1000),
   `fastfive_benefit_desc` varchar(100),
   `company_contact_address` varchar(100),
-  `company_info_url` varchar(100),
+  `company_info_url` varchar(1000),
   `fastfive_branches_id` integer,
   `updated_at` datetime default now() ON UPDATE now() NOT NULL,
   `users_id` integer
@@ -139,21 +139,15 @@ ALTER TABLE `company_post_forms` ADD FOREIGN KEY (`fastfive_branches_id`) REFERE
 
 ALTER TABLE `company_post_forms` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
-ALTER TABLE `level_2_categories` ADD FOREIGN KEY (`level_1_categories_id`) REFERENCES `level_1_categories` (`id`) ON DELETE CASCADE;
-
 ALTER TABLE `company_members` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
 
 ALTER TABLE `company_members` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
-
-ALTER TABLE `fastfive_branches` ADD FOREIGN KEY (`locations_id`) REFERENCES `locations` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `company_residences` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`);
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
-
-ALTER TABLE `comments` ADD FOREIGN KEY (`company_posts_id`) REFERENCES `company_posts` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `admins` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
@@ -162,6 +156,12 @@ ALTER TABLE `company_request` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`
 ALTER TABLE `member_join_request` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `member_join_request` ADD FOREIGN KEY (`companies_id`) REFERENCES `companies` (`id`);
+
+ALTER TABLE `comments` ADD FOREIGN KEY (`company_posts_id`) REFERENCES `company_posts` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `fastfive_branches` ADD FOREIGN KEY (`locations_id`) REFERENCES `locations` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `level_2_categories` ADD FOREIGN KEY (`level_1_categories_id`) REFERENCES `level_1_categories` (`id`) ON DELETE CASCADE;
 
 -- migrate:down
 
