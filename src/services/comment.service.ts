@@ -60,12 +60,7 @@ const getCommentOnPost = async (userId: string, postId: number, page: number) =>
       console.log(1);
       item.comment_content = "이 댓글은 작성자만 볼 수 있습니다."
     }
-
-    if(item.users_id !== userId) {
-      item.auth = 0;
-    } else {
-      item.auth = 1;
-    }
+    item.auth = item.users_id === userId ? 1 : 0;
   })
   return result;
 }
