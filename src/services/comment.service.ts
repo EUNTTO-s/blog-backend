@@ -1,7 +1,7 @@
 import daoset from '../models';
 const { cmtDao, userDao } = daoset;
 
-const addCommentOnPost = async (userId: number, postId: number, comment: string, is_secret: number) => {
+const addCommentOnPost = async (userId: number, postId: number, comment: string, isSecret: number) => {
   // 유저가 존재하는지 확인
   const existUser = await userDao.findUser({userId});
   if (!existUser) {
@@ -20,10 +20,10 @@ const addCommentOnPost = async (userId: number, postId: number, comment: string,
   }
 
   // 댓글 추가
-  await cmtDao.addCommentOnPost(userId, postId, comment, is_secret);
+  await cmtDao.addCommentOnPost(userId, postId, comment, isSecret);
 }
 
-const addCommentOnComment = async (userId: number, postId: number, commentId: number, comment: string, is_secret: number) => {
+const addCommentOnComment = async (userId: number, postId: number, commentId: number, comment: string, isSecret: number) => {
   // 유저가 존재하는지 확인
   const existUser = await userDao.findUser({userId});
   if (!existUser) {
@@ -44,7 +44,7 @@ const addCommentOnComment = async (userId: number, postId: number, commentId: nu
   const SEQ = await cmtDao.findSEQByCommentId(commentId);
 
   // 댓글 추가
-  await cmtDao.addCommentOnComment(userId, postId, commentId, comment, SEQ.SEQ , is_secret);
+  await cmtDao.addCommentOnComment(userId, postId, commentId, comment, SEQ.SEQ , isSecret);
 }
 
 const getCommentOnPost = async (userId: string, postId: number, page: number) => {
@@ -56,7 +56,7 @@ const getCommentOnPost = async (userId: string, postId: number, page: number) =>
 
   result.forEach((item: any) => {
     // 비밀 댓글에 대한 열람 권한이 없을 시
-    if(item.is_secret === 1 && item.users_id !== userId && postWriter.users_id !== Number(userId)) {
+    if(item.isSecret === 1 && item.users_id !== userId && postWriter.users_id !== Number(userId)) {
       console.log(1);
       item.comment_content = "이 댓글은 작성자만 볼 수 있습니다."
     }
@@ -65,7 +65,7 @@ const getCommentOnPost = async (userId: string, postId: number, page: number) =>
   return result;
 }
 
-const updateComment = async (userId: number, commentId: number, comment: string, is_secret: number) => {
+const updateComment = async (userId: number, commentId: number, comment: string, isSecret: number) => {
   // 유저가 존재하는지 확인
   const existUser = await userDao.findUser({userId});
   if (!existUser) {
@@ -83,7 +83,7 @@ const updateComment = async (userId: number, commentId: number, comment: string,
     throw {status: 400, message: '수정 권한이 없습니다'}
   }
 
-  await cmtDao.updateComment(commentId, comment, is_secret);
+  await cmtDao.updateComment(commentId, comment, isSecret);
 }
 
 const deleteComment = async (userId: number, commentId: number) => {

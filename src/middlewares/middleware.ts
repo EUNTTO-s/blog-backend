@@ -82,14 +82,14 @@ const categoryFilter = async (req: express.Request, file: Express.Multer.File, c
 
   let categoryId;
   if (req.method == 'POST') {
-    const { category_name, description } = req.body;
-    let cate  = await cateSvc.getCategory_1_byCateName(category_name);
+    const { categoryName, description } = req.body;
+    let cate  = await cateSvc.getCategory_1_byCateName(categoryName);
     if (cate) {
-      cb(new Error('ALREADY_EXIST_CATEGORY_NAME'));
+      cb(new Error('ALREADY_EXIST_CATEGORYNAME'));
     }
     try {
-      await cateSvc.createCategory("TEMP", category_name, description);
-      cate  = await cateSvc.getCategory_1_byCateName(category_name);
+      await cateSvc.createCategory("TEMP", categoryName, description);
+      cate  = await cateSvc.getCategory_1_byCateName(categoryName);
     } catch (e) {
       cb(new Error('FAILD_CREATE_CATEGORY'));
     }

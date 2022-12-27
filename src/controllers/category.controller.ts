@@ -3,8 +3,8 @@ import service_set from "../services";
 const { cateSvc } = service_set;
 
 const createCategory = async (req: express.Request, res: express.Response) => {
-    const { categoryId, img_url } = req.body;
-    await cateSvc.updateCategoryImg(categoryId, img_url);
+    const { categoryId, imgUrl } = req.body;
+    await cateSvc.updateCategoryImg(categoryId, imgUrl);
     res.status(201).json({message : "CREATE_CATEGORY"});
 }
 
@@ -14,8 +14,8 @@ const getAllCategories = async (req: express.Request, res: express.Response) => 
 }
 
 const updateCategory = async (req: express.Request, res: express.Response) => {
-    const { categoryId, category_name, description } = req.body;
-    await cateSvc.updateCategory(categoryId, category_name, description);
+    const { categoryId, categoryName, description } = req.body;
+    await cateSvc.updateCategory(categoryId, categoryName, description);
     res.status(201).json({message : "UPDATE_CATEGORY"})
 }
 
@@ -26,22 +26,22 @@ const deleteCategory = async (req: express.Request, res: express.Response) => {
 }
 
 const updateCategoryImg = async (req: express.Request, res:express.Response, next: express.NextFunction) => {
-    const { categoryId, img_url } = req.body;
+    const { categoryId, imgUrl } = req.body;
 
-    await cateSvc.updateCategoryImg(categoryId, img_url);
+    await cateSvc.updateCategoryImg(categoryId, imgUrl);
     res.status(201).json({message : "UPDATE_CATEGORY_IMG"})
     next();
 }
 
 const createLevel_2_Category = async (req: express.Request, res: express.Response) => {
-    const { level_1_categories_id, category_name, description } = req.body;
-    await cateSvc.createLevel_2_Category(level_1_categories_id, category_name, description);
+    const { level_1_categories_id, categoryName, description } = req.body;
+    await cateSvc.createLevel_2_Category(level_1_categories_id, categoryName, description);
     res.status(201).json({message : "CREATE_CATEGORY_LEVEL2"})
 }
 
 const updateLevel_2_Category = async (req: express.Request, res: express.Response) => {
-    const { categoryId ,category_name, description } = req.body;
-    await cateSvc.updateLevel_2_Category(categoryId, category_name, description);
+    const { categoryId ,categoryName, description } = req.body;
+    await cateSvc.updateLevel_2_Category(categoryId, categoryName, description);
     res.status(201).json({message : "UPDATE_CATEGORY_LEVEL2"})
 }
 

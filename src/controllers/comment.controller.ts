@@ -6,17 +6,17 @@ const {cmtSvc} = service_set;
 
 const addCommentOnPost = async (req: express.Request, res: express.Response) => {
   const userId = req.userInfo.id;
-  const {comment, postId, is_secret}: CommentInputType = req.body;
+  const {comment, postId, isSecret}: CommentInputType = req.body;
   checkDataIsNotEmpty({userId, comment, postId});
-  await cmtSvc.addCommentOnPost(Number(userId), postId, comment, is_secret);
+  await cmtSvc.addCommentOnPost(Number(userId), postId, comment, isSecret);
   res.status(201).json({message : "COMMENT_CREATED"});
 }
 
 const addCommentOnComment = async (req: express.Request, res: express.Response) => {
   const userId = req.userInfo.id;
-  const {comment, postId, commentId ,is_secret}: CommentInputType = req.body;
+  const {comment, postId, commentId ,isSecret}: CommentInputType = req.body;
   checkDataIsNotEmpty({userId, comment, postId, commentId})
-  await cmtSvc.addCommentOnComment(Number(userId), postId, commentId, comment, is_secret);
+  await cmtSvc.addCommentOnComment(Number(userId), postId, commentId, comment, isSecret);
   res.status(201).json({message : "COMMENT_CREATED"});
 }
 
@@ -30,8 +30,8 @@ const getCommentOnPost = async (req: express.Request, res: express.Response) => 
 
 const updateComment = async (req: express.Request, res: express.Response) => {
   const userId = req.userInfo.id;
-  const {comment, commentId, is_secret}: CommentInputType = req.body;
-  await cmtSvc.updateComment(Number(userId), commentId, comment, is_secret);
+  const {comment, commentId, isSecret}: CommentInputType = req.body;
+  await cmtSvc.updateComment(Number(userId), commentId, comment, isSecret);
   res.status(201).json({message : "COMMENT_UPDATED"});
 }
 

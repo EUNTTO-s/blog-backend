@@ -1,35 +1,35 @@
 import locationDao from "../models/location.dao";
 
-const createLocation = async (location_name: string) => {
-    await locationDao.createLocation(location_name);
+const createLocation = async (locationName: string) => {
+    await locationDao.createLocation(locationName);
 }
 const getAllLocations = async () => {
     const result = await locationDao.getAllLocations();
     return result;
 }
 
-const updateLocation = async (locationId: number,location_name: string) => {
-    await locationDao.updateLocation(locationId, location_name);
+const updateLocation = async (locationId: number,locationName: string) => {
+    await locationDao.updateLocation(locationId, locationName);
 }
 
 const deleteLocation = async (locationId: number) => {
     await locationDao.deleteLocation(locationId);
 }
 
-const createBranch = async (locations_id: number, branch_name: string) => {
-    await locationDao.createBranch(locations_id, branch_name);
+const createBranch = async (locationId: number, branchName: string) => {
+    await locationDao.createBranch(locationId, branchName);
 }
 const getAllBranches = async () => {
     const result = await locationDao.getAllBranches();
     return result;
 }
 
-const updateBranch = async (branch_Id: number, branch_name: string) => {
-    await locationDao.updateBranch(branch_Id, branch_name);
+const updateBranch = async (branchId: number, branchName: string) => {
+    await locationDao.updateBranch(branchId, branchName);
 }
 
-const deleteBranch = async (branch_Id: number) => {
-    await locationDao.deleteBranch(branch_Id);
+const deleteBranch = async (branchId: number) => {
+    await locationDao.deleteBranch(branchId);
 }
 
 export default {

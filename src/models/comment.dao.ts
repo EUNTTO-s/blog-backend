@@ -5,7 +5,7 @@ const commentDepth = {
   SECOND : 2
   }
 
-const addCommentOnPost = async (userId: number, postId: number, comment: string, is_secret: number) => {
+const addCommentOnPost = async (userId: number, postId: number, comment: string, isSecret: number) => {
   await dataSource.query(`
     INSERT INTO comments (
       users_id,
@@ -16,10 +16,10 @@ const addCommentOnPost = async (userId: number, postId: number, comment: string,
       is_secret
     )
     VALUES (?, ?, ?, ?, ?, ?)`
-  , [userId, postId, comment, commentDepth.FIRST, 1, is_secret])
+  , [userId, postId, comment, commentDepth.FIRST, 1, isSecret])
 }
 
-const addCommentOnComment = async (userId: number, postId: number, commentId: number, comment: string, SEQ: number, is_secret: number) => {
+const addCommentOnComment = async (userId: number, postId: number, commentId: number, comment: string, SEQ: number, isSecret: number) => {
   await dataSource.query(`
     INSERT INTO comments (
       users_id,
@@ -31,7 +31,7 @@ const addCommentOnComment = async (userId: number, postId: number, commentId: nu
       is_secret
     )
     VALUES (?, ?, ?, ?, ?, ?, ?)`
-  , [userId, postId, comment, commentId, commentDepth.SECOND, SEQ + 1, is_secret])
+  , [userId, postId, comment, commentId, commentDepth.SECOND, SEQ + 1, isSecret])
 }
 
 const getCommentOnPost = async (postId: number, pagenation: number, dataLength: number = 20): Promise<any> => {
@@ -45,7 +45,7 @@ const getCommentOnPost = async (postId: number, pagenation: number, dataLength: 
       cmt.depth,
       cmt.sequence,
       cmt.created_at,
-      cmt.is_secret
+      cmt.is_secret AS isSecret
     FROM
       comments as cmt
     JOIN company_posts as cp ON cp.id = cmt.company_posts_id
@@ -57,7 +57,7 @@ const getCommentOnPost = async (postId: number, pagenation: number, dataLength: 
   return result as CommentType;
 }
 
-const updateComment = async (commentId: number, comment: string, is_secret: number) => {
+const updateComment = async (commentId: number, comment: string, isSecret: number) => {
   await dataSource.query(`
     UPDATE comments
       SET comment_content = ?
@@ -69,7 +69,7 @@ const updateComment = async (commentId: number, comment: string, is_secret: numb
       SET is_secret = ?
     WHERE
       id = ?
-  `, [is_secret, commentId])
+  `, [isSecret, commentId])
 }
 
 const changeCommentToDelete = async (commentId: number) => {

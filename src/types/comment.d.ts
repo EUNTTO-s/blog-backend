@@ -2,7 +2,7 @@ interface CommentInputType {
     comment?: string;
     postId?: number;
     commentId?: number;
-    is_secret?: number;
+    isSecret?: number;
 }
 
 interface CommentType {
@@ -13,6 +13,6 @@ interface CommentType {
     DEPTH?: number;
     SEQ?: number;
     created_at?: any;
-    is_secret?: number;
+    isSecret?: number;
     wrtier?: number;
 }

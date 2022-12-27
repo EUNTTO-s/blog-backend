@@ -3,8 +3,8 @@ import locationSvc from "../services/location.service"
 
 
 const createLocation = async (req: express.Request, res: express.Response) => {
-    const { location_name } = req.body;
-    await locationSvc.createLocation(location_name);
+    const { locationName } = req.body;
+    await locationSvc.createLocation(locationName);
     res.json({message: "CREATE_LOCATION"})
 }
 
@@ -14,8 +14,8 @@ const getAllLocations = async (req: express.Request, res: express.Response) => {
 }
 
 const updateLocation = async (req: express.Request, res: express.Response) => {
-    const { locationId, location_name } = req.body;
-    await locationSvc.updateLocation(locationId ,location_name);
+    const { locationId, locationName } = req.body;
+    await locationSvc.updateLocation(locationId ,locationName);
     res.json({message: "UPDATE_LOCATION"})
 }
 
@@ -26,8 +26,8 @@ const deleteLocation = async (req: express.Request, res: express.Response) => {
 }
 
 const createBranch = async (req: express.Request, res: express.Response) => {
-    const { locations_id, branch_name } = req.body;
-    await locationSvc.createBranch(locations_id, branch_name);
+    const { locationsId, branchName } = req.body;
+    await locationSvc.createBranch(locationsId, branchName);
     res.json({message: "CREATE_BRANCH"})
 }
 
@@ -37,14 +37,14 @@ const getAllBranches = async (req: express.Request, res: express.Response) => {
 }
 
 const updateBranch = async (req: express.Request, res: express.Response) => {
-    const { branch_Id, branch_name } = req.body;
-    await locationSvc.updateBranch(branch_Id, branch_name);
+    const { branchId, branchName } = req.body;
+    await locationSvc.updateBranch(branchId, branchName);
     res.json({message: "UPDATE_BRANCH"})
 }
 
 const deleteBranch = async (req: express.Request, res: express.Response) => {
-    const { branch_Id } = req.body;
-    await locationSvc.deleteBranch(branch_Id);
+    const { branchId } = req.body;
+    await locationSvc.deleteBranch(branchId);
     res.json({message: "DELETE_BRANCH"})
 }
 

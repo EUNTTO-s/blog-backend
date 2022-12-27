@@ -4,41 +4,41 @@ const getAllLocations = async () => {
     const result = await dataSource.query(`
         SELECT
             id,
-            location_name
+            location_name AS locationName
         FROM
             locations
     `)
-    return result as {id: number, location_name: string};
+    return result as {id: number, locationName: string};
 }
 
-const createLocation = async(location_name: string) => {
+const createLocation = async(locationName: string) => {
     await dataSource.query(`
         INSERT INTO
             locations (location_name)
         VALUES
             (?)
-    `, [location_name])
+    `, [locationName])
 }
 
-const updateLocation = async(locationId: number, location_name: string) => {
+const updateLocation = async(locationId: number, locationName: string) => {
     await dataSource.query(`
         UPDATE locations
             SET location_name = ?
         WHERE
             id = ?
-    `, [location_name, locationId])
+    `, [locationName, locationId])
 }
 
-const deleteLocation = async(locations_Id: number) => {
+const deleteLocation = async(locationsId: number) => {
     await dataSource.query(`
         DELETE FROM
             locations
         WHERE
             id = ?
-    `, [locations_Id])
+    `, [locationsId])
 }
 
-const createBranch = async(locations_Id: number, branch_name: string) => {
+const createBranch = async(locationsId: number, branchName: string) => {
     await dataSource.query(`
         INSERT INTO
             fastfive_branches (
@@ -47,46 +47,46 @@ const createBranch = async(locations_Id: number, branch_name: string) => {
             )
         VALUES
             (?, ?)
-    `, [locations_Id, branch_name])
+    `, [locationsId, branchName])
 }
 
 const getAllBranches = async () => {
     const result = await dataSource.query(`
         SELECT
 	        fastfive_branches.id,
-            locations.location_name,
-            fastfive_branches.branch_name
+            locations.location_name AS locationName,
+            fastfive_branches.branch_name AS branchName
         FROM
 	        locations
         JOIN fastfive_branches ON fastfive_branches.locations_id = locations.id
     `)
-    return result as {id: number, location_name: string, branch_name: string};
+    return result as {id: number, locationName: string, branchName: string};
 }
 
 
-const updateBranch = async(branch_Id: number, branch_name: string) => {
+const updateBranch = async(branchId: number, branchName: string) => {
     await dataSource.query(`
         UPDATE fastfive_branches
             SET branch_name = ?
         WHERE
             id = ?
-    `, [branch_name, branch_Id])
+    `, [branchName, branchId])
 }
 
-const deleteBranch = async(branch_Id: number) => {
+const deleteBranch = async(branchId: number) => {
     await dataSource.query(`
         DELETE FROM
             fastfive_branches
         WHERE id = ?
-    `, [branch_Id])
+    `, [branchId])
 }
 
 const findBranchById = async (branchId: number) => {
   const result = await dataSource.query(`
       SELECT
         fastfive_branches.id,
-        locations.location_name,
-        fastfive_branches.branch_name
+        locations.location_name AS locationName,
+        fastfive_branches.branch_name AS branchName
       FROM
         locations
       JOIN fastfive_branches ON fastfive_branches.locations_id = locations.id

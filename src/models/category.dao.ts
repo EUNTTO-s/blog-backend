@@ -4,8 +4,8 @@ const getAllCategories = async () => {
     const result = await dataSource.query(`
     SELECT
 	    level_1_categories.id,
-        level_1_categories.category_name,
-        level_1_categories.img_url,
+        level_1_categories.category_name AS categoryName,
+        level_1_categories.img_url AS imgUrl,
         level_1_categories.description,
         JSON_ARRAYAGG
             (JSON_OBJECT
@@ -20,7 +20,7 @@ const getAllCategories = async () => {
         return {
           ...category,
           subCategory: JSON.parse(category.subCategory),
-          img_url: category.img_url.startsWith("http") ? category.img_url : domain + category.img_url
+          imgUrl: category.imgUrl.startsWith("http") ? category.imgUrl : domain + category.imgUrl
         };
       })
     });
@@ -41,36 +41,36 @@ const findCategoryById = async (categoryId: number) => {
     const [result] = await dataSource.query(`
         SELECT
             id,
-            img_url,
-            category_name,
+            img_url AS imgUrl,
+            categoryName,
             description
         FROM
             level_1_categories
         WHERE
             id = ?
     `, [categoryId]);
-    return result as {id: number, img_url: string, category_name: string, description: string};
+    return result as {id: number, imgUrl: string, categoryName: string, description: string};
 }
 
-const createCategory = async(img_url: string, category_name: string, description: string) => {
+const createCategory = async(imgUrl: string, categoryName: string, description: string) => {
     await dataSource.query(`
         INSERT INTO
             level_1_categories (
-                img_url,
+                img_url AS imgUrl,
                 category_name,
                 description)
         VALUES
             (?, ?, ?)
-    `, [img_url, category_name, description]);
+    `, [imgUrl, categoryName, description]);
 }
 
-const updateCategory = async(categoryId: number, category_name?: string, description?: string) => {
-    category_name ? await dataSource.query(`
+const updateCategory = async(categoryId: number, categoryName?: string, description?: string) => {
+  categoryName ? await dataSource.query(`
         UPDATE level_1_categories
             SET category_name = ?
         WHERE
             id = ?
-    `, [category_name, categoryId]) : ''
+    `, [categoryName, categoryId]) : ''
     description ? await dataSource.query(`
         UPDATE level_1_categories
             SET description = ?
@@ -88,16 +88,16 @@ const deleteCategory = async(categoryId: number) => {
     `, [categoryId])
 }
 
-const updateCategoryImg = async(img_url:string, categoryId: number) => {
+const updateCategoryImg = async(imgUrl:string, categoryId: number) => {
     await dataSource.query(`
         UPDATE level_1_categories
             SET level_1_categories.img_url = ?
         WHERE
             id = ?
-    `, [img_url, categoryId])
+    `, [imgUrl, categoryId])
 }
 
-const createLevel_2_Category = async(level_1_categories_id: number, category_name: string) => {
+const createLevel_2_Category = async(level_1_categories_id: number, categoryName: string) => {
     await dataSource.query(`
         INSERT INTO
             level_2_categories (
@@ -106,16 +106,16 @@ const createLevel_2_Category = async(level_1_categories_id: number, category_nam
             )
         VALUES
             (?, ?)
-    `, [level_1_categories_id, category_name]);
+    `, [level_1_categories_id, categoryName]);
 }
 
-const updateLevel_2_Category = async(categoryId: number, category_name?: string, description?: string) => {
-    category_name ? await dataSource.query(`
+const updateLevel_2_Category = async(categoryId: number, categoryName?: string, description?: string) => {
+  categoryName ? await dataSource.query(`
         UPDATE level_2_categories
             SET category_name = ?
         WHERE
             id = ?
-    `, [category_name, categoryId]) : ''
+    `, [categoryName, categoryId]) : ''
     description ? await dataSource.query(`
         UPDATE level_2_categories
             SET description = ?
@@ -138,7 +138,7 @@ const findlv2CategoryById = async (categoryId: number) => {
       SELECT
         id,
         level_1_categories_id,
-        category_name,
+        category_name AS categoryName,
         description
       FROM
         level_2_categories
@@ -152,15 +152,15 @@ const findCategoryByCateName = async (categoryName: string) => {
   const [result] = await dataSource.query(`
       SELECT
           id,
-          img_url,
-          category_name,
+          img_url AS imgUrl,
+          category_name AS categoryName,
           description
       FROM
           level_1_categories
       WHERE
           category_name = ?
   `, [categoryName]);
-  return result as {id: number, img_url: string, category_name: string, description: string};
+  return result as {id: number, imgUrl: string, categoryName: string, description: string};
 }
 
 export default {
