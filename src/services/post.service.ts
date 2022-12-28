@@ -1,74 +1,83 @@
 import daoset from '../models';
 
-const {postDao, userDao} = daoset;
+const { postDao, companyDao, userDao, categoryDao, locationDao, postFormDao } =
+  daoset;
 
-async function addPost(contents: string, image_url: string, userId: string) {
+const putPost = async (postInput: CompanyPostFormInput) => {
+  let result;
+  // 회사 정보 조회
+  const companyInfo = await companyDao.getCompanies({id: postInput.companiesId});
+  if (!companyInfo) {
+    throw {status: 404, message: "회사 ID에 해당하는 회사 정보가 존재하지 않습니다."};
+  }
+
+  // 해당 회사의 메인 멤버인지 확인
+  const companyMemberInfo = await postFormDao.getCompanyMemberByUserId(postInput.usersId);
+
+  if (!companyMemberInfo) {
+    throw {status: 404, message: "해당 유저는 멤버 그룹에 존재하지 않아 게시물 수정 권한이 없습니다."};
+  }
+
+  if ((!companyMemberInfo.isMainMember) || (companyMemberInfo.companiesId != postInput.companiesId)) {
+    throw {status: 403, message: "해당 회사에 대한 메인멤버가 아닙니다."};
+  }
+
   // 유저 정보 조회
-  const userInfo = await userDao.findUserById(userId);
+  const userInfo = await userDao.findUser({userId: Number(postInput.usersId)});
   if (!userInfo) {
-    throw {status: 404, message: "유저 아이디가 존재하지 않습니다."};
+    throw {status: 404, message: "유저 ID에 해당하는 유저 정보가 존재하지 않습니다."};
   }
-  return await postDao.addPost(contents, image_url, userId);
+  // 카테고리 정보 조회
+  const lv2CateInfo = await categoryDao.findlv2CategoryById(Number(postInput.level2CategoriesId));
+  if (!lv2CateInfo) {
+    throw {status: 404, message: "카테고리 ID에 해당하는 카테고리 정보가 존재하지 않습니다."};
+  }
+  // 패스트파이브 입점 정보 조회
+  const branchInfo = await locationDao.findBranchById(Number(postInput.fastfiveBranchesId));
+  if (!branchInfo) {
+    throw {status: 404, message: "브랜치 ID에 해당하는 브랜치 정보가 존재하지 않습니다."};
+  }
+
+  // 이미 작성 폼이 존재하는 지 확인
+  const postInfo = await postDao.getPost({companiesId: postInput.companiesId});
+
+  // 존재하면 업데이트
+  if (postInfo) {
+    result = await postDao.updatePost(postInput);
+  } else {
+    // 그렇지 않으면 생성
+    result = await postDao.createPost(postInput);
+  }
+  return result;
 }
 
-async function getAllPost() {
-  return await postDao.getAllPost();
+const getPost = async (serchOption?: PostSearchOption) => {
+  if (serchOption.ourGruop) {
+      // 해당 회사의 메인 멤버인지 확인
+      const companyMemberInfo = await postFormDao.getCompanyMemberByUserId(serchOption.usersId);
+      console.log("companyMemberInfo: ", companyMemberInfo);
+      if (!companyMemberInfo) {
+        throw {status: 404, message: "해당 유저는 멤버 그룹에 존재하지 않습니다"};
+      }
+      serchOption.companiesId = companyMemberInfo.companiesId;
+  }
+  return await postDao.getPost(serchOption);
 }
 
-async function updatePost(userId: string, postId:string, contents: string, imageUrl: string) {
-  // 유저 정보 조회
-  const userInfo = await userDao.findUserById(userId);
-  if (!userInfo) {
-    throw {status: 404, message: "유저 아이디가 존재하지 않습니다."};
+const deletePost = async (userId: string ,postId: string) => {
+  // TODO
+    // 현재는 게시글 작성자가 포스트를 삭제할 수 있도록 구현
+    // 추후에는 회사의 메인 멤버만이 삭제할 수 있도록 수정 필요
+  const postInfo = await postDao.getPost({id: postId});
+  if (!postInfo) {
+    throw {status: 404, message: "포스트 ID에 해당하는 포스트가 존재하지 않습니다."};
   }
-  // 작성 권한 확인
-  const post = await postDao.getPostByPostId(postId);
-  if (userId != String(post.userId)) {
-    throw {status: 403, message: "작성자만 변경할 수 있습니다."};
-  }
-  // 게시글 변경
-  await postDao.updatePost(postId, contents, imageUrl);
-  const updatedPost = postDao.getPostByPostId(postId);
-  return updatedPost;
-}
 
-async function deletePost(userId: string, postId:string) {
-  // 유저 정보 조회
-  const userInfo = await userDao.findUserById(userId);
-  if (!userInfo) {
-    throw {status: 404, message: "유저 아이디가 존재하지 않습니다."};
-  }
-  // 작성 권한 확인
-  const post = await postDao.getPostByPostId(postId);
-  if (userId != String(post.userId)) {
-    throw {status: 403, message: "작성자만 삭제할 수 있습니다."};
-  }
-  // 게시글 삭제
-  await postDao.deletePost(postId);
-}
-
-async function getPostByPostId(postId: string) {
-  const post = await postDao.getPostByPostId(postId);
-  if (!post) {
-    throw {status: 404, message: "ID에 해당하는 게시글이 존재하지 않습니다."};
-  }
-  return post;
-}
-
-async function getPostsByUserId(userId: string) {
-  await postDao.getPostsByUserId(userId);
-}
-
-async function addLikePost(userId: string, postId: string) {
-  await postDao.addLikePost(userId, postId);
+  return await postDao.deletePost(postId);
 }
 
 export default {
-  addPost,
-  getAllPost,
-  updatePost,
+  putPost,
+  getPost,
   deletePost,
-  getPostByPostId,
-  getPostsByUserId,
-  addLikePost,
 }

@@ -7,12 +7,9 @@ const {postCtl} = controllers;
 const router = express.Router();
 
 // posting route
-router.post('/post', asyncWrap(middleware.authMiddleware), asyncWrap(postCtl.addPost));
-router.get('/post', asyncWrap(postCtl.getAllPost));
-router.patch('/post/:id', asyncWrap(middleware.authMiddleware), asyncWrap(postCtl.updatePost));
-router.delete('/post/:id', asyncWrap(middleware.authMiddleware), asyncWrap(postCtl.deletePost));
-router.get('/post/:id', asyncWrap(postCtl.getPostByPostId));
-router.get('/post/user/:id', asyncWrap(postCtl.getPostsByUserId));
-router.post('/post/:id/like', asyncWrap(middleware.authMiddleware), asyncWrap(postCtl.addLikePost));
-router.post('/file-upload', asyncWrap(postCtl.uploadFile));
+router.get('/post', asyncWrap(middleware.authMiddleware), asyncWrap(postCtl.getPost));
+router.get('/post/:id', asyncWrap(middleware.authMiddleware), asyncWrap(postCtl.getPost));
+router.delete('/post/:id', asyncWrap(middleware.authMiddleware), middleware.removeFolder, asyncWrap(postCtl.deletePost));
+router.put('/post', asyncWrap(middleware.authMiddleware), asyncWrap(middleware.upload.any()), middleware.removeFolderOnEmptyProperty, asyncWrap(postCtl.putPost));
+
 export default router;

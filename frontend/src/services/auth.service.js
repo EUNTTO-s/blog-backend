@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axios_ = axios.create({
-  baseURL : "http://localhost:5000/"
+  baseURL : "http://localhost:5500/"
 });
 
 const login = async (email, password) => {
@@ -42,10 +42,25 @@ const fileUpload = async (formdata) => {
   console.log("response: ", response);
 };
 
+const PostUpload = async (formdata) => {
+  const response = await axios_.put(
+    "/post-form",
+    formdata,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjcxNDY0MjE3fQ.dMRIq1OlZBUl3Yi3nvUF4nTVjVw3auwGdG3IB-yvn0g"
+      },
+    }
+  );
+  console.log("response: ", response);
+};
+
 const AuthService = {
   login,
   register,
   fileUpload,
+  PostUpload,
 };
 
 export default AuthService;

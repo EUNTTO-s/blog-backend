@@ -12,33 +12,34 @@ table companies as cp {
 
 table company_posts as cpp {
   id integer [pk, increment]
-  companies_id integer [ref: > cp.id]
+  companies_id integer [ref: > cp.id, not null]
   company_name varchar(100) [not null]
   level_2_categories_id integer [ref: > lv2_cate.id, not null]
-  company_img_url varchar(100) [not null]
+  company_img_url varchar(1000) [not null]
   company_short_desc varchar(100) [not null]
-  homepage_url varchar(100)
+  homepage_url varchar(1000)
   main_bussiness_tags varchar(300) [not null]
   company_long_desc varchar(1000)
   fastfive_benefit_desc varchar(100)
   company_contact_address varchar(100) [not null]
-  company_info_url varchar(100)
+  company_info_url varchar(1000)
   fastfive_branches_id integer [ref: > fb.id, not null]
+  users_id integer [ref: - u.id, not null]
 }
 
 table company_post_forms as cpf {
   id integer [pk, increment]
-  companies_id integer [ref: > cp.id]
+  companies_id integer [ref: > cp.id, not null]
   company_name varchar(100)
   level_2_categories_id integer [ref: > lv2_cate.id]
-  company_img_url varchar(100)
+  company_img_url varchar(1000)
   company_short_desc varchar(100)
-  homepage_url varchar(100)
+  homepage_url varchar(1000)
   main_bussiness_tags varchar(300)
   company_long_desc varchar(1000)
   fastfive_benefit_desc varchar(100)
   company_contact_address varchar(100)
-  company_info_url varchar(100)
+  company_info_url varchar(1000)
   fastfive_branches_id integer [ref: > fb.id]
   updated_at "datetime default now() ON UPDATE now()" [not null]
   users_id integer [ref: - u.id]
@@ -46,15 +47,15 @@ table company_post_forms as cpf {
 
 table level_1_categories as lv1_cate {
   id integer [pk, increment]
-  img_url varchar(150) [not null]
+  img_url varchar(500) [not null]
   category_name varchar(150) [not null, unique]
   description varchar(150)
 }
 
 table level_2_categories as lv2_cate {
   id integer [pk, increment]
-  level_1_categories_id integer [ref: > lv1_cate.id]
-  category_name varchar(150) [not null, unique]
+  level_1_categories_id integer
+  category_name varchar(150) [not null]
   description varchar(150)
 }
 
@@ -71,7 +72,7 @@ table company_members as cpm {
 table fastfive_branches as fb {
   id integer [pk, increment]
   branch_name varchar(150) [not null]
-  locations_id integer [ref: > locations.id]
+  locations_id integer
 }
 
 table company_residences as cpr {
@@ -85,9 +86,11 @@ table comments as cmt {
   id integer [pk, increment]
   comments_id integer [ref: > cmt.id]
   users_id integer [ref: > u.id]
-  company_posts_id integer [ref: > cpp.id]
+  company_posts_id integer
   comment_content varchar(1000) [not null]
   is_secret tinyint [default: 0]
+  depth integer
+  sequence integer
   created_at "datetime default now()" [not null]
 }
 
@@ -119,3 +122,7 @@ table member_join_request as mjr {
   companies_id integer [ref: > cp.id]
   created_at "datetime default now()" [not null]
 }
+
+ref: cmt.company_posts_id > cpp.id [delete: cascade]
+ref: fb.locations_id > locations.id [delete: cascade]
+ref: lv2_cate.level_1_categories_id > lv1_cate.id [delete: cascade]
