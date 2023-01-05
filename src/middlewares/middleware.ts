@@ -1,8 +1,6 @@
 import type express from "express";
-import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import service_set from "../services";
-const { cateSvc } = service_set;
+
 
 const authMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const token = req.headers.authorization;
@@ -46,127 +44,8 @@ const errorHandler: express.ErrorRequestHandler = (err: MyError, _1, res, _2) =>
     res.status(responseInfo.status || 500).send({ message: responseInfo.message || "" });
 };
 
-import multer from "multer";
-import fs from "fs";
-
-const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    if (!req.res.locals.fileupload) {
-        req.res.locals.fileupload = {};
-    }
-
-    const uploadRootFolder = `${__dirname}/../../uploads`;
-    const fileSpecificFolder = `${req.originalUrl}/${req.userInfo.id || "test"}/${file.fieldname}`;
-    const folderLocation = `${uploadRootFolder}${fileSpecificFolder}`;
-    // folderLocation는 다른 함수에서 파일 저장 위치를 설정할 때 사용됨.
-    req.res.locals.fileupload.folderLocation = folderLocation;
-    // body값에 저장하여 DB에 url을 저장하기 위해 사용됨.
-    req.body[file.fieldname] = `${fileSpecificFolder}/${file.originalname}`;
-
-    // 파일을 저장할 폴더 생성
-    try {
-        fs.rmdirSync(`${folderLocation}`, { recursive: true });
-    } catch (err) {
-        console.log("nothing to delete");
-    }
-    fs.mkdirSync(`${folderLocation}`, { recursive: true });
-    cb(null, true);
-};
-
-const categoryFilter = async (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  if (!req.res.locals.fileupload) {
-      req.res.locals.fileupload = {};
-  }
-  // multer에서 새로 변경된 카테고리 URL을 body 에 져장.
-  // process에서 이전 카테고리 URL을 body에 저장.
-  // 이후, 이전 URL의 파일을 제거.
-
-  let categoryId;
-  if (req.method == 'POST') {
-    const { categoryName, description } = req.body;
-    let cate  = await cateSvc.getCategory_1_byCateName(categoryName);
-    if (cate) {
-      cb(new Error('ALREADY_EXIST_CATEGORYNAME'));
-    }
-    try {
-      await cateSvc.createCategory("TEMP", categoryName, description);
-      cate  = await cateSvc.getCategory_1_byCateName(categoryName);
-    } catch (e) {
-      cb(new Error('FAILD_CREATE_CATEGORY'));
-    }
-    categoryId = cate.id;
-    req.body.categoryId = cate.id;
-  } else {
-    categoryId = req.body.categoryId;
-  }
-
-  const baseUrl = '/category';
-
-  const uploadRootFolder = `${__dirname}/../../uploads`;
-  const fileSpecificFolder = `${baseUrl}/${categoryId || "test"}/${file.fieldname}`;
-  const folderLocation = `${uploadRootFolder}${fileSpecificFolder}`;
-
-  // folderLocation는 다른 함수에서 파일 저장 위치를 설정할 때 사용됨.
-  req.res.locals.fileupload.folderLocation = folderLocation;
-  // body값에 저장하여 DB에 url을 저장하기 위해 사용됨.
-  req.body[file.fieldname] = `${fileSpecificFolder}/${file.originalname}`;
-
-  // 파일을 저장할 폴더 생성
-  try {
-      fs.rmdirSync(`${folderLocation}`, { recursive: true });
-  } catch (err) {
-      console.log("nothing to delete");
-  }
-  fs.mkdirSync(`${folderLocation}`, { recursive: true });
-  cb(null, true);
-};
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const { folderLocation } = req.res.locals.fileupload;
-        cb(null, folderLocation);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    },
-});
-
-const upload = multer({ storage: storage, fileFilter });
-const categoryUpload = multer({ storage: storage, fileFilter: categoryFilter });
-
-const removeFolderOnEmptyProperty = (req: Request, res: Response, next: NextFunction) => {
-    const uploadFieldNames = ["companyInfoUrl", "companyImgUrl"];
-    const target = `${__dirname}/../../uploads${req.originalUrl}/${req.userInfo.id}`;
-    uploadFieldNames.forEach((fieldName) => {
-        if (req.body[fieldName] != "") return;
-        try {
-            fs.rmdirSync(`${target}/${fieldName}`, { recursive: true });
-        } catch (err) {
-            console.log("nothing to delete");
-        }
-    });
-    next();
-};
-
-const removeFolder = (req: Request, res: Response, next: NextFunction) => {
-    const uploadFieldNames = ["companyInfoUrl", "companyImgUrl"];
-    const target = `${__dirname}/../../uploads${req.originalUrl}/${req.userInfo.id}`;
-    uploadFieldNames.forEach((fieldName) => {
-        try {
-            fs.rmdirSync(`${target}/${fieldName}`, { recursive: true });
-        } catch (err) {
-            console.log("nothing to delete");
-        }
-    });
-    next();
-};
-
 export default {
     authMiddleware,
     adminMiddleware,
     errorHandler,
-    upload,
-    categoryUpload,
-    removeFolderOnEmptyProperty,
-    removeFolder,
-    categoryFilter,
 };

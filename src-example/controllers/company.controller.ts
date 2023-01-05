@@ -1,5 +1,6 @@
 import express from 'express';
-import companySvc from '../services/company.service'
+import service_set from '../services'
+const {companySvc} = service_set;
 
 const getCompanies = async (req: express.Request, res: express.Response) => {
   const companies = await companySvc.getCompanies();
