@@ -1,0 +1,47 @@
+table users as u {
+  id integer [pk, increment]
+  nickname varchar(100) [not null, unique]
+  email varchar(100) [not null, unique]
+  password varchar(100) [not null]
+  blog_title varchar(100)
+  profile_intro varchar(200)
+  profile_img_url varchar(1000)
+}
+
+table posts as p {
+  id integer [pk, increment]
+  users_id integer [ref: > u.id, not null]
+  categories_id integer [ref: > cate.id, not null]
+  topics_id integer [ref: > t.id, not null]
+  content varchar(150) [not null]
+  thumnail_img_url varchar(1000)
+  is_secret tinyint [default: 0, note:'0: 모두 공개, 1: 맞팔 공개, 2: 비공개']
+}
+
+table categories as cate {
+  id integer [pk, increment]
+  users_id integer [ref: > u.id]
+  category_name varchar(150) [not null, unique]
+}
+
+table topics as t {
+  id integer [pk, increment]
+  topic_name varchar(150) [not null, unique]
+}
+
+table follow {
+  id integer [pk, increment]
+  users_id integer [ref: > u.id]
+  target_users_id integer [ref: > u.id]
+  Indexes {
+    (users_id, target_users_id) [unique]
+  }
+}
+
+table comments as cmt {
+  id integer [pk, increment]
+  posts_id integer [ref: > p.id]
+  comments_id integer [ref: > cmt.id]
+  users_id integer [ref: > u.id]
+  comment_content varchar(1000) [not null]
+}
