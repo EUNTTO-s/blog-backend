@@ -5,9 +5,10 @@ const getTopics = async () => {
         `
         SELECT
           id,
-          topic_name
+          topic_name AS content
         FROM
           topics
+          ORDER BY id
         `
     );
     return topics;
