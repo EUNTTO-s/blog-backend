@@ -6,7 +6,8 @@ CREATE TABLE `users` (
   `password` varchar(100) NOT NULL,
   `blog_title` varchar(100),
   `profile_intro` varchar(200),
-  `profile_img_url` varchar(1000)
+  `profile_img_url` varchar(1000),
+  `created_at` datetime NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE `posts` (
@@ -16,7 +17,8 @@ CREATE TABLE `posts` (
   `topics_id` integer NOT NULL,
   `content` varchar(150) NOT NULL,
   `thumnail_img_url` varchar(1000),
-  `is_secret` tinyint DEFAULT 0 COMMENT '0: 모두 공개, 1: 맞팔 공개, 2: 비공개'
+  `is_secret` tinyint DEFAULT 0 COMMENT '0: 모두 공개, 1: 맞팔 공개, 2: 비공개',
+  `created_at` datetime NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE `categories` (
@@ -41,10 +43,24 @@ CREATE TABLE `comments` (
   `posts_id` integer,
   `comments_id` integer,
   `users_id` integer,
-  `comment_content` varchar(1000) NOT NULL
+  `comment_content` varchar(1000) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE `tags` (
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `tag_name` varchar(150) UNIQUE NOT NULL
+);
+
+CREATE TABLE `posts_tags` (
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `posts_id` int NOT NULL,
+  `tags_id` int NOT NULL
 );
 
 CREATE UNIQUE INDEX `follow_index_0` ON `follow` (`users_id`, `target_users_id`);
+
+CREATE UNIQUE INDEX `posts_tags_index_1` ON `posts_tags` (`posts_id`, `tags_id`);
 
 ALTER TABLE `posts` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
@@ -64,6 +80,10 @@ ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`i
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
+ALTER TABLE `posts_tags` ADD FOREIGN KEY (`posts_id`) REFERENCES `posts` (`id`);
+
+ALTER TABLE `posts_tags` ADD FOREIGN KEY (`tags_id`) REFERENCES `tags` (`id`);
+
 -- migrate:down
 
 SET foreign_key_checks = 0;
@@ -73,7 +93,8 @@ DROP TABLE posts;
 DROP TABLE categories;
 DROP TABLE topics;
 DROP TABLE follow;
-DROP TABLE users;
-
+DROP TABLE comments;
+DROP TABLE tags;
+DROP TABLE posts_tags;
 
 SET foreign_key_checks = 1;

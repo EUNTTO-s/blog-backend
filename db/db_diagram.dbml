@@ -6,6 +6,7 @@ table users as u {
   blog_title varchar(100)
   profile_intro varchar(200)
   profile_img_url varchar(1000)
+  created_at datetime [not null, default: `now()`]
 }
 
 table posts as p {
@@ -16,6 +17,7 @@ table posts as p {
   content varchar(150) [not null]
   thumnail_img_url varchar(1000)
   is_secret tinyint [default: 0, note:'0: 모두 공개, 1: 맞팔 공개, 2: 비공개']
+  created_at datetime [not null, default: `now()`]
 }
 
 table categories as cate {
@@ -44,4 +46,19 @@ table comments as cmt {
   comments_id integer [ref: > cmt.id]
   users_id integer [ref: > u.id]
   comment_content varchar(1000) [not null]
+  created_at datetime [not null, default: `now()`]
+}
+
+table tags {
+  id integer [pk, increment]
+  tag_name varchar(150) [not null, unique]
+}
+
+table posts_tags {
+  id integer [pk, increment]
+  posts_id int [not null, ref: > p.id]
+  tags_id int [not null, ref: > tags.id]
+  Indexes {
+    (posts_id, tags_id) [unique]
+  }
 }
