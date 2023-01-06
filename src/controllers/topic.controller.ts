@@ -1,5 +1,6 @@
 import express from 'express';
-import topicSvc from '../services/topic.service'
+import service_set from "../services";
+const { topicSvc } = service_set;
 
 const getTopics = async (req: express.Request, res: express.Response) => {
   const topics = await topicSvc.getTopics();

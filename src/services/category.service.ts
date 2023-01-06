@@ -1,4 +1,5 @@
-import cateDao from "../models/category.dao";
+import dao_set from "../models";
+const { cateDao } = dao_set;
 
 const getCategories = async (option: CategorySerarchOption) => {
     return await cateDao.getCategories(option);
