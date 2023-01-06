@@ -1,5 +1,6 @@
 import express from 'express';
-import cateSvc from '../services/category.service'
+import service_set from "../services";
+const { cateSvc } = service_set;
 import {checkDataIsNotEmpty,} from '../utils/myutils'
 
 const createCategories = async (req: express.Request, res: express.Response) => {
