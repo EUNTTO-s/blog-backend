@@ -37,8 +37,9 @@ const signUp = async (nickname: string, email: string, password: string) => {
 // 로그인
 const login = async (email: string, password: string) => {
     // 아이디가 email 형식이 아닐 때
-    if (!email.includes("@") || !email.includes(".")) {
-        throw { message: "아이디는 이메일 형식이여야 합니다." };
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+        throw { message: "아이디는 이메일 형식이어야 합니다." };
     }
     // 매칭되는 유저가 있는 지 확인
     const userInfo = await userDao.findUser({ email, includePwd: true });
