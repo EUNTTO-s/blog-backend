@@ -13,11 +13,11 @@ router.post("/categories",
 router.get("/categories/users/:id",
             asyncWrap(cateCtl.getCategories));
 
-router.patch("/categories",
+router.patch("/categories/:id",
             asyncWrap(middleware.authMiddleware),
             asyncWrap(cateCtl.updateCategories));
 
-router.delete("/categories",
+router.delete("/categories/:id",
             asyncWrap(middleware.authMiddleware),
             asyncWrap(cateCtl.deleteCategories));
 
