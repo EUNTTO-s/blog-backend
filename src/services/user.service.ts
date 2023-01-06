@@ -9,22 +9,23 @@ const signUp = async (nickname: string, email: string, password: string) => {
     // 이메일 필수 값 체크
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {
-        throw { message: "아이디는 이메일 형식이어야 합니다." };
+        throw { status: 404, message: "아이디는 이메일 형식이어야 합니다." };
     }
     // 중복 아이디 체크
     const existUser = await userDao.existUser(email);
     if (existUser) {
-        throw { message: "이미 존재하는 아이디 입니다." };
+        throw { status: 404, message: "이미 존재하는 아이디 입니다." };
     }
     // 중복 닉네임 체크
     const existNickname = await userDao.existNickname(nickname);
     if (existNickname) {
-        throw { message: "이미 존재하는 닉네임 입니다." };
+        throw { status: 404, message: "이미 존재하는 닉네임 입니다." };
     }
     // 비밀번호 필수 값 체크
     const pwRegex = /^(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/;
     if (!pwRegex.test(password)) {
         throw {
+            status: 404,
             message: "비밀번호는 영문, 숫자, 특수문자를 포함하여 8~16자리를 입력해주세요.",
         };
     }
@@ -39,7 +40,7 @@ const login = async (email: string, password: string) => {
     // 아이디가 email 형식이 아닐 때
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {
-        throw { message: "아이디는 이메일 형식이어야 합니다." };
+        throw { status: 404, message: "아이디는 이메일 형식이어야 합니다." };
     }
     // 매칭되는 유저가 있는 지 확인
     const userInfo = await userDao.findUser({ email, includePwd: true });
