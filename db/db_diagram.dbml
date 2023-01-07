@@ -12,11 +12,12 @@ table users as u {
 table posts as p {
   id integer [pk, increment]
   users_id integer [ref: > u.id, not null]
-  categories_id integer [ref: > cate.id, not null]
+  categories_id integer [ref: > cate.id]
   topics_id integer [ref: > t.id, not null]
-  content varchar(150) [not null]
+  title varchar(300) [not null]
+  content varchar(1500) [not null]
   thumnail_img_url varchar(1000)
-  is_secret tinyint [default: 0, note:'0: 모두 공개, 1: 맞팔 공개, 2: 비공개']
+  secret_type tinyint [default: 0, note:'0: 모두 공개, 1: 맞팔 공개, 2: 비공개']
   created_at datetime [not null, default: `now()`]
 }
 
