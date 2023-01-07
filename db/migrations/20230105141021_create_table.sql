@@ -13,11 +13,12 @@ CREATE TABLE `users` (
 CREATE TABLE `posts` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `users_id` integer NOT NULL,
-  `categories_id` integer NOT NULL,
+  `categories_id` integer,
   `topics_id` integer NOT NULL,
-  `content` varchar(150) NOT NULL,
+  `title` varchar(300) NOT NULL,
+  `content` varchar(1500) NOT NULL,
   `thumnail_img_url` varchar(1000),
-  `is_secret` tinyint DEFAULT 0 COMMENT '0: 모두 공개, 1: 맞팔 공개, 2: 비공개',
+  `secret_type` tinyint DEFAULT 0 COMMENT '0: 모두 공개, 1: 맞팔 공개, 2: 비공개',
   `created_at` datetime NOT NULL DEFAULT (now())
 );
 
@@ -85,7 +86,6 @@ ALTER TABLE `posts_tags` ADD FOREIGN KEY (`posts_id`) REFERENCES `posts` (`id`);
 ALTER TABLE `posts_tags` ADD FOREIGN KEY (`tags_id`) REFERENCES `tags` (`id`);
 
 -- migrate:down
-
 SET foreign_key_checks = 0;
 
 DROP TABLE users;
