@@ -1,7 +1,7 @@
 import dataSource from "./database";
 
 // 팔로우 하기
-const createFollow = async (userId: string, target_users_id: string) => {
+const createFollow = async (userId: string, targetUsersId: string) => {
     await dataSource.query(
         `
           INSERT INTO
@@ -10,13 +10,13 @@ const createFollow = async (userId: string, target_users_id: string) => {
           VALUES
             (?, ?);
         `,
-        [userId, target_users_id]
+        [userId, targetUsersId]
     );
 };
 
 // 팔로우 존재 여부
-const existFollow = async (userId: string, target_users_id: string) => {
-    const [findList] = await dataSource.query(
+const existFollow = async (userId: string, targetUsersId: string) => {
+    const [getList] = await dataSource.query(
         `
         SELECT
           id,
@@ -28,44 +28,68 @@ const existFollow = async (userId: string, target_users_id: string) => {
         AND
           target_users_id = ?
       `,
-        [userId, target_users_id]
+        [userId, targetUsersId]
     );
-    return findList;
+    return getList;
 };
 
 // 언팔로우 하기
-const deleteFollow = async (followId: string) => {
+const deleteFollow = async (userId: string, targetUsersId: string) => {
     await dataSource.query(
         `
           DELETE FROM
             follow
           WHERE
-            id = ?
+            users_id = ?
+          AND
+            target_users_id = ?
         `,
-        [followId]
+        [userId, targetUsersId]
     );
 };
 
-// 팔로우 리스트 보기
-const findFollowList = async (userId: string) => {
-    const findList = await dataSource.query(
+// 팔로잉 리스트 보기
+const getFollowingList = async (userId: string) => {
+    const getList = await dataSource.query(
         `
-          SELECT
-            id AS followId,
-            target_users_id AS targetUsersId
-          FROM
-            follow
-          WHERE
+        SELECT
+          follow.target_users_id AS id,
+          users.nickname,
+          users.email
+        FROM
+          follow
+          JOIN users ON users.id = follow.target_users_id
+        WHERE
             users_id = ?
         `,
         [userId]
     );
-    return findList;
+    return getList;
+};
+
+// 팔로워 리스트 보기
+const getFollowerList = async (userId: string) => {
+    const getList = await dataSource.query(
+        `
+        SELECT
+            follow.users_id AS id,
+            users.nickname,
+            users.email
+        FROM
+          follow
+        JOIN users ON users.id = follow.users_id
+        WHERE
+            target_users_id = ?
+        `,
+        [userId]
+    );
+    return getList;
 };
 
 export default {
     createFollow,
     existFollow,
     deleteFollow,
-    findFollowList,
+    getFollowingList,
+    getFollowerList,
 };

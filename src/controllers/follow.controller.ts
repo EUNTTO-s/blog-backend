@@ -4,35 +4,46 @@ const { followSvc } = service_set;
 import { checkDataIsNotEmpty } from "../utils/myutils";
 
 // 팔로우 하기
-const folllowRequest = async (req: express.Request, res: express.Response) => {
-    const { target_users_id }: followInputType = req.body;
+const followRequest = async (req: express.Request, res: express.Response) => {
+    const { targetUsersId }: followInputType = req.body;
     const userId = req.userInfo.id;
-    checkDataIsNotEmpty({ userId, target_users_id });
+    checkDataIsNotEmpty({ userId, targetUsersId });
 
-    await followSvc.folllowRequest(userId, target_users_id);
+    await followSvc.followRequest(userId, targetUsersId);
     res.status(201).json({ message: "FOLLOW_SUCCESSFULLY" });
 };
 
 // 언팔로우 하기
-const unfolllowRequest = async (req: express.Request, res: express.Response) => {
-    const { followId }: followInputType = req.body;
-    checkDataIsNotEmpty({ followId });
+const unfollowRequest = async (req: express.Request, res: express.Response) => {
+    const { id: targetUsersId } = req.params;
+    const userId = req.userInfo.id;
+    checkDataIsNotEmpty({ userId, targetUsersId });
 
-    await followSvc.unfolllowRequest(followId);
+    await followSvc.unfollowRequest(userId, targetUsersId);
     res.status(201).json({ message: "UNFOLLOW_SUCCESSFULLY" });
 };
 
-// 팔로우 리스트 보기
-const findFollowList = async (req: express.Request, res: express.Response) => {
+// 팔로잉 리스트 보기
+const getFollowingList = async (req: express.Request, res: express.Response) => {
     const userId = req.userInfo.id;
     checkDataIsNotEmpty({ userId });
 
-    const findList = await followSvc.findFollowList(userId);
-    res.status(200).json({ data: findList });
+    const getList = await followSvc.getFollowingList(userId);
+    res.status(200).json({ data: getList });
+};
+
+// 팔로워 리스트 보기
+const getFollowerList = async (req: express.Request, res: express.Response) => {
+    const userId = req.userInfo.id;
+    checkDataIsNotEmpty({ userId });
+
+    const getList = await followSvc.getFollowerList(userId);
+    res.status(200).json({ data: getList });
 };
 
 export default {
-    folllowRequest,
-    unfolllowRequest,
-    findFollowList,
+    followRequest,
+    unfollowRequest,
+    getFollowingList,
+    getFollowerList,
 };

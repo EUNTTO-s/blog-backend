@@ -1,5 +1,4 @@
 interface followInputType {
-    target_users_id: string;
+    targetUsersId: string;
     userId: string;
-    followId: string;
 }
