@@ -4,12 +4,14 @@ import middleware from "../middlewares/middleware";
 import userRouter from "./user.router";
 import topicRouter from "./topic.router";
 import categoryRouter from "./category.router";
+import postRouter from "./post.router";
 import followRouter from "./follow.router";
 
 const router = express.Router();
 router.use("", topicRouter);
 router.use("", categoryRouter);
 router.use("", userRouter);
+router.use("", postRouter);
 router.use("", followRouter);
 
 router.use(express.static(__dirname + "/../../uploads"));
