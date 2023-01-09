@@ -2,7 +2,7 @@ import dataSource from "./database";
 import { whereBuilder, setBuilder } from "./builder/queryBuilder";
 
 const createPosts = async (postInput: PostInputType) => {
-  const { title, userId, cateId, content, thumnailImgUrl, secretType, topicId } =
+  const { title, userId, cateId, content, secretType, topicId } =
     postInput;
   const answer = await dataSource.query(
     `
@@ -12,19 +12,17 @@ const createPosts = async (postInput: PostInputType) => {
         users_id,
         categories_id,
         content,
-        thumnail_img_url,
         secret_type,
         topics_id
       )
     VALUES
-      (?,?,?,?,?,?,?)
+      (?,?,?,?,?,?)
     `,
     [
       title,
       userId,
       cateId,
       content,
-      thumnailImgUrl,
       secretType,
       topicId
     ]
@@ -40,9 +38,9 @@ const getPosts = async (searchOption: PostSearchOption) => {
         p.id,
         p.title,
         p.content,
-        p.thumnail_img_url,
-        p.secret_type,
-        p.created_at,
+        p.thumnail_img_url AS thumnailImgUrl,
+        p.secret_type AS secretType,
+        p.created_at AS createdAt,
         JSON_OBJECT(
           'id',
           cate.id,
@@ -86,11 +84,17 @@ const getPosts = async (searchOption: PostSearchOption) => {
     `,
   ).then((answer) => {
     return [...answer].map((item)=> {
+      const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
       return {...item,
           category: JSON.parse(item.category),
           user: JSON.parse(item.user),
           topic: JSON.parse(item.topic),
           tags: JSON.parse(item.tags),
+          thumnailImgUrl: item.thumnailImgUrl
+            ?
+              `${domain}${item.thumnailImgUrl}`
+            :
+              null
         }
     })
   });
@@ -124,9 +128,10 @@ const updatePosts = async (postInput: PostInputType) => {
         posts
       SET
         ${stateOfSet}
-      WHERE users_id = ?
+      WHERE
+        id = ?
       `,
-    [...filterdValueArr, postInput.userId]
+    [...filterdValueArr, postInput.postId]
   );
   return answer;
 };
