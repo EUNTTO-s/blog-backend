@@ -1,10 +1,13 @@
 import dao_set from "../models";
 import { enumToArray } from "../utils/myutils";
+import fileManger from "../middlewares/fileManager";
 import { OpenRange } from "../types/post.types";
+import fs from "fs";
+
 const { postDao, postTagDao, tagDao, cateDao } = dao_set;
 
 const createPosts = async (input: PostInputType) => {
-  const { cateId, userId, tagNames, secretType } = input;
+  const { cateId, userId, tagNames, secretType, thumnail } = input;
 
   // 카테고리 정보 가져오기
   if (cateId) {
@@ -21,6 +24,7 @@ const createPosts = async (input: PostInputType) => {
   }
 
   const post = await postDao.createPosts(input);
+  const postId = post.insertId;
 
   // 태그 생성 및 포스트와 태그 연결
   tagNames.forEach(async (tagName) => {
@@ -29,8 +33,20 @@ const createPosts = async (input: PostInputType) => {
       tag = await tagDao.createTags(tagName.trim());
     }
     tag.id = tag.id? tag.id : tag.insertId;
-    await postTagDao.createPostTags(post.insertId, tag.id);
+    await postTagDao.createPostTags(postId, tag.id);
   })
+
+  if (thumnail) {
+    const oldPath = thumnail.path;
+    const newPath = `${fileManger.getUploadRootDir()}/post/${postId}/`
+    fs.mkdirSync(newPath, { recursive: true });
+    fs.rename(oldPath, newPath + thumnail.originalname, function (err) {
+      if (err) throw err
+      console.log('Successfully moved');
+    })
+    await postDao.updatePosts({postId, thumnailImgUrl: `/post/${postId}/${thumnail.originalname}`});
+  }
+
 };
 
 const getPosts = async (searchOption: PostSearchOption) => {
@@ -47,7 +63,7 @@ const deletePosts = async (userId: string, postId: string) => {
 }
 
 const updatePosts = async (input: PostInputType) => {
-  const { userId, postId, tagNames, cateId, secretType } = input;
+  const { userId, postId, tagNames, cateId, secretType, thumnail } = input;
 
   // 카테고리 정보 가져오기
   if (cateId) {
@@ -80,6 +96,17 @@ const updatePosts = async (input: PostInputType) => {
     tag.id = tag.id? tag.id : tag.insertId;
     await postTagDao.createPostTags(post.id, tag.id);
   })
+
+  if (thumnail) {
+    const oldPath = thumnail.path;
+    const newPath = `${fileManger.getUploadRootDir()}/post/${postId}/`
+    fs.mkdirSync(newPath, { recursive: true });
+    fs.rename(oldPath, newPath + thumnail.originalname, function (err) {
+      if (err) throw err
+      console.log('Successfully moved');
+    })
+    input.thumnailImgUrl = `/post/${postId}/${thumnail.originalname}`;
+  }
 
   await postDao.updatePosts(input);
 }
