@@ -4,14 +4,14 @@ const { postSvc } = service_set;
 import {checkDataIsNotEmpty,} from '../utils/myutils'
 
 const createPosts = async (req: express.Request, res: express.Response) => {
-  const { title, categoryId, content, thumnailImgUrl, secretType, topicId, tagNames} = req.body;
+  const { title, categoryId, content, secretType, topicId, tagNames} = req.body;
   checkDataIsNotEmpty({ title, content });
   const input = {
     title,
     userId: req.userInfo.id,
     cateId: categoryId || null,
     content,
-    thumnailImgUrl: thumnailImgUrl || null,
+    thumnail: req.file || null,
     secretType: secretType || 0,
     topicId: topicId || null,
     tagNames: tagNames? tagNames.split(',') : [tagNames],
@@ -35,7 +35,7 @@ const deletePosts = async (req: express.Request, res: express.Response) => {
 
 const updatePosts = async (req: express.Request, res: express.Response) => {
   const { id: postId } = req.params;
-  const { title, categoryId, content, thumnailImgUrl, secretType, topicId, tagNames} = req.body;
+  const { title, categoryId, content, secretType, topicId, tagNames} = req.body;
   checkDataIsNotEmpty({ title, content });
   const input = {
     postId,
@@ -43,7 +43,7 @@ const updatePosts = async (req: express.Request, res: express.Response) => {
     userId: req.userInfo.id,
     cateId: categoryId || null,
     content,
-    thumnailImgUrl: thumnailImgUrl || null,
+    thumnail: req.file || null,
     secretType: secretType || 0,
     topicId: topicId || null,
     tagNames: tagNames? tagNames.split(',') : [tagNames],
