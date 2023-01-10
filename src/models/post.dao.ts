@@ -31,7 +31,7 @@ const createPosts = async (postInput: PostInputType) => {
 };
 
 const getPosts = async (searchOption: PostSearchOption) => {
-  const { postId, userId, categoryId, topicId, search} = searchOption;
+  const { postId, userId, categoryId, topicId, search, countPerPage = 30, pageNumber= 1} = searchOption;
   const answer = await dataSource.query(
       `
       SELECT
@@ -87,6 +87,7 @@ const getPosts = async (searchOption: PostSearchOption) => {
       ${whereBuilder("p.content", ["LIKE", "OR"], search)}
       ${whereBuilder("cate.category_name", ["LIKE", "OR"], search)}
       ${whereBuilder("tagsOnPost.tags", ["LIKE", "OR"], search)}
+      LIMIT ${countPerPage} OFFSET ${countPerPage * (pageNumber - 1)}
     `,
   ).then((answer) => {
     return [...answer].map((item)=> {
