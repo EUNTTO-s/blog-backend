@@ -12,7 +12,7 @@ const createCategories = async (req: express.Request, res: express.Response) => 
 const getCategories = async (req: express.Request, res: express.Response) => {
   const { id: userId } = req.params;
   const categories = await cateSvc.getCategories({userId});
-  res.status(200).json(categories);
+  res.status(200).json({ data: categories });
 }
 
 const updateCategories = async (req: express.Request, res: express.Response) => {
