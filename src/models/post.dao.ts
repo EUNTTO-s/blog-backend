@@ -31,7 +31,7 @@ const createPosts = async (postInput: PostInputType) => {
 };
 
 const getPosts = async (searchOption: PostSearchOption) => {
-  const { postId, userId } = searchOption;
+  const { postId, userId, categoryId, topicId, } = searchOption;
   const answer = await dataSource.query(
       `
       SELECT
@@ -79,8 +79,10 @@ const getPosts = async (searchOption: PostSearchOption) => {
             posts_id
         ) tagsOnPost
           ON tagsOnPost.posts_id = p.id
-      ${whereBuilder("p.id", postId, true)}
-      ${whereBuilder("p.users_id", userId)}
+      ${whereBuilder("p.id", "=", postId, true)}
+      ${whereBuilder("p.users_id", "=", userId)}
+      ${whereBuilder("cate.id", "=", categoryId)}
+      ${whereBuilder("t.id", "=", topicId)}
     `,
   ).then((answer) => {
     return [...answer].map((item)=> {

@@ -63,8 +63,8 @@ const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
             users.email
           FROM
             users
-          ${whereBuilder("users.id", userId, true)}
-          ${whereBuilder("users.email", email)}
+          ${whereBuilder("users.id", "=", userId, true)}
+          ${whereBuilder("users.email", "=", email)}
         `,
         [userId]
     );
