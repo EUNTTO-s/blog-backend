@@ -11,9 +11,9 @@ const getCategories = async (option: CategorySerarchOption) => {
       category_name
     FROM
       categories
-    ${whereBuilder("id", "=", cateId, true)}
-    ${whereBuilder("users_id", "=", userId)}
-    ${whereBuilder("category_name", "=", cateName)}
+    ${whereBuilder("id", ["="], cateId, true)}
+    ${whereBuilder("users_id", ["="], userId)}
+    ${whereBuilder("category_name", ["="], cateName)}
     ORDER BY
       id
     `

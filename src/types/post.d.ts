@@ -15,7 +15,8 @@ interface PostSearchOption {
   postId?: string,
   userId?: string,
   categoryId?: string,
-  tagNames?: string[],
+  tagName?: string,
   topicId?: string,
   secret_type?: number,
+  search?: string,
 }
