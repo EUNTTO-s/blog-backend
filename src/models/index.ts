@@ -4,6 +4,7 @@ import topicDao from "./topic.dao";
 import postDao from "./post.dao";
 import tagDao from "./tag.dao";
 import postTagDao from "./postTag.dao";
+import followDao from "./follow.dao";
 
 const dao_set = {
     userDao,
@@ -12,6 +13,7 @@ const dao_set = {
     postDao,
     tagDao,
     postTagDao,
+    followDao,
 };
 
 export default dao_set;
