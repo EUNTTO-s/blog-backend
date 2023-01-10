@@ -16,7 +16,7 @@ const createFollow = async (userId: string, targetUsersId: string) => {
 
 // 팔로우 존재 여부
 const existFollow = async (userId: string, targetUsersId: string) => {
-    const [getList] = await dataSource.query(
+    const [list] = await dataSource.query(
         `
         SELECT
           id,
@@ -30,7 +30,7 @@ const existFollow = async (userId: string, targetUsersId: string) => {
       `,
         [userId, targetUsersId]
     );
-    return getList;
+    return list;
 };
 
 // 언팔로우 하기
@@ -49,8 +49,8 @@ const deleteFollow = async (userId: string, targetUsersId: string) => {
 };
 
 // 팔로잉 리스트 보기
-const getFollowingList = async (userId: string) => {
-    const getList = await dataSource.query(
+const getFollowings = async (userId: string) => {
+    const list = await dataSource.query(
         `
         SELECT
           follow.target_users_id AS id,
@@ -64,12 +64,12 @@ const getFollowingList = async (userId: string) => {
         `,
         [userId]
     );
-    return getList;
+    return list;
 };
 
 // 팔로워 리스트 보기
-const getFollowerList = async (userId: string) => {
-    const getList = await dataSource.query(
+const getFollowers = async (userId: string) => {
+    const list = await dataSource.query(
         `
         SELECT
             follow.users_id AS id,
@@ -83,13 +83,13 @@ const getFollowerList = async (userId: string) => {
         `,
         [userId]
     );
-    return getList;
+    return list;
 };
 
 export default {
     createFollow,
     existFollow,
     deleteFollow,
-    getFollowingList,
-    getFollowerList,
+    getFollowings,
+    getFollowers,
 };

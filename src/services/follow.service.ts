@@ -2,7 +2,7 @@ import dao_set from "../models";
 const { followDao } = dao_set;
 
 // 팔로우 하기
-const followRequest = async (userId: string, targetUsersId: string) => {
+const follow = async (userId: string, targetUsersId: string) => {
     console.log(targetUsersId);
     const existFollow = await followDao.existFollow(userId, targetUsersId);
     if (existFollow) {
@@ -16,7 +16,7 @@ const followRequest = async (userId: string, targetUsersId: string) => {
 };
 
 // 언팔로우 하기
-const unfollowRequest = async (userId: string, targetUsersId: string) => {
+const unfollow = async (userId: string, targetUsersId: string) => {
     const existFollow = await followDao.existFollow(userId, targetUsersId);
     if (!existFollow) {
         throw { status: 409, message: "팔로우, 팔로워 목록에 존재하지 않는 유저 입니다." };
@@ -26,25 +26,19 @@ const unfollowRequest = async (userId: string, targetUsersId: string) => {
 };
 
 // 팔로워 리스트 보기
-const getFollowingList = async (userId: string) => {
-    const getList = await followDao.getFollowingList(userId);
-    if (getList == false) {
-        throw { status: 409, message: "팔로잉한 유저가 존재하지 않습니다." };
-    }
-    return getList;
+const getFollowings = async (userId: string) => {
+    const list = await followDao.getFollowings(userId);
+    return list;
 };
 
-const getFollowerList = async (userId: string) => {
-    const getList = await followDao.getFollowerList(userId);
-    if (getList == false) {
-        throw { status: 409, message: "팔로워가 존재하지 않습니다." };
-    }
-    return getList;
+const getFollowers = async (userId: string) => {
+    const list = await followDao.getFollowers(userId);
+    return list;
 };
 
 export default {
-    followRequest,
-    unfollowRequest,
-    getFollowingList,
-    getFollowerList,
+    follow,
+    unfollow,
+    getFollowings,
+    getFollowers,
 };
