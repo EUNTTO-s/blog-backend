@@ -22,8 +22,11 @@ const createPosts = async (req: express.Request, res: express.Response) => {
 }
 
 const getPosts = async (req: express.Request, res: express.Response) => {
-  const { id: postId } = req.params;
-  const posts = await postSvc.getPosts({postId});
+  const searchOption : PostSearchOption = {
+    ...req.query,
+    postId: req.params.id
+  };
+  const posts = await postSvc.getPosts(searchOption);
   res.status(200).json(posts);
 }
 
