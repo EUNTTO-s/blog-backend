@@ -19,4 +19,6 @@ interface PostSearchOption {
   topicId?: string,
   secret_type?: number,
   search?: string,
+  pageNumber?: number,
+  countPerPage?: number,
 }

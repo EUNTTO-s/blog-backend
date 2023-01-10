@@ -24,7 +24,9 @@ const createPosts = async (req: express.Request, res: express.Response) => {
 const getPosts = async (req: express.Request, res: express.Response) => {
   const searchOption : PostSearchOption = {
     ...req.query,
-    postId: req.params.id
+    postId: req.params.id,
+    pageNumber: req.query.pageNumber && Number(req.query.pageNumber),
+    countPerPage: req.query.countPerPage && Number(req.query.countPerPage),
   };
   const posts = await postSvc.getPosts(searchOption);
   res.status(200).json({ data: posts });
