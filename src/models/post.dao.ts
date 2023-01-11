@@ -40,7 +40,8 @@ const getPosts = async (searchOption: PostSearchOption) => {
         p.content,
         p.thumnail_img_url AS thumnailImgUrl,
         p.secret_type AS secretType,
-        p.created_at AS createdAt,
+        -- p.created_at AS createdAt,
+        p.created_at as createdAt,
         JSON_OBJECT(
           'id',
           cate.id,

@@ -1,4 +1,4 @@
-const whereBuilder = (columnName: string, searchOption: ["LIKE" | "=", ("AND"|"OR"|"NOT")?], serchValue: string | Number, isFirstWhere: boolean = false) => {
+const whereBuilder = (columnName: string, searchOption: ["LIKE"|"="|"<="|">=", ("AND"|"OR"|"NOT")?], serchValue: string | Number, isFirstWhere: boolean = false) => {
   if (!serchValue && !isFirstWhere) {
     return ``;
   }
@@ -9,7 +9,7 @@ const whereBuilder = (columnName: string, searchOption: ["LIKE" | "=", ("AND"|"O
     searchState = 'IS NOT NULL';
   } else {
     const isLike = mainOperator == "LIKE";
-    const searchTarget = isLike? `'%${serchValue}%'` :`'${serchValue}'`;
+    const searchTarget = isLike? `'%${serchValue}%'` :`${serchValue}`;
     searchState = `${mainOperator} ${searchTarget}`;
   }
   return `
