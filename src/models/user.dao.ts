@@ -1,5 +1,5 @@
 import dataSource from "./database";
-import { whereBuilder } from "./builder/queryBuilder";
+import { whereBuilder, setBuilder } from "./builder/queryBuilder";
 
 // 계정 생성
 const createUser = async (nickname: string, email: string, hashed_password: string) => {
@@ -51,6 +51,28 @@ const existNickname = async (nickname: string): Promise<UserInfo> => {
     return userName;
 };
 
+// 프로필 업데이트
+const updateProfile = async (input: ProfileInputType) => {
+    const propertyArray: [string, string, boolean?][] = [
+        ["nickname", input.nickname],
+        ["blog_title", input.blogTitle],
+        ["profile_intro", input.profileIntro],
+    ];
+    const [stateOfSet, filterdValueArr] = setBuilder(propertyArray);
+    const profile = await dataSource.query(
+        `
+        UPDATE
+          users
+        SET
+          ${stateOfSet}
+        WHERE
+          id = ?
+      `,
+        [...filterdValueArr, input.userId]
+    );
+    return profile;
+};
+
 // 유저 정보
 const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
     let { userId, email, includePwd } = searchOption;
@@ -76,5 +98,6 @@ export default {
     createUser,
     existUser,
     existNickname,
+    updateProfile,
     findUser,
 };

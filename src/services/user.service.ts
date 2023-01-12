@@ -75,6 +75,24 @@ const login = async (email: string, password: string) => {
     return token;
 };
 
+// 프로필 업데이트
+const updateProfile = async (input: ProfileInputType) => {
+    const { nickname, blogTitle, profileIntro }: ProfileInputType = input;
+
+    const existNickname = await userDao.existNickname(nickname);
+    if (existNickname) {
+        throw { status: 409, message: "이미 존재하는 닉네임 입니다." };
+    }
+    if (blogTitle && blogTitle.length > 100) {
+        throw { status: 409, message: "제목은 100자 이상 적을 수 없습니다." };
+    }
+    if (profileIntro && profileIntro.length > 200) {
+        throw { status: 409, message: "소개글은 200자 이상 적을 수 없습니다." };
+    }
+
+    await userDao.updateProfile(input);
+};
+
 // 유저 정보
 const getMe = async (userId: number) => {
     const userInfo = await userDao.findUser({ userId });
@@ -86,5 +104,6 @@ export default {
     isExistNickname,
     isExistEmail,
     login,
+    updateProfile,
     getMe,
 };

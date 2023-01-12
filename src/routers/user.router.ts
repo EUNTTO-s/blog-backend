@@ -13,5 +13,5 @@ router.post("/nickname", asyncWrap(userCtl.isExistNickname));
 router.post("/email", asyncWrap(userCtl.isExistEmail));
 router.post("/login", asyncWrap(userCtl.login));
 router.get("/user", asyncWrap(middleware.authMiddleware), asyncWrap(userCtl.getMe));
-
+router.patch("/profile", asyncWrap(middleware.authMiddleware), asyncWrap(userCtl.updateProfile));
 export default router;

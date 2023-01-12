@@ -37,6 +37,19 @@ const login = async (req: express.Request, res: express.Response) => {
     res.status(200).send({ message: "LOGIN_SUCCESS", token });
 };
 
+// 프로필 업데이트
+const updateProfile = async (req: express.Request, res: express.Response) => {
+    const { nickname, blogTitle, profileIntro }: ProfileInputType = req.body;
+    const input = {
+        nickname,
+        blogTitle,
+        profileIntro,
+        userId: req.userInfo.id,
+    };
+    await userSvc.updateProfile(input);
+    res.status(200).json({ message: "PROFILE_UPDATED" });
+};
+
 // 유저 정보
 const getMe = async (req: express.Request, res: express.Response) => {
     const userInfo = await userSvc.getMe(Number(req.userInfo.id));
@@ -48,5 +61,6 @@ export default {
     isExistNickname,
     isExistEmail,
     login,
+    updateProfile,
     getMe,
 };

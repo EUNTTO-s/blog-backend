@@ -11,3 +11,10 @@ interface UserSearchOption {
     includePwd?: boolean;
     limit?: number;
 }
+
+interface ProfileInputType {
+    userId?: string;
+    nickname: string;
+    blogTitle: string;
+    profileIntro: string;
+}
