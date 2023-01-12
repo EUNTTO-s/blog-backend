@@ -35,6 +35,22 @@ const signUp = async (nickname: string, email: string, password: string) => {
     return createUser;
 };
 
+// 닉네임 중복 체크
+const isExistNickname = async (nickname: string) => {
+    const existNickname = await userDao.existNickname(nickname);
+    const checkNickname = existNickname ? true : false;
+
+    return checkNickname;
+};
+
+// 이메일(아이디) 중복 체크
+const isExistEmail = async (email: string) => {
+    const existUser = await userDao.existUser(email);
+    const checkEmail = existUser ? true : false;
+
+    return checkEmail;
+};
+
 // 로그인
 const login = async (email: string, password: string) => {
     // 아이디가 email 형식이 아닐 때
@@ -67,6 +83,8 @@ const getMe = async (userId: number) => {
 
 export default {
     signUp,
+    isExistNickname,
+    isExistEmail,
     login,
     getMe,
 };

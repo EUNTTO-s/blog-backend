@@ -12,6 +12,22 @@ const signUp = async (req: express.Request, res: express.Response) => {
     res.status(201).json({ message: "USER_CREATED" });
 };
 
+// 닉네임 중복 체크
+const isExistNickname = async (req: express.Request, res: express.Response) => {
+    const { nickname }: UserInputType = req.body;
+    checkDataIsNotEmpty({ nickname });
+    const duplicateNickname = await userSvc.isExistNickname(nickname);
+    res.status(200).json({ duplicateNickname });
+};
+
+// 이메일(아이디) 중복 체크
+const isExistEmail = async (req: express.Request, res: express.Response) => {
+    const { email }: UserInputType = req.body;
+    checkDataIsNotEmpty({ email });
+    const duplicateEmail = await userSvc.isExistEmail(email);
+    res.status(200).json({ duplicateEmail });
+};
+
 // 로그인
 const login = async (req: express.Request, res: express.Response) => {
     const { email, password }: UserInputType = req.body;
@@ -29,6 +45,8 @@ const getMe = async (req: express.Request, res: express.Response) => {
 
 export default {
     signUp,
+    isExistNickname,
+    isExistEmail,
     login,
     getMe,
 };
