@@ -9,11 +9,11 @@ const createPosts = async (req: express.Request, res: express.Response) => {
   const input = {
     title,
     userId: req.userInfo.id,
-    cateId: categoryId || null,
+    cateId: categoryId,
     content,
     thumnail: req.file || null,
     secretType: secretType || 0,
-    topicId: topicId || null,
+    topicId: topicId,
     tagNames: tagNames? tagNames.split(',') : [tagNames],
   }
 
@@ -41,16 +41,15 @@ const deletePosts = async (req: express.Request, res: express.Response) => {
 const updatePosts = async (req: express.Request, res: express.Response) => {
   const { id: postId } = req.params;
   const { title, categoryId, content, secretType, topicId, tagNames} = req.body;
-  checkDataIsNotEmpty({ title, content });
   const input = {
     postId,
     title,
     userId: req.userInfo.id,
-    cateId: categoryId || null,
+    cateId: categoryId,
     content,
     thumnail: req.file || null,
     secretType: secretType || 0,
-    topicId: topicId || null,
+    topicId: topicId,
     tagNames: tagNames? tagNames.split(',') : [tagNames],
   }
 
