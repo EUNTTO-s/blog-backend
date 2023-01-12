@@ -123,11 +123,11 @@ const deletePosts = async (postId: string) => {
 const updatePosts = async (postInput: PostInputType) => {
   const propertyArray : [string, string, boolean?][] = [
     ['title',             postInput.title],
-    ['categories_id',     postInput.cateId],
+    ['categories_id',     postInput.cateId, true],
     ['content',           postInput.content],
     ['thumnail_img_url',  postInput.thumnailImgUrl],
     ['secret_type',       postInput.secretType],
-    ['topics_id',         postInput.topicId],
+    ['topics_id',         postInput.topicId, true],
   ];
   const [stateOfSet, filterdValueArr] = setBuilder(propertyArray);
   const answer = await dataSource.query(
