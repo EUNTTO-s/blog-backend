@@ -1,17 +1,17 @@
-const whereBuilder = (columnName: string, searchOption: ["LIKE"|"="|"<="|">=", ("AND"|"OR"|"NOT")?], serchValue: string | Number, isFirstWhere: boolean = false) => {
+const whereBuilder = (columnName: string, searchOption: ["LIKE"|"="|"<="|">=", ("AND"|"OR"|"NOT")?, ("QUOTE"|"NO_QUOTE"|"SEARCH")?], serchValue: string | Number, isFirstWhere: boolean = false) => {
   if (!serchValue && !isFirstWhere) {
     return ``;
   }
   const mainOperator = searchOption[0];
   const subOperator = searchOption[1] || "AND";
-  let searchState;
-  if (!serchValue) {
-    searchState = 'IS NOT NULL';
-  } else {
-    const isLike = mainOperator == "LIKE";
-    const searchTarget = isLike? `'%${serchValue}%'` :`'${serchValue}'`;
+  const valueWrapOption = searchOption[2] || "QUOTE";
+  let searchState = 'IS NOT NULL';
+
+  if (serchValue) {
+    const searchTarget = modifyValue(serchValue, valueWrapOption);
     searchState = `${mainOperator} ${searchTarget}`;
   }
+
   return `
   ${isFirstWhere? 'WHERE' : subOperator}
     ${columnName} ${searchState}
@@ -48,6 +48,15 @@ const setBuilder = (pairArray: [string, string, boolean?][]) : [string, any[]]=>
   );
   return [state, valueArr];
 };
+
+const modifyValue = (searchValue: string|Number, valueWrapOption: "QUOTE"|"NO_QUOTE"|"SEARCH") => {
+  switch(valueWrapOption){
+      case "QUOTE":     return `'${searchValue}'`;
+      case "NO_QUOTE":  return searchValue;
+      case "SEARCH":    return `'%${searchValue}%'`;
+      default:          return `'${searchValue}'`;
+  }
+}
 
 export {
   whereBuilder,

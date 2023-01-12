@@ -19,7 +19,7 @@ const getGrasses = async (searchInput: GrassSearchType) => {
           posts AS p
         ${whereBuilder("p.id", ["="], null, true)}
         ${whereBuilder("p.users_Id", ["="], userId)}
-        ${whereBuilder("p.created_at", [">="], 'SUBDATE(now(), INTERVAL ? DAY)')}
+        ${whereBuilder("p.created_at", [">=",,"NO_QUOTE"], 'SUBDATE(now(), INTERVAL ? DAY)')}
         GROUP BY
           date
       `,

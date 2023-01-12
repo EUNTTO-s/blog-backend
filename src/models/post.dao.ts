@@ -80,14 +80,14 @@ const getPosts = async (searchOption: PostSearchOption) => {
             posts_id
         ) tagsOnPost
           ON tagsOnPost.posts_id = p.id
-      ${whereBuilder("p.id", ["="], postId, true)}
-      ${whereBuilder("p.users_id", ["="], userId)}
-      ${whereBuilder("cate.id", ["="], categoryId)}
-      ${whereBuilder("t.id", ["="], topicId)}
-      ${whereBuilder("p.title", ["LIKE"], search)}
-      ${whereBuilder("p.content", ["LIKE", "OR"], search)}
-      ${whereBuilder("cate.category_name", ["LIKE", "OR"], search)}
-      ${whereBuilder("tagsOnPost.tags", ["LIKE", "OR"], search)}
+      ${whereBuilder("p.id",        ["="], postId, true)}
+      ${whereBuilder("p.users_id",  ["="], userId)}
+      ${whereBuilder("cate.id",     ["="], categoryId)}
+      ${whereBuilder("t.id",        ["="], topicId)}
+      ${whereBuilder("p.title",             ["LIKE", "AND", "SEARCH"], search)}
+      ${whereBuilder("p.content",           ["LIKE", "OR",  "SEARCH"], search)}
+      ${whereBuilder("cate.category_name",  ["LIKE", "OR",  "SEARCH"], search)}
+      ${whereBuilder("tagsOnPost.tags",     ["LIKE", "OR",  "SEARCH"], search)}
       LIMIT ${countPerPage} OFFSET ${countPerPage * (pageNumber - 1)}
     `,
   ).then((answer) => {
