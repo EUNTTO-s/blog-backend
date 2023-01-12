@@ -9,7 +9,7 @@ const whereBuilder = (columnName: string, searchOption: ["LIKE"|"="|"<="|">=", (
     searchState = 'IS NOT NULL';
   } else {
     const isLike = mainOperator == "LIKE";
-    const searchTarget = isLike? `'%${serchValue}%'` :`${serchValue}`;
+    const searchTarget = isLike? `'%${serchValue}%'` :`'${serchValue}'`;
     searchState = `${mainOperator} ${searchTarget}`;
   }
   return `
@@ -19,6 +19,11 @@ const whereBuilder = (columnName: string, searchOption: ["LIKE"|"="|"<="|">=", (
 };
 
 const setBuilder = (pairArray: [string, string, boolean?][]) : [string, any[]]=> {
+  // array 0번쨰: 컬럼명
+  // array 1번쨰: 컬럼값
+  // array 2번쨰: 컬럼이 ID인지 확인하는 Flag
+
+  // 컬럼값이 undefined일 경우 Client에서 변경요청하지 않은 값이라 판단하고 업데이트 대상에서 제외한다.
   const filteredArray = pairArray
           .filter((pair) => pair[1] != undefined);
 
