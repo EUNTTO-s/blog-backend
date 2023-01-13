@@ -26,27 +26,13 @@ const createPosts = async (input: PostInputType) => {
   const post = await postDao.createPosts(input);
   const postId = post.insertId;
 
-  // 태그 생성 및 포스트와 태그 연결
-  tagNames.forEach(async (tagName) => {
-    let [tag] = await tagDao.getTags(tagName.trim());
-    if (!tag) {
-      tag = await tagDao.createTags(tagName.trim());
-    }
-    tag.id = tag.id? tag.id : tag.insertId;
-    await postTagDao.createPostTags(postId, tag.id);
-  })
-
-  if (thumnail) {
-    const oldPath = thumnail.path;
-    const newPath = `${fileManger.getUploadRootDir()}/post/${postId}/`
-    fs.mkdirSync(newPath, { recursive: true });
-    fs.rename(oldPath, newPath + thumnail.originalname, function (err) {
-      if (err) throw err
-      console.log('Successfully moved');
-    })
-    await postDao.updatePosts({postId, thumnailImgUrl: `/post/${postId}/${thumnail.originalname}`});
+  if (tagNames) {
+    updateTagOnPost(postId, tagNames);
   }
 
+  if (thumnail) {
+    updateFileOnPost(postId, thumnail);
+  }
 };
 
 const getPosts = async (searchOption: PostSearchOption) => {
@@ -84,31 +70,45 @@ const updatePosts = async (input: PostInputType) => {
     throw { status: 400, message: "본인이 작성한 포스트가 아니거나 포스트가 존재하지 않습니다." };
   }
 
+  await postDao.updatePosts(input);
+
+  if (tagNames != undefined) {
+    updateTagOnPost(post.id, tagNames);
+  }
+
+  if (thumnail) {
+    updateFileOnPost(postId, thumnail);
+  }
+}
+
+const updateTagOnPost = async (postId: string, tagNames: string[]) => {
   // 기존 태그 삭제
   await postTagDao.deletePostTags(postId);
 
-  // 새로운 태그 생성 및 포스트와 태그 연결
-  tagNames.forEach(async (tagName) => {
-    let [tag] = await tagDao.getTags(tagName.trim());
-    if (!tag) {
-      tag = await tagDao.createTags(tagName.trim());
-    }
-    tag.id = tag.id? tag.id : tag.insertId;
-    await postTagDao.createPostTags(post.id, tag.id);
-  })
+  const trimedTagNames = tagNames
+    .filter(v => v != "")
+    .map(v =>(v.trim()));
 
-  if (thumnail) {
-    const oldPath = thumnail.path;
+  // 새로운 태그 생성 및 포스트와 태그 연결
+  trimedTagNames.forEach(async (tagName) => {
+    let [tag] = await tagDao.getTags(tagName);
+    if (!tag) {
+      tag = await tagDao.createTags(tagName);
+    }
+    tag.id = tag.id || tag.insertId;
+    await postTagDao.createPostTags(postId, tag.id);
+  })
+}
+
+const updateFileOnPost = async (postId: string, file: Express.Multer.File) => {
+    const oldPath = file.path;
     const newPath = `${fileManger.getUploadRootDir()}/post/${postId}/`
     fs.mkdirSync(newPath, { recursive: true });
-    fs.rename(oldPath, newPath + thumnail.originalname, function (err) {
+    fs.rename(oldPath, newPath + file.originalname, function (err) {
       if (err) throw err
       console.log('Successfully moved');
     })
-    input.thumnailImgUrl = `/post/${postId}/${thumnail.originalname}`;
-  }
-
-  await postDao.updatePosts(input);
+    await postDao.updatePosts({postId, thumnailImgUrl: `/post/${postId}/${file.originalname}`});
 }
 
 export default {

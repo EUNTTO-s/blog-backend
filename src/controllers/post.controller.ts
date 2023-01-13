@@ -14,7 +14,7 @@ const createPosts = async (req: express.Request, res: express.Response) => {
     thumnail: req.file || null,
     secretType: secretType || 0,
     topicId: topicId,
-    tagNames: tagNames? tagNames.split(',') : [tagNames],
+    tagNames: tagNames?.split(','),
   }
 
   await postSvc.createPosts(input);
@@ -40,7 +40,7 @@ const deletePosts = async (req: express.Request, res: express.Response) => {
 
 const updatePosts = async (req: express.Request, res: express.Response) => {
   const { id: postId } = req.params;
-  const { title, categoryId, content, secretType, topicId, tagNames} = req.body;
+  const { title, categoryId, content, secretType, topicId, tagNames } = req.body;
   const input = {
     postId,
     title,
@@ -50,7 +50,7 @@ const updatePosts = async (req: express.Request, res: express.Response) => {
     thumnail: req.file || null,
     secretType: secretType || 0,
     topicId: topicId,
-    tagNames: tagNames? tagNames.split(',') : [tagNames],
+    tagNames: tagNames?.split(','),
   }
 
   await postSvc.updatePosts(input);
