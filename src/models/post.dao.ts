@@ -2,7 +2,7 @@ import dataSource from "./database";
 import { whereBuilder, setBuilder } from "./builder/queryBuilder";
 
 const createPosts = async (postInput: PostInputType) => {
-  const { title, userId, cateId, content, secretType, topicId } =
+  const { title, userId, cateId, content, secretType, topicId, thumnailImgUrl } =
     postInput;
   const answer = await dataSource.query(
     `
@@ -13,10 +13,11 @@ const createPosts = async (postInput: PostInputType) => {
         categories_id,
         content,
         secret_type,
-        topics_id
+        topics_id,
+        thumnail_img_url
       )
     VALUES
-      (?,?,?,?,?,?)
+      (?,?,?,?,?,?,?)
     `,
     [
       title,
@@ -24,7 +25,8 @@ const createPosts = async (postInput: PostInputType) => {
       cateId,
       content,
       secretType,
-      topicId
+      topicId,
+      thumnailImgUrl,
     ]
   );
   return answer;
@@ -125,7 +127,7 @@ const updatePosts = async (postInput: PostInputType) => {
     ['title',             postInput.title],
     ['categories_id',     postInput.cateId, true],
     ['content',           postInput.content],
-    ['thumnail_img_url',  postInput.thumnailImgUrl],
+    ['thumnail_img_url',  postInput.thumnailImgUrl, true],
     ['secret_type',       postInput.secretType],
     ['topics_id',         postInput.topicId, true],
   ];
