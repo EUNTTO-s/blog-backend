@@ -5,12 +5,12 @@ import { whereBuilder, setBuilder } from "./builder/queryBuilder";
 const createUser = async (nickname: string, email: string, hashed_password: string) => {
     await dataSource.query(
         `
-        INSERT INTO
-          users
-          (nickname, email, password)
-        VALUES
-          (?, ?, ?);
-      `,
+          INSERT INTO
+            users
+            (nickname, email, password)
+          VALUES
+            (?, ?, ?);
+        `,
         [nickname, email, hashed_password]
     );
 };
@@ -19,14 +19,14 @@ const createUser = async (nickname: string, email: string, hashed_password: stri
 const existUser = async (email: string): Promise<UserInfo> => {
     const [user] = await dataSource.query(
         `
-        SELECT
-          id,
-          email
-        FROM
-          users
-        WHERE
-          email = ?
-      `,
+          SELECT
+            id,
+            email
+          FROM
+            users
+          WHERE
+            email = ?
+        `,
         [email]
     );
 
@@ -37,14 +37,14 @@ const existUser = async (email: string): Promise<UserInfo> => {
 const existNickname = async (nickname: string): Promise<UserInfo> => {
     const [userName] = await dataSource.query(
         `
-    SELECT
-      id,
-      nickname
-    FROM
-      users
-    WHERE
-      nickname = ?
-    `,
+          SELECT
+            id,
+            nickname
+          FROM
+            users
+          WHERE
+            nickname = ?
+        `,
         [nickname]
     );
 
@@ -61,13 +61,13 @@ const updateProfile = async (input: ProfileInputType) => {
     const [stateOfSet, filterdValueArr] = setBuilder(propertyArray);
     const profile = await dataSource.query(
         `
-        UPDATE
-          users
-        SET
-          ${stateOfSet}
-        WHERE
-          id = ?
-      `,
+          UPDATE
+            users
+          SET
+            ${stateOfSet}
+          WHERE
+            id = ?
+        `,
         [...filterdValueArr, input.userId]
     );
     return profile;
@@ -76,20 +76,33 @@ const updateProfile = async (input: ProfileInputType) => {
 // 유저 정보
 const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
     let { userId, email, includePwd } = searchOption;
-    const [userInfo] = await dataSource.query(
-        `
+    const [userInfo] = await dataSource
+        .query(
+            `
           SELECT
             users.id,
             users.nickname,
             ${includePwd ? "users.password," : ""}
-            users.email
+            users.email,
+            JSON_OBJECT(
+              'blogTitle',
+              users.blog_title,
+              'profileIntro',
+              users.profile_intro
+            ) AS profile,
+            users.created_at AS startDate
           FROM
             users
           ${whereBuilder("users.id", ["="], userId, true)}
           ${whereBuilder("users.email", ["="], email)}
         `,
-        [userId]
-    );
+            [userId]
+        )
+        .then((users) => {
+            return [...users].map((user) => {
+                return { ...user, profile: JSON.parse(user.profile) };
+            });
+        });
 
     return userInfo as UserInfo;
 };
