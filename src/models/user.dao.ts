@@ -57,6 +57,7 @@ const updateProfile = async (input: ProfileInputType) => {
         ["nickname", input.nickname],
         ["blog_title", input.blogTitle],
         ["profile_intro", input.profileIntro],
+        ["profile_img_url", input.profileImgUrl],
     ];
     const [stateOfSet, filterdValueArr] = setBuilder(propertyArray);
     const profile = await dataSource.query(
@@ -88,7 +89,9 @@ const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
               'blogTitle',
               users.blog_title,
               'profileIntro',
-              users.profile_intro
+              users.profile_intro,
+              'profileImgUrl',
+              users.profile_img_url
             ) AS profile,
             users.created_at AS startDate
           FROM
@@ -100,7 +103,13 @@ const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
         )
         .then((users) => {
             return [...users].map((user) => {
-                return { ...user, profile: JSON.parse(user.profile) };
+                const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
+                let profile = JSON.parse(user.profile);
+                let profileImgUrl = profile.profileImgUrl && `${domain}${profile.profileImgUrl}`
+                return {
+                  ...user,
+                  profile: { ...profile, profileImgUrl },
+                };
             });
         });
 

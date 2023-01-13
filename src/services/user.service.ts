@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import fileManger from "../middlewares/fileManager";
+import fs from "fs";
 import dao_set from "../models";
 
 const { userDao } = dao_set;
@@ -90,7 +92,8 @@ const updateProfile = async (input: ProfileInputType) => {
         throw { status: 409, message: "소개글은 200자 이상 적을 수 없습니다." };
     }
 
-    await userDao.updateProfile(input);
+    const profileImgUrl = await updateFileOnUser(input.userId, input.profileImg);
+    await userDao.updateProfile({...input, profileImgUrl});
 };
 
 // 유저 정보
@@ -98,6 +101,18 @@ const getMe = async (userId: number) => {
     const userInfo = await userDao.findUser({ userId });
     return userInfo;
 };
+
+const updateFileOnUser = async (id: string, file: Express.Multer.File) => {
+  const oldPath = file.path;
+  const newPath = `${fileManger.getUploadRootDir()}/user/${id}/`
+  fs.mkdirSync(newPath, { recursive: true });
+  fs.rename(oldPath, newPath + file.originalname, function (err) {
+    if (err) throw err
+    console.log('Successfully moved');
+  });
+  const filePath = `/user/${id}/${file.originalname}`;
+  return filePath;
+}
 
 export default {
     signUp,
