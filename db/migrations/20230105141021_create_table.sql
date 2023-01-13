@@ -13,7 +13,7 @@ CREATE TABLE `users` (
 CREATE TABLE `posts` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `users_id` integer NOT NULL,
-  `categories_id` integer,
+  `categories_id` integer COMMENT 'ref: > cate.id',
   `topics_id` integer NOT NULL,
   `title` varchar(300) NOT NULL,
   `content` varchar(1500) NOT NULL,
@@ -41,8 +41,8 @@ CREATE TABLE `follow` (
 
 CREATE TABLE `comments` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `posts_id` integer,
-  `comments_id` integer,
+  `posts_id` integer COMMENT 'ref: > p.id',
+  `comments_id` integer COMMENT 'ref: > cmt.id',
   `users_id` integer,
   `comment_content` varchar(1000) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT (now())
@@ -55,8 +55,8 @@ CREATE TABLE `tags` (
 
 CREATE TABLE `posts_tags` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `posts_id` int NOT NULL,
-  `tags_id` int NOT NULL
+  `posts_id` integer NOT NULL COMMENT 'ref: > posts.id',
+  `tags_id` integer NOT NULL COMMENT 'ref: > tags.id'
 );
 
 CREATE UNIQUE INDEX `follow_index_0` ON `follow` (`users_id`, `target_users_id`);
@@ -64,8 +64,6 @@ CREATE UNIQUE INDEX `follow_index_0` ON `follow` (`users_id`, `target_users_id`)
 CREATE UNIQUE INDEX `posts_tags_index_1` ON `posts_tags` (`posts_id`, `tags_id`);
 
 ALTER TABLE `posts` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
-
-ALTER TABLE `posts` ADD FOREIGN KEY (`categories_id`) REFERENCES `categories` (`id`);
 
 ALTER TABLE `posts` ADD FOREIGN KEY (`topics_id`) REFERENCES `topics` (`id`);
 
@@ -75,15 +73,17 @@ ALTER TABLE `follow` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `follow` ADD FOREIGN KEY (`target_users_id`) REFERENCES `users` (`id`);
 
-ALTER TABLE `comments` ADD FOREIGN KEY (`posts_id`) REFERENCES `posts` (`id`);
-
-ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`);
-
 ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
-ALTER TABLE `posts_tags` ADD FOREIGN KEY (`posts_id`) REFERENCES `posts` (`id`);
+ALTER TABLE `posts` ADD FOREIGN KEY (`categories_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `posts_tags` ADD FOREIGN KEY (`tags_id`) REFERENCES `tags` (`id`);
+ALTER TABLE `posts_tags` ADD FOREIGN KEY (`posts_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `posts_tags` ADD FOREIGN KEY (`tags_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `comments` ADD FOREIGN KEY (`posts_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `comments` ADD FOREIGN KEY (`comments_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE;
 
 -- migrate:down
 SET foreign_key_checks = 0;

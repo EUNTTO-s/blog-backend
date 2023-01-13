@@ -12,7 +12,7 @@ table users as u {
 table posts as p {
   id integer [pk, increment]
   users_id integer [ref: > u.id, not null]
-  categories_id integer [ref: > cate.id]
+  categories_id integer [note: 'ref: > cate.id']
   topics_id integer [ref: > t.id, not null]
   title varchar(300) [not null]
   content varchar(1500) [not null]
@@ -43,8 +43,8 @@ table follow {
 
 table comments as cmt {
   id integer [pk, increment]
-  posts_id integer [ref: > p.id]
-  comments_id integer [ref: > cmt.id]
+  posts_id integer [note: 'ref: > p.id']
+  comments_id integer [note: 'ref: > cmt.id']
   users_id integer [ref: > u.id]
   comment_content varchar(1000) [not null]
   created_at datetime [not null, default: `now()`]
@@ -55,11 +55,17 @@ table tags {
   tag_name varchar(150) [not null, unique]
 }
 
-table posts_tags {
+table posts_tags as pt {
   id integer [pk, increment]
-  posts_id int [not null, ref: > p.id]
-  tags_id int [not null, ref: > tags.id]
+  posts_id integer [not null, note: 'ref: > posts.id']
+  tags_id integer [not null, note: 'ref: > tags.id']
   Indexes {
     (posts_id, tags_id) [unique]
   }
 }
+
+ref: p.categories_id > cate.id [delete: cascade]
+ref: pt.posts_id > p.id [delete: cascade]
+ref: pt.tags_id > tags.id [delete: cascade]
+ref: cmt.posts_id > p.id [delete: cascade]
+ref: cmt.comments_id > cmt.id [delete: cascade]
