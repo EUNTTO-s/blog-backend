@@ -12,7 +12,9 @@ const getUploadRootDir = () => {
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const {fieldname, mimetype} = file;
-  if (fieldname == 'thumnail' && !(mimetype.includes("image"))) {
+  const imageNameList = ['thumnail', 'profileImg'];
+  const found = imageNameList.find(v => v == fieldname);
+  if (found && !(mimetype.includes("image"))) {
     cb({message: '이미지 형식이 아닙니다.', status: 400, name: ''});
   }
   cb(null, true);
@@ -35,9 +37,27 @@ const makeUploadFolder = () => {
   }
 }
 
+const updateFile = async (path: string, id: string, file: Express.Multer.File | "") => {
+  if (file === "") {
+    return "";
+  }
+  if (file === undefined) {
+    return undefined;
+  }
+  const oldPath = file.path;
+  const newPath = `${getUploadRootDir()}/${path}/${id}/`
+  fs.mkdirSync(newPath, { recursive: true });
+  fs.rename(oldPath, newPath + file.originalname, function (err) {
+    if (err) throw err
+  });
+  const filePath = `/${path}/${id}/${file.originalname}`;
+  return filePath;
+}
+
 export default {
   upload,
   getTempDir,
   getUploadRootDir,
   makeUploadFolder,
+  updateFile,
 };

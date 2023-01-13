@@ -40,11 +40,14 @@ const login = async (req: express.Request, res: express.Response) => {
 // 프로필 업데이트
 const updateProfile = async (req: express.Request, res: express.Response) => {
     const { nickname, blogTitle, profileIntro }: ProfileInputType = req.body;
+    let { profileImg } = req.body;
+    profileImg = profileImg === undefined ? req.file : "";
     const input = {
         nickname,
         blogTitle,
         profileIntro,
         userId: req.userInfo.id,
+        profileImg,
     };
     await userSvc.updateProfile(input);
     res.status(200).json({ message: "PROFILE_UPDATED" });
