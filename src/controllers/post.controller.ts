@@ -11,7 +11,7 @@ const createPosts = async (req: express.Request, res: express.Response) => {
     userId: req.userInfo.id,
     cateId: categoryId,
     content,
-    thumnail: req.file || null,
+    thumnail: req.file,
     secretType: secretType || 0,
     topicId: topicId,
     tagNames: tagNames?.split(','),
@@ -41,14 +41,17 @@ const deletePosts = async (req: express.Request, res: express.Response) => {
 const updatePosts = async (req: express.Request, res: express.Response) => {
   const { id: postId } = req.params;
   const { title, categoryId, content, secretType, topicId, tagNames } = req.body;
+  let { thumnail } = req.body;
+  thumnail = thumnail === undefined ? req.file : "";
+
   const input = {
     postId,
     title,
     userId: req.userInfo.id,
     cateId: categoryId,
     content,
-    thumnail: req.file || null,
-    secretType: secretType || 0,
+    thumnail,
+    secretType: secretType,
     topicId: topicId,
     tagNames: tagNames?.split(','),
   }
