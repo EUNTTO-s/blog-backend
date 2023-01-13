@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import fileManger from "../middlewares/fileManager";
 import dao_set from "../models";
 
 const { userDao } = dao_set;
@@ -90,7 +91,8 @@ const updateProfile = async (input: ProfileInputType) => {
         throw { status: 409, message: "소개글은 200자 이상 적을 수 없습니다." };
     }
 
-    await userDao.updateProfile(input);
+    const profileImgUrl = await fileManger.updateFile('user', input.userId, input.profileImg);
+    await userDao.updateProfile({...input, profileImgUrl});
 };
 
 // 유저 정보

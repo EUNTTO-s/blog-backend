@@ -13,8 +13,10 @@ interface UserSearchOption {
 }
 
 interface ProfileInputType {
-    userId?: string;
-    nickname: string;
-    blogTitle: string;
-    profileIntro: string;
+    userId: string;
+    nickname?: string;
+    blogTitle?: string;
+    profileIntro?: string;
+    profileImg?: Express.Multer.File;
+    profileImgUrl?: string;
 }
