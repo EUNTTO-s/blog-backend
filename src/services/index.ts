@@ -4,6 +4,7 @@ import topicSvc from "./topic.service";
 import postSvc from "./post.service";
 import followSvc from "./follow.service";
 import grassSvc from "./grass.service";
+import commentSvc from "./comment.service";
 
 const svc_set = {
     userSvc,
@@ -12,6 +13,7 @@ const svc_set = {
     followSvc,
     postSvc,
     grassSvc,
+    commentSvc,
 };
 
 export default svc_set;
