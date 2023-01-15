@@ -21,12 +21,16 @@ const createPosts = async (input: PostInputType) => {
     throw { status: 400, message: "secretType가 0~2 사이에 존재하지 않습니다. 0: 전체공개, 1: 맞팔공개, 2: 비공개" };
   }
 
-  const thumnailImgUrl = await fileManger.updateFile("post", userId, thumnail);
-  const post = await postDao.createPosts({...input, thumnailImgUrl});
+  const post = await postDao.createPosts(input);
   const postId = post.insertId;
 
   if (tagNames) {
     updateTagOnPost(postId, tagNames);
+  }
+
+  const thumnailImgUrl = await fileManger.updateFile("post", postId, thumnail);
+  if (thumnailImgUrl) {
+    await postDao.updatePosts({postId, thumnailImgUrl});
   }
 };
 
@@ -66,7 +70,7 @@ const updatePosts = async (input: PostInputType) => {
     throw { status: 400, message: "본인이 작성한 포스트가 아니거나 포스트가 존재하지 않습니다." };
   }
 
-  const thumnailImgUrl = await fileManger.updateFile("post", userId, thumnail);
+  const thumnailImgUrl = await fileManger.updateFile("post", postId, thumnail);
   await postDao.updatePosts({...input, thumnailImgUrl});
 
   if (tagNames != undefined) {
