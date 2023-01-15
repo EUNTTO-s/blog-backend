@@ -3,33 +3,11 @@ import jwt from "jsonwebtoken";
 
 
 const authMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
-    const token = req.headers.authorization;
-    let decodedToken;
-    try {
-        decodedToken = decodeToken(token);
-    } catch {
-        throw { status: 400, message: "토큰이 유효하지 않습니다." };
-    }
-    req.userInfo = { id: decodedToken.id, email: decodedToken.email };
-    console.log(req.userInfo);
-    next();
+    authenticate(req, next);
 };
 
 const authInfoMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
-  const token = req.headers.authorization;
-  if (!token) {
-    next();
-    return;
-  }
-  let decodedToken;
-  try {
-      decodedToken = decodeToken(token);
-  } catch {
-      throw { status: 400, message: "토큰이 유효하지 않습니다." };
-  }
-  req.userInfo = { id: decodedToken.id, email: decodedToken.email };
-  console.log(req.userInfo);
-  next();
+    authenticate(req, next, false);
 };
 
 const adminMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
@@ -60,6 +38,21 @@ const errorHandler: express.ErrorRequestHandler = (err: MyError, _1, res, _2) =>
     console.log("err LOG:", err);
     res.status(responseInfo.status || 500).send({ message: responseInfo.message || "" });
 };
+
+const authenticate = (req: express.Request, next: express.NextFunction, throwError: boolean = true) => {
+  const token = req.headers.authorization;
+  let decodedToken;
+  try {
+      decodedToken = decodeToken(token);
+      req.userInfo = { id: decodedToken.id, email: decodedToken.email };
+      console.log("userInfo: ", req.userInfo);
+  } catch {
+      if (throwError) {
+        throw { status: 400, message: "토큰이 유효하지 않습니다." };
+      }
+  }
+  next();
+}
 
 export default {
     authMiddleware,
