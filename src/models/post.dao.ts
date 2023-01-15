@@ -33,7 +33,16 @@ const createPosts = async (postInput: PostInputType) => {
 };
 
 const getPosts = async (searchOption: PostSearchOption) => {
-  const { postId, userId, categoryId, topicId, search, countPerPage = 30, pageNumber= 1} = searchOption;
+  const {
+    postId,
+    userId,
+    categoryId,
+    topicId,
+    search,
+    countPerPage = 30,
+    pageNumber = 1,
+    loginedUserId,
+  } = searchOption;
   const answer = await dataSource.query(
       `
       SELECT
@@ -42,7 +51,6 @@ const getPosts = async (searchOption: PostSearchOption) => {
         p.content,
         p.thumnail_img_url AS thumnailImgUrl,
         p.secret_type AS secretType,
-        -- p.created_at AS createdAt,
         p.created_at as createdAt,
         JSON_OBJECT(
           'id',
@@ -86,12 +94,14 @@ const getPosts = async (searchOption: PostSearchOption) => {
       ${whereBuilder("p.users_id",  ["="], userId)}
       ${whereBuilder("cate.id",     ["="], categoryId)}
       ${whereBuilder("t.id",        ["="], topicId)}
+      AND
+        (p.secret_type = 0 ${loginedUserId? "OR (p.users_id = ?)" : ""} )
       ${whereBuilder("p.title",             ["LIKE", "AND", "SEARCH"], search)}
       ${whereBuilder("p.content",           ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("cate.category_name",  ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("tagsOnPost.tags",     ["LIKE", "OR",  "SEARCH"], search)}
       LIMIT ${countPerPage} OFFSET ${countPerPage * (pageNumber - 1)}
-    `,
+    `, [loginedUserId]
   ).then((answer) => {
     return [...answer].map((item)=> {
       const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;

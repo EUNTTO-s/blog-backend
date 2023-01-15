@@ -21,4 +21,5 @@ interface PostSearchOption {
   search?: string,
   pageNumber?: number,
   countPerPage?: number,
+  loginedUserId?: string,
 }

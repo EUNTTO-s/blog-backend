@@ -15,6 +15,23 @@ const authMiddleware = async (...[req, _, next]: Parameters<express.RequestHandl
     next();
 };
 
+const authInfoMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
+  const token = req.headers.authorization;
+  if (!token) {
+    next();
+    return;
+  }
+  let decodedToken;
+  try {
+      decodedToken = decodeToken(token);
+  } catch {
+      throw { status: 400, message: "토큰이 유효하지 않습니다." };
+  }
+  req.userInfo = { id: decodedToken.id, email: decodedToken.email };
+  console.log(req.userInfo);
+  next();
+};
+
 const adminMiddleware = async (...[req, _, next]: Parameters<express.RequestHandler>): Promise<any> => {
     const userInfo = req.userInfo;
     if (userInfo.email != "admin@gmail.com") {
@@ -48,4 +65,5 @@ export default {
     authMiddleware,
     adminMiddleware,
     errorHandler,
+    authInfoMiddleware,
 };
