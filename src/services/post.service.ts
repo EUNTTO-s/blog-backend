@@ -35,7 +35,7 @@ const getPosts = async (searchOption: PostSearchOption) => {
 }
 
 const deletePosts = async (userId: string, postId: string) => {
-  const [post] = await postDao.getPosts({userId, postId});
+  const [post] = await postDao.getPosts({userId, postId, loginedUserId: userId});
   if (!post) {
     throw { status: 400, message: "본인이 작성한 포스트가 아니거나 포스트가 존재하지 않습니다." };
   }
@@ -61,7 +61,7 @@ const updatePosts = async (input: PostInputType) => {
     }
   }
 
-  const [post] = await postDao.getPosts({userId, postId});
+  const [post] = await postDao.getPosts({userId, postId, loginedUserId: userId});
   if (!post) {
     throw { status: 400, message: "본인이 작성한 포스트가 아니거나 포스트가 존재하지 않습니다." };
   }

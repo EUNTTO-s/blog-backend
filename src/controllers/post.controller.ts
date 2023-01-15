@@ -27,6 +27,7 @@ const getPosts = async (req: express.Request, res: express.Response) => {
     postId: req.params.id,
     pageNumber: req.query.pageNumber && Number(req.query.pageNumber),
     countPerPage: req.query.countPerPage && Number(req.query.countPerPage),
+    loginedUserId: req.userInfo?.id,
   };
   const posts = await postSvc.getPosts(searchOption);
   res.status(200).json({ data: posts });
@@ -54,6 +55,7 @@ const updatePosts = async (req: express.Request, res: express.Response) => {
     secretType: secretType,
     topicId: topicId,
     tagNames: tagNames?.split(','),
+    loginedUserId: req.userInfo?.id,
   }
 
   await postSvc.updatePosts(input);

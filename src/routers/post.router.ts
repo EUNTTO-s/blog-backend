@@ -16,6 +16,7 @@ router.post(
 
 router.get(
   ["/posts", "/posts/:id"],
+  asyncWrap(middleware.authInfoMiddleware),
   asyncWrap(postCtl.getPosts),
 );
 
