@@ -95,13 +95,37 @@ const getPosts = async (searchOption: PostSearchOption) => {
       ${whereBuilder("cate.id",     ["="], categoryId)}
       ${whereBuilder("t.id",        ["="], topicId)}
       AND
-        (p.secret_type = 0 ${loginedUserId? "OR (p.users_id = ?)" : ""} )
+        (
+          p.secret_type = 0
+          ${loginedUserId?
+          ` -- 당신꺼면 볼 수 있다.
+            OR (p.users_id = ?)
+            -- 맞팔이면 볼 수 있다.
+            OR
+              (
+                p.secret_type = 1 AND p.users_id IN
+                (
+                  SELECT DISTINCT
+                    myFollow.target_users_id AS users_id
+                  FROM
+                    follow myFollow,
+                    follow yourFollow
+                  WHERE
+                  (
+                    ? = myFollow.users_id
+                    AND myFollow.users_id = yourFollow.target_users_id
+                    AND myFollow.target_users_id = yourFollow.users_id
+                  )
+                )
+              )
+          ` : ""}
+        )
       ${whereBuilder("p.title",             ["LIKE", "AND", "SEARCH"], search)}
       ${whereBuilder("p.content",           ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("cate.category_name",  ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("tagsOnPost.tags",     ["LIKE", "OR",  "SEARCH"], search)}
       LIMIT ${countPerPage} OFFSET ${countPerPage * (pageNumber - 1)}
-    `, [loginedUserId]
+    `, [loginedUserId, loginedUserId]
   ).then((answer) => {
     return [...answer].map((item)=> {
       const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
