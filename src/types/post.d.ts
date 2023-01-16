@@ -17,9 +17,9 @@ interface PostSearchOption {
   categoryId?: string,
   tagName?: string,
   topicId?: string,
-  secret_type?: number,
   search?: string,
   pageNumber?: number,
   countPerPage?: number,
   loginedUserId?: string,
+  myFollowing?: string,
 }

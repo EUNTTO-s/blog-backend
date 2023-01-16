@@ -41,6 +41,10 @@ const getPosts = async (searchOption: PostSearchOption) => {
     pageNumber = 1,
     loginedUserId,
   } = searchOption;
+  let { myFollowing } = searchOption;
+  if (myFollowing == "false") {
+    myFollowing = undefined;
+  }
   const answer = await dataSource.query(
       `
       SELECT
@@ -110,7 +114,7 @@ const getPosts = async (searchOption: PostSearchOption) => {
                     follow yourFollow
                   WHERE
                   (
-                    ? = myFollow.users_id
+                    myFollow.users_id = ?
                     AND myFollow.users_id = yourFollow.target_users_id
                     AND myFollow.target_users_id = yourFollow.users_id
                   )
@@ -118,12 +122,26 @@ const getPosts = async (searchOption: PostSearchOption) => {
               )
           ` : ""}
         )
+      ${myFollowing ?
+        `
+        AND p.users_id IN
+        (
+          SELECT DISTINCT
+            follow.target_users_id AS users_id
+          FROM
+            follow
+          WHERE
+          (
+            follow.users_id = ?
+          )
+        )
+        `: ''}
       ${whereBuilder("p.title",             ["LIKE", "AND", "SEARCH"], search)}
       ${whereBuilder("p.content",           ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("cate.category_name",  ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("tagsOnPost.tags",     ["LIKE", "OR",  "SEARCH"], search)}
       LIMIT ${countPerPage} OFFSET ${countPerPage * (pageNumber - 1)}
-    `, [loginedUserId, loginedUserId]
+    `, [loginedUserId, loginedUserId, loginedUserId]
   ).then((answer) => {
     return [...answer].map((item)=> {
       const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
