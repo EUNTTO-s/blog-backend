@@ -8,7 +8,8 @@ const getCategories = async (option: CategorySerarchOption) => {
     `
     SELECT
       id,
-      category_name
+      category_name,
+      category_name AS categoryName
     FROM
       categories
     ${whereBuilder("id", ["="], cateId, true)}
