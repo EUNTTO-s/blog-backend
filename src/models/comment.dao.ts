@@ -30,7 +30,7 @@ const getComments = async (postId: string) => {
                   users.nickname,
                   'email',
                   users.email
-                ) AS userInfo
+                ) AS user
               FROM
                 comments
               JOIN users ON users.id = comments.users_id
@@ -41,7 +41,7 @@ const getComments = async (postId: string) => {
         )
         .then((comments) => {
             return [...comments].map((comment) => {
-                return { ...comment, userInfo: JSON.parse(comment.userInfo) };
+                return { ...comment, user: JSON.parse(comment.user) };
             });
         });
     return comments;

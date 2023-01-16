@@ -5,10 +5,10 @@ const { commentDao, postDao } = dao_set;
 const createComments = async (postId: string, content: string, userId: string) => {
     const [post] = await postDao.getPosts({ postId });
     if (!post) {
-        throw { status: 409, message: "존재하지 않는 게시글입니다." };
+        throw { status: 400, message: "존재하지 않는 게시글입니다." };
     }
     if (content.length > 1000) {
-        throw { status: 409, message: "댓글은 1000자 이상 작성 할 수 없습니다" };
+        throw { status: 400, message: "댓글은 1000자 이상 작성 할 수 없습니다" };
     }
     await commentDao.createComments(postId, content, userId);
 };
@@ -16,7 +16,7 @@ const createComments = async (postId: string, content: string, userId: string) =
 // 특정 게시글의 댓글 가져오기
 const getComments = async (postId: string) => {
     if (!getComments) {
-        throw { status: 409, message: "게시글이 존재하지 않습니다" };
+        throw { status: 400, message: "존재하지 않는 게시글입니다." };
     }
     const comments = await commentDao.getComments(postId);
     return comments;
@@ -25,7 +25,7 @@ const getComments = async (postId: string) => {
 // 댓글 수정
 const updateComments = async (content: string, commentId: string, userId: string) => {
     if (content.length > 1000) {
-        throw { status: 409, message: "댓글은 1000자 이상 작성 할 수 없습니다" };
+        throw { status: 400, message: "댓글은 1000자 이상 작성 할 수 없습니다" };
     }
     await commentDao.updateComments(content, commentId, userId);
 };
