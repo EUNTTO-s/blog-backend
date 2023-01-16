@@ -105,7 +105,11 @@ const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
             return [...users].map((user) => {
                 const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
                 let profile = JSON.parse(user.profile);
-                let profileImgUrl = profile.profileImgUrl && `${domain}${profile.profileImgUrl}`
+                let profileImgUrl = profile.profileImgUrl
+                  ?
+                    `${domain}${profile.profileImgUrl}`
+                  :
+                    `${domain}/user/default-img.png`
                 return {
                   ...user,
                   profile: { ...profile, profileImgUrl },

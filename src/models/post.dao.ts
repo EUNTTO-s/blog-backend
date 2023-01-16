@@ -67,17 +67,11 @@ const getPosts = async (searchOption: PostSearchOption) => {
     `, [loginedUserId, loginedUserId, loginedUserId]
   ).then((answer) => {
     return [...answer].map((item)=> {
-      const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
       return {...item,
           category: JSON.parse(item.category),
           user: JSON.parse(item.user),
           topic: JSON.parse(item.topic),
           tags: JSON.parse(item.tags),
-          thumnailImgUrl: item.thumnailImgUrl
-            ?
-              `${domain}${item.thumnailImgUrl}`
-            :
-              null
         }
     })
   });
