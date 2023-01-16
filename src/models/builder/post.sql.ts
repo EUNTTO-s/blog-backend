@@ -1,10 +1,14 @@
+const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
+const defaultPostImgUrl = '/post/default-img.jpg';
+const defaultUserImgUrl = '/user/default-img.png';
+
 const getQueryOfSelectPost = () =>
   `
   SELECT
     p.id,
     p.title,
     p.content,
-    p.thumnail_img_url AS thumnailImgUrl,
+    CONCAT('${domain}',IFNULL(p.thumnail_img_url, '${defaultPostImgUrl}')) AS thumnailImgUrl,
     p.secret_type AS secretType,
     p.created_at as createdAt,
     JSON_OBJECT(
@@ -17,7 +21,9 @@ const getQueryOfSelectPost = () =>
       'id',
       u.id,
       'nickname',
-      u.nickname
+      u.nickname,
+      'profileImgUrl',
+      CONCAT('${domain}',IFNULL(u.profile_img_url, '${defaultUserImgUrl}'))
     ) AS user,
     JSON_OBJECT(
       'id',
