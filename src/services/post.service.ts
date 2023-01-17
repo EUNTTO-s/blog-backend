@@ -35,7 +35,11 @@ const createPosts = async (input: PostInputType) => {
 };
 
 const getPosts = async (searchOption: PostSearchOption) => {
-  return await postDao.getPosts(searchOption);
+  const posts = await postDao.getPosts(searchOption);
+  if (searchOption.postId) {
+    return posts[0];
+  }
+  return posts;
 }
 
 const deletePosts = async (userId: string, postId: string) => {
