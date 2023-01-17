@@ -23,15 +23,20 @@ table posts as p {
 
 table categories as cate {
   id integer [pk, increment]
+  pos integer
   users_id integer [ref: > u.id]
   category_name varchar(150) [not null]
   Indexes {
     (users_id, category_name) [unique]
   }
+  Indexes {
+    (users_id, pos) [unique]
+  }
 }
 
 table topics as t {
   id integer [pk, increment]
+  pos integer
   topic_name varchar(150) [not null, unique]
 }
 

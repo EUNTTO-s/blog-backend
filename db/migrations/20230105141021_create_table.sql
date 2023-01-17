@@ -24,12 +24,14 @@ CREATE TABLE `posts` (
 
 CREATE TABLE `categories` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `pos` integer,
   `users_id` integer,
   `category_name` varchar(150) NOT NULL
 );
 
 CREATE TABLE `topics` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `pos` integer,
   `topic_name` varchar(150) UNIQUE NOT NULL
 );
 
@@ -61,9 +63,11 @@ CREATE TABLE `posts_tags` (
 
 CREATE UNIQUE INDEX `categories_index_0` ON `categories` (`users_id`, `category_name`);
 
-CREATE UNIQUE INDEX `follow_index_1` ON `follow` (`users_id`, `target_users_id`);
+CREATE UNIQUE INDEX `categories_index_1` ON `categories` (`users_id`, `pos`);
 
-CREATE UNIQUE INDEX `posts_tags_index_2` ON `posts_tags` (`posts_id`, `tags_id`);
+CREATE UNIQUE INDEX `follow_index_2` ON `follow` (`users_id`, `target_users_id`);
+
+CREATE UNIQUE INDEX `posts_tags_index_3` ON `posts_tags` (`posts_id`, `tags_id`);
 
 ALTER TABLE `posts` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
