@@ -31,7 +31,7 @@ const getQueryOfSelectPost = () =>
       'topicName',
       t.topic_name
     ) AS topic,
-    tagsOnPost.tags
+    IFNULL(tagsOnPost.tags, "[]") as tags
   FROM
     posts AS p
     JOIN users AS u
