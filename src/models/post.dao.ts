@@ -45,14 +45,16 @@ const getPosts = async (searchOption: PostSearchOption) => {
     countPerPage = 30,
     pageNumber = 1,
     loginedUserId,
+    onlyCount = false,
   } = searchOption;
   let { myFollowing } = searchOption;
   if (myFollowing == "false") {
     myFollowing = undefined;
   }
-  const answer = await dataSource.query(
+  const answer = await dataSource
+    .query(
       `
-      ${getQueryOfSelectPost()}
+      ${getQueryOfSelectPost({ onlyCount })}
       ${whereBuilder("p.id",        ["="], postId, true)}
       ${whereBuilder("p.users_id",  ["="], userId)}
       ${whereBuilder("cate.id",     ["="], categoryId)}
@@ -63,11 +65,22 @@ const getPosts = async (searchOption: PostSearchOption) => {
       ${whereBuilder("p.content",           ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("cate.category_name",  ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("tagsOnPost.tags",     ["LIKE", "OR",  "SEARCH"], search)}
-      LIMIT ${countPerPage} OFFSET ${countPerPage * (pageNumber - 1)}
-    `, [loginedUserId, loginedUserId, loginedUserId]
-  ).then((answer) => {
-    return [...answer].map((item)=> {
-      return {...item,
+      ${
+        onlyCount == false?
+          `LIMIT ${countPerPage} OFFSET ${countPerPage * (pageNumber - 1)}`
+        :
+          ``
+      }
+    `,
+      [loginedUserId, loginedUserId, loginedUserId]
+    )
+    .then((answer) => {
+      return [...answer].map((item) => {
+        if (onlyCount) {
+          return JSON.parse(item.maxCount);
+        }
+        return {
+          ...item,
           category: JSON.parse(item.category),
           user: JSON.parse(item.user),
           topic: JSON.parse(item.topic),
@@ -75,9 +88,15 @@ const getPosts = async (searchOption: PostSearchOption) => {
         }
     })
   });
-
+  if (onlyCount || postId) {
+    return answer[0];
+  }
   return answer;
 };
+
+const getMaxCountOfPosts = (searchOption: PostSearchOption) => {
+  getPosts({ ...searchOption, onlyCount: true });
+}
 
 const deletePosts = async (postId: string) => {
   await dataSource.query(`
@@ -118,4 +137,5 @@ export default {
   getPosts,
   deletePosts,
   updatePosts,
+  getMaxCountOfPosts,
 };
