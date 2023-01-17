@@ -37,9 +37,10 @@ const createPosts = async (input: PostInputType) => {
 const getPosts = async (searchOption: PostSearchOption) => {
   const posts = await postDao.getPosts(searchOption);
   if (searchOption.postId) {
-    return posts[0];
+    return [posts, 1];
   }
-  return posts;
+  const maxCount = await postDao.getPosts({...searchOption, onlyCount: true});
+  return [posts, maxCount];
 }
 
 const deletePosts = async (userId: string, postId: string) => {

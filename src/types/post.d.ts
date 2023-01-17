@@ -22,4 +22,5 @@ interface PostSearchOption {
   countPerPage?: number,
   loginedUserId?: string,
   myFollowing?: string,
+  onlyCount?: boolean,
 }

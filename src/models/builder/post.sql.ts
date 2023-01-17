@@ -2,36 +2,40 @@ const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT
 const defaultPostImgUrl = '/post/default-img.jpg';
 const defaultUserImgUrl = '/user/default-img.png';
 
-const getQueryOfSelectPost = () =>
-  `
+const queryOfSelectColumn = `
+  p.id,
+  p.title,
+  p.content,
+  CONCAT('${domain}',IFNULL(p.thumnail_img_url, '${defaultPostImgUrl}')) AS thumnailImgUrl,
+  p.secret_type AS secretType,
+  p.created_at as createdAt,
+  JSON_OBJECT(
+    'id',
+    cate.id,
+    'categoryName',
+    cate.category_name
+  ) AS category,
+  JSON_OBJECT(
+    'id',
+    u.id,
+    'nickname',
+    u.nickname,
+    'profileImgUrl',
+    CONCAT('${domain}',IFNULL(u.profile_img_url, '${defaultUserImgUrl}'))
+  ) AS user,
+  JSON_OBJECT(
+    'id',
+    t.id,
+    'topicName',
+    t.topic_name
+  ) AS topic,
+  IFNULL(tagsOnPost.tags, "[]") as tags
+`
+
+const getQueryOfSelectPost = ({onlyCount} : {onlyCount?: boolean} = {onlyCount: false}) => {
+  return `
   SELECT
-    p.id,
-    p.title,
-    p.content,
-    CONCAT('${domain}',IFNULL(p.thumnail_img_url, '${defaultPostImgUrl}')) AS thumnailImgUrl,
-    p.secret_type AS secretType,
-    p.created_at as createdAt,
-    JSON_OBJECT(
-      'id',
-      cate.id,
-      'categoryName',
-      cate.category_name
-    ) AS category,
-    JSON_OBJECT(
-      'id',
-      u.id,
-      'nickname',
-      u.nickname,
-      'profileImgUrl',
-      CONCAT('${domain}',IFNULL(u.profile_img_url, '${defaultUserImgUrl}'))
-    ) AS user,
-    JSON_OBJECT(
-      'id',
-      t.id,
-      'topicName',
-      t.topic_name
-    ) AS topic,
-    IFNULL(tagsOnPost.tags, "[]") as tags
+  ${onlyCount ? 'count(*) AS maxCount' : queryOfSelectColumn}
   FROM
     posts AS p
     JOIN users AS u
@@ -52,7 +56,7 @@ const getQueryOfSelectPost = () =>
     ) tagsOnPost
       ON tagsOnPost.posts_id = p.id
   `
-
+}
 const getQueryOfOpenRange = (loginedUserId: string) =>
   `
     AND
