@@ -1,4 +1,6 @@
 import dataSource from "./database";
+const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
+const defaultUserImgUrl = '/user/default-img.png';
 
 // 팔로우 하기
 const createFollow = async (userId: string, targetUsersId: string) => {
@@ -55,7 +57,8 @@ const getFollowings = async (userId: string) => {
         SELECT
           follow.target_users_id AS id,
           users.nickname,
-          users.email
+          users.email,
+          CONCAT('${domain}',IFNULL(users.profile_img_url, '${defaultUserImgUrl}')) AS profileImgUrl
         FROM
           follow
           JOIN users ON users.id = follow.target_users_id
@@ -74,7 +77,8 @@ const getFollowers = async (userId: string) => {
         SELECT
             follow.users_id AS id,
             users.nickname,
-            users.email
+            users.email,
+            CONCAT('${domain}',IFNULL(users.profile_img_url, '${defaultUserImgUrl}')) AS profileImgUrl
         FROM
           follow
         JOIN users ON users.id = follow.users_id
