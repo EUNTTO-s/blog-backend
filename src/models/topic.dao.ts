@@ -1,6 +1,8 @@
 import dataSource from "./database";
+import { whereBuilder } from "./builder/queryBuilder";
 
-const getTopics = async () => {
+const getTopics = async (searchOption: TopicSearchOption) => {
+    const { topicId, topicName } = searchOption;
     const topics = await dataSource.query(
         `
         SELECT
@@ -8,7 +10,9 @@ const getTopics = async () => {
           topic_name AS content
         FROM
           topics
-          ORDER BY id
+        ${whereBuilder("id", ["="], topicId, true)}
+        ${whereBuilder("topic_name", ["="], topicName)}
+        ORDER BY id
         `
     );
     return topics;

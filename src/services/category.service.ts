@@ -6,7 +6,12 @@ const getCategories = async (option: CategorySerarchOption) => {
 }
 
 const createCategories = async (userId: string, cateName: string) => {
+  // title 길이 검사
+  if (cateName.length > 50) {
+    throw { status: 400, message: "카테고리명은 50자 이상 적을 수 없습니다." };
+  }
   const [cate] = await cateDao.getCategories({userId, cateName});
+
   if (cate) {
     throw {status: 400, message: "ALREADY_EXIST_CATEGORY_NAME"};
   }

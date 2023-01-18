@@ -5,7 +5,7 @@ import {checkDataIsNotEmpty,} from '../utils/myutils'
 
 const createPosts = async (req: express.Request, res: express.Response) => {
   const { title, categoryId, content, secretType, topicId, tagNames} = req.body;
-  checkDataIsNotEmpty({ title, content });
+  checkDataIsNotEmpty({ title, content, topicId });
   const input = {
     title,
     userId: req.userInfo.id,

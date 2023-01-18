@@ -3,10 +3,30 @@ import { enumToArray } from "../utils/myutils";
 import fileManger from "../middlewares/fileManager";
 import { OpenRange } from "../types/post.types";
 
-const { postDao, postTagDao, tagDao, cateDao } = dao_set;
+const { postDao, postTagDao, tagDao, cateDao, topicDao } = dao_set;
 
 const createPosts = async (input: PostInputType) => {
-  const { cateId, userId, tagNames, secretType, thumnail } = input;
+  const {
+    cateId,
+    userId,
+    tagNames,
+    secretType,
+    thumnail,
+    topicId,
+    title,
+    content,
+  } = input;
+
+  // title 길이 검사
+  if (title.length > 300) {
+    throw { status: 400, message: "제목은 300자 이상 적을 수 없습니다." };
+  }
+
+  // title 길이 검사
+  if (content.length > 1500) {
+    throw { status: 400, message: "제목은 1500자 이상 적을 수 없습니다." };
+  }
+
   // 카테고리 정보 가져오기
   if (cateId) {
     const [cate] = await cateDao.getCategories({ userId, cateId });
@@ -19,6 +39,11 @@ const createPosts = async (input: PostInputType) => {
   const inRange = enumToArray(OpenRange).includes(Number(secretType));
   if (!inRange) {
     throw { status: 400, message: "secretType가 0~2 사이에 존재하지 않습니다. 0: 전체공개, 1: 맞팔공개, 2: 비공개" };
+  }
+
+  const [topic] = await topicDao.getTopics({ topicId });
+  if (!topic) {
+    throw { status: 400, message: "해당하는 토픽이 존재하지 않습니다." };
   }
 
   const post = await postDao.createPosts(input);
