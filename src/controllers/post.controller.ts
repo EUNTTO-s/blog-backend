@@ -14,11 +14,11 @@ const createPosts = async (req: express.Request, res: express.Response) => {
     thumnail: req.file,
     secretType: secretType || 0,
     topicId: topicId,
-    tagNames: tagNames?.split(','),
+    tagNames: tagNames?.split(',') ?? [],
   }
 
-  await postSvc.createPosts(input);
-  res.status(200).json({message: 'POST_CREATED'});
+  const result = await postSvc.createPosts(input);
+  res.status(200).json({message: 'POST_CREATED', data: result});
 }
 
 const getPosts = async (req: express.Request, res: express.Response) => {

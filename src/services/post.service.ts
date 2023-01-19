@@ -27,12 +27,17 @@ const createPosts = async (input: PostInputType) => {
     throw { status: 400, message: "제목은 1500자 이상 적을 수 없습니다." };
   }
 
-  // 카테고리 정보 가져오기
+  // 카테고리 유무 검사
   if (cateId) {
     const [cate] = await cateDao.getCategories({ userId, cateId });
     if (!cate) {
       throw { status: 400, message: "해당하는 카테고리가 존재하지 않습니다." };
     }
+  }
+
+  // 태그 개수 제한 검사
+  if (tagNames.length > 10) {
+    throw { status: 400, message: "태그는 10개를 초과할 수 없습니다." };
   }
 
   // 공개타입이 범위 내에 존재하는 지 확인
@@ -57,6 +62,7 @@ const createPosts = async (input: PostInputType) => {
   if (thumbnailImgUrl) {
     await postDao.updatePosts({postId, thumbnailImgUrl});
   }
+  return { postId };
 };
 
 const getPosts = async (searchOption: PostSearchOption) => {
@@ -114,6 +120,7 @@ const updateTagOnPost = async (postId: string, tagNames: string[]) => {
 
   const trimedTagNames = tagNames
     .filter(v => v != "")
+    .filter((v, idx, arr) => arr.indexOf(v) === idx)
     .map(v =>(v.trim()));
 
   // 새로운 태그 생성 및 포스트와 태그 연결
