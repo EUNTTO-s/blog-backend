@@ -6,7 +6,7 @@ const queryOfSelectColumn = `
   p.id,
   p.title,
   p.content,
-  CONCAT('${domain}',IFNULL(p.thumnail_img_url, '${defaultPostImgUrl}')) AS thumnailImgUrl,
+  CONCAT('${domain}',IFNULL(p.thumnail_img_url, '${defaultPostImgUrl}')) AS thumbnailImgUrl,
   p.secret_type AS secretType,
   p.created_at as createdAt,
   JSON_OBJECT(

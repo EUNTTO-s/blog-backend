@@ -10,7 +10,7 @@ const router = express.Router();
 router.post(
   "/posts",
   asyncWrap(middleware.authMiddleware),
-  asyncWrap(fileManager.upload.single('thumnail')),
+  asyncWrap(fileManager.upload.single('thumbnail')),
   asyncWrap(postCtl.createPosts),
 );
 
@@ -29,7 +29,7 @@ router.delete(
 router.patch(
   "/posts/:id",
   asyncWrap(middleware.authMiddleware),
-  asyncWrap(fileManager.upload.single('thumnail')),
+  asyncWrap(fileManager.upload.single('thumbnail')),
   asyncWrap(postCtl.updatePosts),
 );
 

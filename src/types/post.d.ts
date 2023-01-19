@@ -4,7 +4,7 @@ interface PostInputType {
   userId?: string,
   cateId?: string,
   content?: string,
-  thumnailImgUrl?: string,
+  thumbnailImgUrl?: string,
   secretType?: string,
   topicId?: string,
   tagNames?: string[],

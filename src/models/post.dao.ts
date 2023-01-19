@@ -113,7 +113,7 @@ const updatePosts = async (postInput: PostInputType) => {
     ['title',             postInput.title],
     ['categories_id',     postInput.cateId, true],
     ['content',           postInput.content],
-    ['thumnail_img_url',  postInput.thumnailImgUrl, true],
+    ['thumnail_img_url',  postInput.thumbnailImgUrl, true],
     ['secret_type',       postInput.secretType],
     ['topics_id',         postInput.topicId, true],
   ];

@@ -25,12 +25,13 @@ const getPosts = async (req: express.Request, res: express.Response) => {
   const searchOption : PostSearchOption = {
     ...req.query,
     postId: req.params.id,
-    pageNumber: req.query.pageNumber && Number(req.query.pageNumber),
-    countPerPage: req.query.countPerPage && Number(req.query.countPerPage),
+    pageNumber: req.query.pageNumber ? Number(req.query.pageNumber) : 1,
+    countPerPage: req.query.countPerPage ? Number(req.query.countPerPage) : 30,
     loginedUserId: req.userInfo?.id,
   };
   const [posts, maxCount] = await postSvc.getPosts(searchOption);
-  res.status(200).json({ data: posts, maxCount });
+  const {pageNumber, countPerPage} = searchOption;
+  res.status(200).json({ data: posts, maxCount, pageNumber, maxPage: Math.floor(maxCount/countPerPage) + 1});
 }
 
 const deletePosts = async (req: express.Request, res: express.Response) => {

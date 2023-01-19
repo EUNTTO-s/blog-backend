@@ -12,7 +12,7 @@ const getUploadRootDir = () => {
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const {fieldname, mimetype} = file;
-  const imageNameList = ['thumnail', 'profileImg'];
+  const imageNameList = ['thumbnail', 'profileImg'];
   const found = imageNameList.find(v => v == fieldname);
   if (found && !(mimetype.includes("image"))) {
     cb({message: '이미지 형식이 아닙니다.', status: 400, name: ''});

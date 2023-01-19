@@ -53,9 +53,9 @@ const createPosts = async (input: PostInputType) => {
     updateTagOnPost(postId, tagNames);
   }
 
-  const thumnailImgUrl = await fileManger.updateFile("post", postId, thumnail);
-  if (thumnailImgUrl) {
-    await postDao.updatePosts({postId, thumnailImgUrl});
+  const thumbnailImgUrl = await fileManger.updateFile("post", postId, thumnail);
+  if (thumbnailImgUrl) {
+    await postDao.updatePosts({postId, thumbnailImgUrl});
   }
 };
 
@@ -100,8 +100,8 @@ const updatePosts = async (input: PostInputType) => {
     throw { status: 400, message: "본인이 작성한 포스트가 아니거나 포스트가 존재하지 않습니다." };
   }
 
-  const thumnailImgUrl = await fileManger.updateFile("post", postId, thumnail);
-  await postDao.updatePosts({...input, thumnailImgUrl});
+  const thumbnailImgUrl = await fileManger.updateFile("post", postId, thumnail);
+  await postDao.updatePosts({...input, thumbnailImgUrl});
 
   if (tagNames != undefined) {
     updateTagOnPost(post.id, tagNames);
