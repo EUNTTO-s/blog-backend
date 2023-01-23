@@ -88,7 +88,7 @@ const getPosts = async (searchOption: PostSearchOption) => {
         }
     })
   });
-  if (onlyCount || postId) {
+  if (onlyCount) {
     return answer[0];
   }
   return answer;
