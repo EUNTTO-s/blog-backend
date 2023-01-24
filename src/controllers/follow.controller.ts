@@ -25,7 +25,7 @@ const unfollow = async (req: express.Request, res: express.Response) => {
 
 // 팔로잉 리스트 보기
 const getFollowings = async (req: express.Request, res: express.Response) => {
-    const userId = req.params.id;
+    let userId = req.query.myFollowing? req.userInfo.id : req.params.id;
     checkDataIsNotEmpty({ userId });
 
     const list = await followSvc.getFollowings(userId);
@@ -34,7 +34,7 @@ const getFollowings = async (req: express.Request, res: express.Response) => {
 
 // 팔로워 리스트 보기
 const getFollowers = async (req: express.Request, res: express.Response) => {
-    const userId = req.params.id;
+  let userId = req.query.myFollower? req.userInfo.id : req.params.id;
     checkDataIsNotEmpty({ userId });
 
     const list = await followSvc.getFollowers(userId);

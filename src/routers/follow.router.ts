@@ -10,7 +10,15 @@ const router = express.Router();
 // user route
 router.post("/follow", asyncWrap(middleware.authMiddleware), asyncWrap(followCtl.follow));
 router.delete("/follow/:id", asyncWrap(middleware.authMiddleware), asyncWrap(followCtl.unfollow));
-router.get("/following/user/:id", asyncWrap(followCtl.getFollowings));
-router.get("/follower/user/:id", asyncWrap(followCtl.getFollowers));
+router.get(
+  ["/following", "/following/user/:id"],
+  asyncWrap(middleware.authInfoMiddleware),
+  asyncWrap(followCtl.getFollowings)
+);
+
+router.get(
+  ["/follower", "/follower/user/:id"],
+  asyncWrap(middleware.authInfoMiddleware),
+  asyncWrap(followCtl.getFollowers));
 
 export default router;
