@@ -60,7 +60,7 @@ const login = async (email: string, password: string) => {
         throw { status: 404, message: "아이디는 이메일 형식이어야 합니다." };
     }
     // 매칭되는 유저가 있는 지 확인
-    const userInfo = await userDao.findUser({ email, includePwd: true });
+    const [userInfo] = await userDao.findUsers({ email, includePwd: true });
     console.log("userInfo: ", userInfo);
     // 있으면 토큰 발행 없으면 에러
     if (!userInfo) {
@@ -96,9 +96,9 @@ const updateProfile = async (input: ProfileInputType) => {
 };
 
 // 유저 정보
-const getMe = async (userId: number) => {
-    const userInfo = await userDao.findUser({ userId });
-    return userInfo;
+const findUsers = async ({userId, search}: UserSearchOption) => {
+    const userInfos = await userDao.findUsers({ userId, search });
+    return userInfos;
 };
 
 export default {
@@ -107,5 +107,5 @@ export default {
     isExistEmail,
     login,
     updateProfile,
-    getMe,
+    findUsers,
 };

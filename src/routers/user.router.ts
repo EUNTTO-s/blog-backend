@@ -13,7 +13,7 @@ router.post("/signup", asyncWrap(userCtl.signUp));
 router.post("/nickname", asyncWrap(userCtl.isExistNickname));
 router.post("/email", asyncWrap(userCtl.isExistEmail));
 router.post("/login", asyncWrap(userCtl.login));
-router.get("/user", asyncWrap(middleware.authMiddleware), asyncWrap(userCtl.getMe));
+router.get("/user", asyncWrap(middleware.authMiddleware), asyncWrap(userCtl.getUserInfo));
 router.patch(
   "/profile",
   asyncWrap(middleware.authMiddleware),

@@ -10,6 +10,7 @@ interface UserSearchOption {
     email?: string;
     includePwd?: boolean;
     limit?: number;
+    search?: string;
 }
 
 interface ProfileInputType {

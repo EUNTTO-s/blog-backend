@@ -75,9 +75,9 @@ const updateProfile = async (input: ProfileInputType) => {
 };
 
 // 유저 정보
-const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
-    let { userId, email, includePwd } = searchOption;
-    const [userInfo] = await dataSource
+const findUsers = async (searchOption: UserSearchOption): Promise<UserInfo[]> => {
+    let { userId, email, includePwd, search } = searchOption;
+    const userInfos = await dataSource
         .query(
             `
           SELECT
@@ -98,6 +98,7 @@ const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
             users
           ${whereBuilder("users.id", ["="], userId, true)}
           ${whereBuilder("users.email", ["="], email)}
+          ${whereBuilder("users.nickname", ["LIKE", "AND", "SEARCH"], search)}
         `,
             [userId]
         )
@@ -117,7 +118,7 @@ const findUser = async (searchOption: UserSearchOption): Promise<UserInfo> => {
             });
         });
 
-    return userInfo as UserInfo;
+    return userInfos;
 };
 
 export default {
@@ -125,5 +126,5 @@ export default {
     existUser,
     existNickname,
     updateProfile,
-    findUser,
+    findUsers,
 };

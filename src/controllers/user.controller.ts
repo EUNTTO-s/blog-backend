@@ -54,9 +54,14 @@ const updateProfile = async (req: express.Request, res: express.Response) => {
 };
 
 // 유저 정보
-const getMe = async (req: express.Request, res: express.Response) => {
-    const userInfo = await userSvc.getMe(Number(req.userInfo.id));
-    res.status(200).json({ userInfo });
+const getUserInfo = async (req: express.Request, res: express.Response) => {
+    let userId;
+    if (!req.query.search) {
+      userId = Number(req.userInfo.id);
+    }
+    const userInfos = await userSvc.findUsers({userId, search: req.query.search as string});
+    let data = req.query.search? userInfos: userInfos[0];
+    res.status(200).json({ data });
 };
 
 export default {
@@ -65,5 +70,5 @@ export default {
     isExistEmail,
     login,
     updateProfile,
-    getMe,
+    getUserInfo,
 };
