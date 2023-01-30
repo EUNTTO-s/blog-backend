@@ -1,69 +1,34 @@
-import express from 'express';
+import {Request, Response} from 'express';
 import service_set from "../services";
 const { postSvc } = service_set;
-import {checkDataIsNotEmpty,} from '../utils/myutils'
+import {CreatePostDto, SearchPostDto, UpdatePostDto} from '../dtos/posts.dto';
 
-const createPosts = async (req: express.Request, res: express.Response) => {
-  const { title, categoryId, content, secretType, topicId, tagNames} = req.body;
-  checkDataIsNotEmpty({ title, content, topicId });
-  const input = {
-    title,
-    userId: req.userInfo.id,
-    cateId: categoryId,
-    content,
-    thumnail: req.file,
-    secretType: secretType || 0,
-    topicId: topicId,
-    tagNames: tagNames?.split(',') ?? [],
-  }
-
-  const result = await postSvc.createPosts(input);
+const createPosts = async (req: Request, res: Response) => {
+  const postDto = CreatePostDto.factory(req);
+  const result = await postSvc.createPosts(postDto);
   res.status(200).json({message: 'POST_CREATED', data: result});
 }
 
-const getPosts = async (req: express.Request, res: express.Response) => {
-  const searchOption : PostSearchOption = {
-    ...req.query,
-    postId: req.params.id,
-    pageNumber: req.query.pageNumber ? Number(req.query.pageNumber) : 1,
-    countPerPage: req.query.countPerPage ? Number(req.query.countPerPage) : 30,
-    loginedUserId: req.userInfo?.id,
-  };
-  const [posts, maxCount] = await postSvc.getPosts(searchOption);
-  const {pageNumber, countPerPage} = searchOption;
-  let resData:any = { data: searchOption.postId ? posts[0] : posts };
-  if (!searchOption.postId) {
+const getPosts = async (req: Request, res: Response) => {
+  const postDto = SearchPostDto.factory(req);
+  const [posts, maxCount] = await postSvc.getPosts(postDto);
+  const {pageNumber, countPerPage} = postDto;
+  let resData:any = { data: postDto.postId ? posts[0] : posts };
+  if (!postDto.postId) {
     resData = {...resData, maxCount, pageNumber, maxPage: Math.floor(maxCount/countPerPage) + 1};
   }
   res.status(200).json(resData);
 }
 
-const deletePosts = async (req: express.Request, res: express.Response) => {
+const deletePosts = async (req: Request, res: Response) => {
   const { id: postId } = req.params;
-  await postSvc.deletePosts(req.userInfo.id, postId);
+  await postSvc.deletePosts(+req.userInfo.id, +postId);
   res.status(200).json({message: 'POST_DELETED'});
 }
 
-const updatePosts = async (req: express.Request, res: express.Response) => {
-  const { id: postId } = req.params;
-  const { title, categoryId, content, secretType, topicId, tagNames } = req.body;
-  let { thumnail } = req.body;
-  thumnail = thumnail === undefined ? req.file : "";
-
-  const input = {
-    postId,
-    title,
-    userId: req.userInfo.id,
-    cateId: categoryId,
-    content,
-    thumnail,
-    secretType: secretType,
-    topicId: topicId,
-    tagNames: tagNames?.split(','),
-    loginedUserId: req.userInfo?.id,
-  }
-
-  await postSvc.updatePosts(input);
+const updatePosts = async (req: Request, res: Response) => {
+  const postDto = UpdatePostDto.factory(req);
+  await postSvc.updatePosts(postDto);
   res.status(200).json({message: 'POST_UPDATED'});
 }
 

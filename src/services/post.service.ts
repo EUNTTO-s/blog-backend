@@ -1,31 +1,17 @@
 import dao_set from "../models";
-import { enumToArray } from "../utils/myutils";
 import fileManger from "../middlewares/fileManager";
-import { OpenRange } from "../types/post.types";
+import {CreatePostDto, SearchPostDto, UpdatePostDto} from '../dtos/posts.dto';
 
 const { postDao, postTagDao, tagDao, cateDao, topicDao } = dao_set;
 
-const createPosts = async (input: PostInputType) => {
+const createPosts = async (input: CreatePostDto) => {
   const {
     cateId,
     userId,
     tagNames,
-    secretType,
     thumnail,
     topicId,
-    title,
-    content,
   } = input;
-
-  // title 길이 검사
-  if (title.length > 300) {
-    throw { status: 400, message: "제목은 300자 이상 적을 수 없습니다." };
-  }
-
-  // title 길이 검사
-  if (content.length > 1500) {
-    throw { status: 400, message: "제목은 1500자 이상 적을 수 없습니다." };
-  }
 
   // 카테고리 유무 검사
   if (cateId) {
@@ -33,17 +19,6 @@ const createPosts = async (input: PostInputType) => {
     if (!cate) {
       throw { status: 400, message: "해당하는 카테고리가 존재하지 않습니다." };
     }
-  }
-
-  // 태그 개수 제한 검사
-  if (tagNames.length > 10) {
-    throw { status: 400, message: "태그는 10개를 초과할 수 없습니다." };
-  }
-
-  // 공개타입이 범위 내에 존재하는 지 확인
-  const inRange = enumToArray(OpenRange).includes(Number(secretType));
-  if (!inRange) {
-    throw { status: 400, message: "secretType가 0~2 사이에 존재하지 않습니다. 0: 전체공개, 1: 맞팔공개, 2: 비공개" };
   }
 
   const [topic] = await topicDao.getTopics({ topicId });
@@ -65,7 +40,7 @@ const createPosts = async (input: PostInputType) => {
   return { postId };
 };
 
-const getPosts = async (searchOption: PostSearchOption) => {
+const getPosts = async (searchOption: SearchPostDto) => {
   const posts = await postDao.getPosts(searchOption);
   if (searchOption.postId) {
     return [posts, 1];
@@ -74,7 +49,7 @@ const getPosts = async (searchOption: PostSearchOption) => {
   return [posts, maxCount];
 }
 
-const deletePosts = async (userId: string, postId: string) => {
+const deletePosts = async (userId: number, postId: number) => {
   const [post] = await postDao.getPosts({userId, postId, loginedUserId: userId});
   if (!post) {
     throw { status: 400, message: "본인이 작성한 포스트가 아니거나 포스트가 존재하지 않습니다." };
@@ -83,21 +58,14 @@ const deletePosts = async (userId: string, postId: string) => {
   await postDao.deletePosts(postId);
 }
 
-const updatePosts = async (input: PostInputType) => {
-  const { userId, postId, tagNames, cateId, secretType, thumnail } = input;
+const updatePosts = async (input: UpdatePostDto) => {
+  const { userId, postId, tagNames, cateId, thumnail } = input;
 
   // 카테고리 정보 가져오기
   if (cateId) {
     const [cate] = await cateDao.getCategories({ userId, cateId });
     if (!cate) {
       throw { status: 400, message: "해당하는 카테고리가 존재하지 않습니다." };
-    }
-  }
-  if (secretType) {
-    // 공개타입이 범위 내에 존재하는 지 확인
-    const inRange = enumToArray(OpenRange).includes(Number(secretType));
-    if (!inRange) {
-      throw { status: 400, message: "secretType가 0~2 사이에 존재하지 않습니다. 0: 전체공개, 1: 맞팔공개, 2: 비공개" };
     }
   }
 
@@ -114,7 +82,7 @@ const updatePosts = async (input: PostInputType) => {
   }
 }
 
-const updateTagOnPost = async (postId: string, tagNames: string[]) => {
+const updateTagOnPost = async (postId: number, tagNames: string[]) => {
   // 기존 태그 삭제
   await postTagDao.deletePostTags(postId);
 

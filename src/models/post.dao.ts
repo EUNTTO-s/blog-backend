@@ -5,8 +5,9 @@ import {
   getQueryOfMyFollow,
 } from "./builder/post.sql";
 import { whereBuilder, setBuilder } from "./builder/queryBuilder";
+import {CreatePostDto, SearchPostDto} from '../dtos/posts.dto';
 
-const createPosts = async (postInput: PostInputType) => {
+const createPosts = async (postInput: CreatePostDto) => {
   const { title, userId, cateId, content, secretType, topicId } =
     postInput;
   const answer = await dataSource.query(
@@ -35,11 +36,11 @@ const createPosts = async (postInput: PostInputType) => {
   return answer;
 };
 
-const getPosts = async (searchOption: PostSearchOption) => {
+const getPosts = async (searchOption: SearchPostDto) => {
   const {
     postId,
     userId,
-    categoryId,
+    cateId,
     topicId,
     search,
     countPerPage = 30,
@@ -57,7 +58,7 @@ const getPosts = async (searchOption: PostSearchOption) => {
       ${getQueryOfSelectPost({ onlyCount })}
       ${whereBuilder("p.id",        ["="], postId, true)}
       ${whereBuilder("p.users_id",  ["="], userId)}
-      ${whereBuilder("cate.id",     ["="], categoryId)}
+      ${whereBuilder("cate.id",     ["="], cateId)}
       ${whereBuilder("t.id",        ["="], topicId)}
       ${getQueryOfOpenRange(loginedUserId)}
       ${getQueryOfMyFollow(myFollowing)}
@@ -94,11 +95,11 @@ const getPosts = async (searchOption: PostSearchOption) => {
   return answer;
 };
 
-const getMaxCountOfPosts = (searchOption: PostSearchOption) => {
+const getMaxCountOfPosts = (searchOption: SearchPostDto) => {
   getPosts({ ...searchOption, onlyCount: true });
 }
 
-const deletePosts = async (postId: string) => {
+const deletePosts = async (postId: number) => {
   await dataSource.query(`
   DELETE FROM
     posts
@@ -108,8 +109,8 @@ const deletePosts = async (postId: string) => {
   );
 }
 
-const updatePosts = async (postInput: PostInputType) => {
-  const propertyArray : [string, string, boolean?][] = [
+const updatePosts = async (postInput: CreatePostDto) => {
+  const propertyArray : [string, string | number, boolean?][] = [
     ['title',             postInput.title],
     ['categories_id',     postInput.cateId, true],
     ['content',           postInput.content],

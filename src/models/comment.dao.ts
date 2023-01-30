@@ -1,7 +1,7 @@
 import dataSource from "./database";
 
 // 댓글 생성
-const createComments = async (postId: string, content: string, userId: string) => {
+const createComments = async (postId: number, content: string, userId: number) => {
     await dataSource.query(
         `
           INSERT INTO

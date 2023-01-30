@@ -37,7 +37,7 @@ const makeUploadFolder = () => {
   }
 }
 
-const updateFile = async (path: string, id: string, file: Express.Multer.File | "") => {
+const updateFile = async (path: string, id: number, file: Express.Multer.File | "") => {
   if (file === "") {
     return "";
   }

@@ -1,4 +1,4 @@
 interface TopicSearchOption {
-  topicId?: string,
+  topicId?: number,
   topicName?: string,
 }

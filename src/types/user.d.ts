@@ -14,7 +14,7 @@ interface UserSearchOption {
 }
 
 interface ProfileInputType {
-    userId: string;
+    userId: number;
     nickname?: string;
     blogTitle?: string;
     profileIntro?: string;
