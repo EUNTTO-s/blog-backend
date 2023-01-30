@@ -9,7 +9,7 @@ const createComments = async (req: express.Request, res: express.Response) => {
     const userId = req.userInfo.id;
     checkDataIsNotEmpty({ postId, content, userId });
 
-    await commentSvc.createComments(postId, content, userId);
+    await commentSvc.createComments(+postId, content, +userId);
     res.status(201).json({ message: "COMMENT_CREATED" });
 };
 

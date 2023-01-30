@@ -5,7 +5,7 @@ const getCategories = async (option: CategorySerarchOption) => {
     return await cateDao.getCategories(option);
 }
 
-const createCategories = async (userId: string, cateName: string) => {
+const createCategories = async (userId: number, cateName: string) => {
   // title 길이 검사
   if (cateName.length > 50) {
     throw { status: 400, message: "카테고리명은 50자 이상 적을 수 없습니다." };
@@ -19,7 +19,7 @@ const createCategories = async (userId: string, cateName: string) => {
   return await cateDao.createCategories(userId, cateName);
 }
 
-const deleteCategories = async (userId: string, cateId: string) => {
+const deleteCategories = async (userId: number, cateId: number) => {
   const [cate] = await cateDao.getCategories({userId, cateId});
   if (!cate) {
     throw {status: 400, message: "NOT_EXIST_MATCHED_CATEGORY"};
@@ -27,7 +27,7 @@ const deleteCategories = async (userId: string, cateId: string) => {
   return await cateDao.deleteCategories(cateId);
 }
 
-const updateCategories = async (userId: string, cateId: string, cateName: string) => {
+const updateCategories = async (userId: number, cateId: number, cateName: string) => {
   const [cate] = await cateDao.getCategories({userId, cateId});
   if (!cate) {
     throw {status: 400, message: "NOT_EXIST_MATCHED_CATEGORY"};

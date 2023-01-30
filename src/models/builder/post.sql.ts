@@ -56,7 +56,7 @@ const getQueryOfSelectPost = ({onlyCount} : {onlyCount?: boolean} = {onlyCount: 
       ON tagsOnPost.posts_id = p.id
   `
 }
-const getQueryOfOpenRange = (loginedUserId: string) =>
+const getQueryOfOpenRange = (loginedUserId: number) =>
   `
     AND
     (

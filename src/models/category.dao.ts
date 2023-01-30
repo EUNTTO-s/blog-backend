@@ -22,7 +22,7 @@ const getCategories = async (option: CategorySerarchOption) => {
   return categories;
 };
 
-const createCategories = async (userId: string, categoryName: string) => {
+const createCategories = async (userId: number, categoryName: string) => {
   const categories = await dataSource.query(
     `
       INSERT INTO
@@ -36,7 +36,7 @@ const createCategories = async (userId: string, categoryName: string) => {
   return categories;
 };
 
-const deleteCategories = async (categoryId: string) => {
+const deleteCategories = async (categoryId: number) => {
   const categories = await dataSource.query(
     `
       DELETE FROM
@@ -49,7 +49,7 @@ const deleteCategories = async (categoryId: string) => {
   return categories;
 };
 
-const updateCategories = async (cateId: string, cateName: string) => {
+const updateCategories = async (cateId: number, cateName: string) => {
   const categories = await dataSource.query(
     `
       UPDATE

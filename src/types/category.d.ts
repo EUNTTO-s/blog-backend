@@ -1,5 +1,5 @@
 interface CategorySerarchOption {
-  cateId?: string,
-  userId?: string,
+  cateId?: number,
+  userId?: number,
   cateName?: string,
 }

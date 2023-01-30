@@ -1,6 +1,6 @@
 import dataSource from "./database";
 
-const createPostTags = async (postId: string, tagId: string) => {
+const createPostTags = async (postId: number, tagId: number) => {
   const answer = await dataSource.query(
     `
     INSERT INTO
@@ -16,7 +16,7 @@ const createPostTags = async (postId: string, tagId: string) => {
   return answer;
 };
 
-const deletePostTags = async (postId: string) => {
+const deletePostTags = async (postId: number) => {
   await dataSource.query(`
   DELETE FROM
     posts_tags

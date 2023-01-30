@@ -18,7 +18,7 @@ const whereBuilder = (columnName: string, searchOption: ["LIKE"|"="|"<="|">=", (
   `
 };
 
-const setBuilder = (pairArray: [string, string, boolean?][]) : [string, any[]]=> {
+const setBuilder = (pairArray: [string, string | number, boolean?][]) : [string, any[]]=> {
   // array 0번쨰: 컬럼명
   // array 1번쨰: 컬럼값
   // array 2번쨰: 컬럼이 ID인지 확인하는 Flag
@@ -34,7 +34,7 @@ const setBuilder = (pairArray: [string, string, boolean?][]) : [string, any[]]=>
       ${pair[0]} = ? ${isLastIndex ? "" : ","}`;
     });
 
-  const valueArr : string[] = filteredArray.map((pair, index, arr) => {
+  const valueArr : (string|number)[] = filteredArray.map((pair, index, arr) => {
     const bPropertyOption = pair[2];
     if (bPropertyOption && pair[1] == '') {
       return null;
