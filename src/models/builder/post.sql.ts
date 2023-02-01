@@ -1,12 +1,11 @@
 const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
-const defaultPostImgUrl = '/post/default-img.jpg';
 const defaultUserImgUrl = '/user/default-img.png';
 
 const queryOfSelectColumn = `
   p.id,
   p.title,
   p.content,
-  CONCAT('${domain}',IFNULL(p.thumnail_img_url, '${defaultPostImgUrl}')) AS thumbnailImgUrl,
+  CONCAT('${domain}',p.thumnail_img_url) AS thumbnailImgUrl,
   p.secret_type AS secretType,
   p.created_at as createdAt,
   JSON_OBJECT(
