@@ -29,7 +29,9 @@ const getComments = async (postId: string) => {
                   'nickname',
                   users.nickname,
                   'email',
-                  users.email
+                  users.email,
+                  'profileImgUrl',
+                  users.profile_img_url
                 ) AS user
               FROM
                 comments
@@ -41,7 +43,13 @@ const getComments = async (postId: string) => {
         )
         .then((comments) => {
             return [...comments].map((comment) => {
-                return { ...comment, user: JSON.parse(comment.user) };
+                const domain = `${process.env.HOST_URL || "http://localhost"}:${process.env.PORT || 5500}`;
+                let user = JSON.parse(comment.user);
+                let profileImgUrl = user.profileImgUrl ? `${domain}${user.profileImgUrl}` : `${domain}/user/default-img.png`;
+                return {
+                    ...comment,
+                    user: { ...user, profileImgUrl },
+                };
             });
         });
     return comments;
