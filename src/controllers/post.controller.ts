@@ -4,7 +4,7 @@ const { postSvc } = service_set;
 import {CreatePostDto, SearchPostDto, UpdatePostDto} from '../dtos/posts.dto';
 
 const createPosts = async (req: Request, res: Response) => {
-  const postDto = CreatePostDto.factory(req);
+  const postDto = await CreatePostDto.factory(req);
   const result = await postSvc.createPosts(postDto);
   res.status(200).json({message: 'POST_CREATED', data: result});
 }
