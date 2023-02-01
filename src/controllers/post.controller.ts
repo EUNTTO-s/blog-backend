@@ -10,7 +10,7 @@ const createPosts = async (req: Request, res: Response) => {
 }
 
 const getPosts = async (req: Request, res: Response) => {
-  const postDto = SearchPostDto.factory(req);
+  const postDto = await SearchPostDto.factory(req);
   const [posts, maxCount] = await postSvc.getPosts(postDto);
   const {pageNumber, countPerPage} = postDto;
   let resData:any = { data: postDto.postId ? posts[0] : posts };
@@ -27,7 +27,7 @@ const deletePosts = async (req: Request, res: Response) => {
 }
 
 const updatePosts = async (req: Request, res: Response) => {
-  const postDto = UpdatePostDto.factory(req);
+  const postDto = await UpdatePostDto.factory(req);
   await postSvc.updatePosts(postDto);
   res.status(200).json({message: 'POST_UPDATED'});
 }

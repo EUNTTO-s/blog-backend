@@ -5,7 +5,7 @@ import {
   getQueryOfMyFollow,
 } from "./builder/post.sql";
 import { whereBuilder, setBuilder } from "./builder/queryBuilder";
-import {CreatePostDto, SearchPostDto} from '../dtos/posts.dto';
+import {CreatePostDto, SearchPostDto, UpdatePostDto} from '../dtos/posts.dto';
 
 const createPosts = async (postInput: CreatePostDto) => {
   const { title, userId, cateId, content, secretType, topicId } =
@@ -109,7 +109,7 @@ const deletePosts = async (postId: number) => {
   );
 }
 
-const updatePosts = async (postInput: CreatePostDto) => {
+const updatePosts = async (postInput: UpdatePostDto) => {
   const propertyArray : [string, string | number, boolean?][] = [
     ['title',             postInput.title],
     ['categories_id',     postInput.cateId, true],
