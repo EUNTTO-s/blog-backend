@@ -1,6 +1,11 @@
 import express from 'express';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({
+  path:
+    process.env.NODE_ENV == undefined
+      ? `${__dirname}/../.env`
+      : `${__dirname}/../.${process.env.NODE_ENV}.env`,
+});
 import morgan from 'morgan';
 import router  from "./routers";
 import { morganCustomFormat } from "./utils/myutils";
