@@ -28,7 +28,7 @@ const getFollowings = async (req: express.Request, res: express.Response) => {
     let userId = req.query.myFollowing? req.userInfo.id : req.params.id;
     checkDataIsNotEmpty({ userId });
 
-    const list = await followSvc.getFollowings(userId);
+    const list = await followSvc.getFollowings(userId, req.userInfo?.id);
     res.status(200).json({ data: list });
 };
 
@@ -37,7 +37,7 @@ const getFollowers = async (req: express.Request, res: express.Response) => {
   let userId = req.query.myFollower? req.userInfo.id : req.params.id;
     checkDataIsNotEmpty({ userId });
 
-    const list = await followSvc.getFollowers(userId);
+    const list = await followSvc.getFollowers(userId, req.userInfo?.id);
     res.status(200).json({ data: list });
 };
 

@@ -26,13 +26,13 @@ const unfollow = async (userId: string, targetUsersId: string) => {
 };
 
 // 팔로워 리스트 보기
-const getFollowings = async (userId: string) => {
-    const list = await followDao.getFollowings(userId);
+const getFollowings = async (targetUserId: string, userId: string) => {
+    const list = await followDao.getFollowings(targetUserId, userId);
     return list;
 };
 
-const getFollowers = async (userId: string) => {
-    const list = await followDao.getFollowers(userId);
+const getFollowers = async (targetUserId: string, userId: string) => {
+    const list = await followDao.getFollowers(targetUserId, userId);
     return list;
 };
 

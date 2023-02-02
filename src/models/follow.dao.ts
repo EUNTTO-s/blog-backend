@@ -51,7 +51,8 @@ const deleteFollow = async (userId: string, targetUsersId: string) => {
 };
 
 // 팔로잉 리스트 보기
-const getFollowings = async (userId: string) => {
+const getFollowings = async (targetUserId: string, userId: string) => {
+    const array = userId? [userId, targetUserId] : [targetUserId];
     const list = await dataSource.query(
         `
         SELECT
@@ -59,19 +60,33 @@ const getFollowings = async (userId: string) => {
           users.nickname,
           users.email,
           CONCAT('${domain}',IFNULL(users.profile_img_url, '${defaultUserImgUrl}')) AS profileImgUrl
+          ${userId?`, IF(ISNULL(myFollow.users_id), 'false', 'true') AS registed` : ''}
         FROM
           follow
           JOIN users ON users.id = follow.target_users_id
+          ${userId? `LEFT JOIN (
+            SELECT
+              follow.target_users_id AS users_id
+            FROM
+              follow
+            WHERE
+              follow.users_id = ?
+          ) AS myFollow ON follow.target_users_id = myFollow.users_id` : ''}
         WHERE
-            users_id = ?
+          follow.users_id = ?
         `,
-        [userId]
-    );
+        array
+    ).then(answer => {
+      return [...answer].map((item)=> {
+        return userId? {...item, registed: JSON.parse(item.registed)} : item
+      })
+    });
     return list;
 };
 
 // 팔로워 리스트 보기
-const getFollowers = async (userId: string) => {
+const getFollowers = async (targetUserId: string, userId: string) => {
+  const array = userId? [userId, targetUserId] : [targetUserId];
     const list = await dataSource.query(
         `
         SELECT
@@ -79,14 +94,27 @@ const getFollowers = async (userId: string) => {
             users.nickname,
             users.email,
             CONCAT('${domain}',IFNULL(users.profile_img_url, '${defaultUserImgUrl}')) AS profileImgUrl
+            ${userId?`, IF(ISNULL(myFollow.users_id), 'false', 'true') AS registed` : ''}
         FROM
           follow
         JOIN users ON users.id = follow.users_id
+        ${userId? `LEFT JOIN (
+          SELECT
+            follow.target_users_id AS users_id
+          FROM
+            follow
+          WHERE
+            follow.users_id = ?
+        ) AS myFollow ON follow.users_id = myFollow.users_id` : ''}
         WHERE
             target_users_id = ?
         `,
-        [userId]
-    );
+        array
+        ).then(answer => {
+          return [...answer].map((item)=> {
+            return userId? {...item, registed: JSON.parse(item.registed)} : item
+          })
+        });
     return list;
 };
 
