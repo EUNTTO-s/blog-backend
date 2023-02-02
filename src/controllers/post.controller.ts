@@ -15,7 +15,7 @@ const getPosts = async (req: Request, res: Response) => {
   const {pageNumber, countPerPage} = postDto;
   let resData:any = { data: postDto.postId ? posts[0] : posts };
   if (!postDto.postId) {
-    resData = {...resData, maxCount, pageNumber, maxPage: Math.floor(maxCount/countPerPage) + 1};
+    resData = {...resData, maxCount, pageNumber, maxPage: Math.ceil(maxCount/countPerPage)};
   }
   res.status(200).json(resData);
 }
