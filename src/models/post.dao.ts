@@ -66,6 +66,7 @@ const getPosts = async (searchOption: SearchPostDto) => {
       ${whereBuilder("p.content",           ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("cate.category_name",  ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("tagsOnPost.tags",     ["LIKE", "OR",  "SEARCH"], search)}
+      ORDER BY p.created_at DESC
       ${
         onlyCount == false?
           `LIMIT ${countPerPage} OFFSET ${countPerPage * (pageNumber - 1)}`
