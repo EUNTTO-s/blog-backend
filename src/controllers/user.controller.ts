@@ -57,10 +57,13 @@ const updateProfile = async (req: express.Request, res: express.Response) => {
 const getUserInfo = async (req: express.Request, res: express.Response) => {
     let userId;
     if (!req.query.search) {
-      userId = Number(req.userInfo.id);
+        userId = Number(req.userInfo?.id);
     }
-    const userInfos = await userSvc.findUsers({userId, search: req.query.search as string});
-    let data = req.query.search? userInfos: userInfos[0];
+
+    userId = req.params.id === undefined ? Number(req.userInfo?.id) : Number(req.params.id);
+
+    const userInfos = await userSvc.findUsers({ userId, search: req.query.search as string });
+    let data = req.query.search ? userInfos : userInfos[0];
     res.status(200).json({ data });
 };
 
