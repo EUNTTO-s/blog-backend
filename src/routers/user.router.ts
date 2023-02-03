@@ -13,6 +13,6 @@ router.post("/signup", asyncWrap(userCtl.signUp));
 router.post("/nickname", asyncWrap(userCtl.isExistNickname));
 router.post("/email", asyncWrap(userCtl.isExistEmail));
 router.post("/login", asyncWrap(userCtl.login));
-router.get(["/user", "/user/:id"], asyncWrap(middleware.authInfoMiddleware), asyncWrap(userCtl.getUserInfo));
+router.get(["/users", "/users/:id"], asyncWrap(middleware.authInfoMiddleware), asyncWrap(userCtl.getUserInfo));
 router.patch("/profile", asyncWrap(middleware.authMiddleware), asyncWrap(fileManager.upload.single("profileImg")), asyncWrap(userCtl.updateProfile));
 export default router;
