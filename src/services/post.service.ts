@@ -27,7 +27,7 @@ const createPosts = async (input: CreatePostDto) => {
   }
 
   const post = await postDao.createPosts(input);
-  const postId = post.insertId;
+  const postId = post.id;
 
   if (tagNames) {
     updateTagOnPost(postId, tagNames);
@@ -35,7 +35,7 @@ const createPosts = async (input: CreatePostDto) => {
 
   const thumbnailImgUrl = await fileManger.updateFile("post", postId, thumnail);
   if (thumbnailImgUrl) {
-    await postDao.updatePosts({postId, thumbnailImgUrl});
+    await postDao.updatePosts({ postId, thumbnailImgUrl });
   }
   return { postId };
 };

@@ -4,36 +4,15 @@ import {
   getQueryOfOpenRange,
   getQueryOfMyFollow,
 } from "./builder/post.sql";
-import { whereBuilder, setBuilder } from "./builder/queryBuilder";
+import { whereBuilder } from "./builder/queryBuilder";
 import {CreatePostDto, SearchPostDto, UpdatePostDto} from '../dtos/posts.dto';
+import { Post } from "./entities/post.entity"
+
+const postRep = dataSource.getRepository(Post)
 
 const createPosts = async (postInput: CreatePostDto) => {
-  const { title, userId, cateId, content, secretType, topicId } =
-    postInput;
-  const answer = await dataSource.query(
-    `
-    INSERT INTO
-      posts(
-        title,
-        users_id,
-        categories_id,
-        content,
-        secret_type,
-        topics_id
-      )
-    VALUES
-      (?,?,?,?,?,?)
-    `,
-    [
-      title,
-      userId,
-      cateId,
-      content,
-      secretType,
-      topicId,
-    ]
-  );
-  return answer;
+  const post = Post.createInstance(postInput);
+  return await postRep.save(post);
 };
 
 const getPosts = async (searchOption: SearchPostDto) => {
@@ -101,37 +80,12 @@ const getMaxCountOfPosts = (searchOption: SearchPostDto) => {
 }
 
 const deletePosts = async (postId: number) => {
-  await dataSource.query(`
-  DELETE FROM
-    posts
-  WHERE
-    id = ?
-  `, [postId]
-  );
+  await postRep.delete({id: postId});
 }
 
 const updatePosts = async (postInput: UpdatePostDto) => {
-  const propertyArray : [string, string | number, boolean?][] = [
-    ['title',             postInput.title],
-    ['categories_id',     postInput.cateId, true],
-    ['content',           postInput.content],
-    ['thumnail_img_url',  postInput.thumbnailImgUrl, true],
-    ['secret_type',       postInput.secretType],
-    ['topics_id',         postInput.topicId, true],
-  ];
-  const [stateOfSet, filterdValueArr] = setBuilder(propertyArray);
-  const answer = await dataSource.query(
-    `
-      UPDATE
-        posts
-      SET
-        ${stateOfSet}
-      WHERE
-        id = ?
-      `,
-    [...filterdValueArr, postInput.postId]
-  );
-  return answer;
+  const post = Post.createInstance(postInput);
+  await postRep.update({id: postInput.postId}, post);
 };
 
 export default {
