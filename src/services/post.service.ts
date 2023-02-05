@@ -92,14 +92,14 @@ const updateTagOnPost = async (postId: number, tagNames: string[]) => {
     .map(v =>(v.trim()));
 
   // 새로운 태그 생성 및 포스트와 태그 연결
-  trimedTagNames.forEach(async (tagName) => {
+  for (const tagName of trimedTagNames) {
     let [tag] = await tagDao.getTags(tagName);
     if (!tag) {
       tag = await tagDao.createTags(tagName);
     }
     tag.id = tag.id || tag.insertId;
     await postTagDao.createPostTags(postId, tag.id);
-  })
+  }
 }
 
 export default {
