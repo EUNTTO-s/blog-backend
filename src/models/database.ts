@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-
+import { Post } from "./entities/post.entity"
 const dataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
   host: process.env.TYPEORM_HOST,
@@ -7,16 +7,13 @@ const dataSource = new DataSource({
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
+  entities: [Post],
 });
 
-const bTestMode = process.env.TEST_MODE;
-
-console.log("bTestMode: ", bTestMode);
-
-if (bTestMode=="FALSE") {
-  dataSource.initialize().then(() => {
-    console.log("Data Source has been initialized!");
-  });
-}
+dataSource.initialize().then(() => {
+  console.log("Data Source has been initialized!");
+});
+const postRep = dataSource.getRepository(Post);
 
 export default dataSource;
+export {postRep};
