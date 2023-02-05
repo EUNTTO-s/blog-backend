@@ -3,7 +3,7 @@ const { commentDao, postDao } = dao_set;
 
 // 댓글 생성
 const createComments = async (postId: number, content: string, userId: number) => {
-    const [post] = await postDao.getPosts({ postId });
+    const [post] = await postDao.getPosts({ postId, loginedUserId: userId });
     if (!post) {
         throw { status: 400, message: "존재하지 않는 게시글입니다." };
     }

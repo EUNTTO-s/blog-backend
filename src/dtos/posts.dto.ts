@@ -157,7 +157,7 @@ export class UpdatePostDto {
   static async factory(req: express.Request) : Promise<UpdatePostDto> {
     const input = {
       ...req.body,
-      postId: req.params.postId,
+      postId: req.params.id,
       userId: req.userInfo.id,
       cateId: req.body.categoryId,
       thumnail: req.body.thumnail === undefined ? req.file : "",
