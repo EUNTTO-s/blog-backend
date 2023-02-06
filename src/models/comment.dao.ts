@@ -43,7 +43,7 @@ const getComments = async (postId: string) => {
         )
         .then((comments) => {
             return [...comments].map((comment) => {
-                const domain = `${process.env.HOST_URL || "http://localhost"}:${process.env.PORT || 5500}`;
+                const domain = `${process.env.HOST_URL}` || `http://localhost/${process.env.PORT || 5500}`;
                 let user = JSON.parse(comment.user);
                 let profileImgUrl = user.profileImgUrl ? `${domain}${user.profileImgUrl}` : `${domain}/user/default-img.png`;
                 return {

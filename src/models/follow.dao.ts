@@ -1,5 +1,5 @@
 import dataSource from "./database";
-const domain = `${process.env.HOST_URL || 'http://localhost'}:${process.env.PORT || 5500}`;
+const domain = `${process.env.HOST_URL}` || `http://localhost/${process.env.PORT || 5500}`;
 const defaultUserImgUrl = '/user/default-img.png';
 
 // 팔로우 하기
