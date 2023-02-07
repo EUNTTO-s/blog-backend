@@ -2,12 +2,15 @@ import multer from "multer";
 import fs from "fs";
 import type { Request} from "express";
 
+const NODE_ENV = process.env.NODE_ENV;
+const appendPath = NODE_ENV? `${NODE_ENV}`: '.';
+
 const getTempDir = () => {
-  return `${__dirname}/../../uploads/temp`;
+  return `${__dirname}/../../uploads/${appendPath}/temp`
 }
 
 const getUploadRootDir = () => {
-  return `${__dirname}/../../uploads`;
+  return `${__dirname}/../../uploads/${appendPath}/`;
 }
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
@@ -33,7 +36,7 @@ const makeUploadFolder = () => {
     fs.readdirSync(getTempDir())
   } catch (e) {
     console.log("업로드 폴더를 생성합니다");
-    fs.mkdirSync(getTempDir());
+    fs.mkdirSync(getTempDir(), {recursive: true});
   }
 }
 
