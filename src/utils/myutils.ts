@@ -68,9 +68,21 @@ const createFolder = (folderName: string) => {
     fs.mkdirSync(folderName);
   }
 }
+
+// Helper
+const stringIsNumber = (value: any) => isNaN(Number(value)) !== false;
+
+// Turn enum into array
+function enumToArray(enumme: any) : number[] {
+    return Object.keys(enumme)
+        .filter(stringIsNumber)
+        .map(key => enumme[key]);
+}
+
 export {
   asyncWrap,
   checkDataIsNotEmpty,
   morganCustomFormat,
   createFolder,
+  enumToArray,
 };

@@ -1,15 +1,48 @@
+# 또-로그
+- 자유롭게 글을 작성하고 사람들과 소통할 수 있다.
 
-해당 프로젝트는 패스트파이브 프리온보딩 기획문서를 사양으로 만들었습니다.
+## 배포 사이트
+https://ttolog.netlify.app/
 
-1. 회사 게시글을 지역별, 카테고리별 필터링하여 볼 수 있습니다.
-2. 게시글에 댓글을 추가할 수 있습니다.
-3. 일반회원은 회사 입주신청을 할 수 있으며 관리자 계정이 입주 신청을 승낙할 수 있습니다.
-4. 메인멤버라면 파일을 첨부가 가능한 회사 게시글을 추가/변경할 수 있습니다.
+## 주요 기능 요구사항:
+- 유저 간 팔로우 기능
+- 자신의 개인 정보 변경 기능 (내 블로그 이름, 소개글)
+- 게시글 공개 여부 설정 (모두 공개, 맞팔 공개, 비공개)
+- 게시글 검색 기능 (태그, 글 검색)
+- 게시글 댓글, 썸네일, 태그 추가
+- 자신의 잔디(깃헙 잔디) 확인 기능
 
-테스트용 아이디 및 비밀번호입니다.
 
-| group status | author        | id                | pwd      |
-|--------------|---------------|-------------------|----------|
-| 퇴주자         | main member   | test1_1@naver.com | test123@ |
-| 퇴주자        | normal member | test1_2@naver.com | test123@ |
-| 입주기업       | main member   | test7@naver.com   | test123@ |
+## API Endpoints
+
+| NAME        | CRUD   | ENDPOINT               |
+|-------------|--------|------------------------|
+| 게시글      | POST   | /posts                 |
+|             | GET    | /posts/{id}            |
+|             | GET    | /posts                 |
+|             | DELETE | /posts/{id}            |
+|             | PATCH  | /posts/{id}            |
+| 댓글        | POST   | /comments              |
+|             | GET    | /comments/{id}         |
+|             | PUT    | /comments/{id}         |
+|             | DELETE | /comments/{id}         |
+| 유저        | POST   | /signup                |
+|             | POST   | /login                 |
+|             | POST   | /nickname/check        |
+|             | POST   | /email/check           |
+|             | GET    | /users                 |
+|             | PATCH  | /profile               |
+| 게시글 잔디 | GET    | /grasses               |
+
+## 사용된 주요 스택
+- Node.js
+- Express
+- MySQL
+- Typescript
+- dbmate (https://github.com/amacneil/dbmate)
+
+## 버저닝 기준
+- [SemVer](http://semver.org/)
+
+## 개발자
+- [이우령](https://unleashed-grill-14b.notion.site/332ac2d305e145169a2903cb877ecf6b), [이상윤](https://www.notion.so/b77735f1fe574271b3495719f0e26b5a)

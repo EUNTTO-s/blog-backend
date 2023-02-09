@@ -12,6 +12,11 @@ declare global {
     }
   }
 
+  interface Error {
+    message: string,
+    status: number,
+  }
+
   type InfoType  = {
     id: string,
     email?: string,
