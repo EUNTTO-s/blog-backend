@@ -1,4 +1,3 @@
--- migrate:up
 CREATE TABLE `users` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `nickname` varchar(100) UNIQUE NOT NULL,
@@ -55,6 +54,13 @@ CREATE TABLE `tags` (
   `tag_name` varchar(150) UNIQUE NOT NULL
 );
 
+CREATE TABLE `urls` (
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `users_id` integer,
+  `title` varchar(150) NOT NULL,
+  `url` varchar(500)
+);
+
 CREATE TABLE `posts_tags` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `posts_id` integer NOT NULL COMMENT 'ref: > posts.id',
@@ -67,7 +73,9 @@ CREATE UNIQUE INDEX `categories_index_1` ON `categories` (`users_id`, `pos`);
 
 CREATE UNIQUE INDEX `follow_index_2` ON `follow` (`users_id`, `target_users_id`);
 
-CREATE UNIQUE INDEX `posts_tags_index_3` ON `posts_tags` (`posts_id`, `tags_id`);
+CREATE UNIQUE INDEX `urls_index_3` ON `urls` (`users_id`, `title`);
+
+CREATE UNIQUE INDEX `posts_tags_index_4` ON `posts_tags` (`posts_id`, `tags_id`);
 
 ALTER TABLE `posts` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
@@ -80,6 +88,8 @@ ALTER TABLE `follow` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 ALTER TABLE `follow` ADD FOREIGN KEY (`target_users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `comments` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
+
+ALTER TABLE `urls` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `posts` ADD FOREIGN KEY (`categories_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
 

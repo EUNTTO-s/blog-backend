@@ -92,20 +92,45 @@ const findUsers = async (searchOption: UserSearchOption): Promise<UserInfo[]> =>
               'profileIntro',
               users.profile_intro,
               'profileImgUrl',
-              users.profile_img_url
-            ) AS profile,
+              users.profile_img_url,
+              'profileUrls',
+              CONCAT(
+                '[',
+                GROUP_CONCAT(
+                  IF(
+                    ISNULL(urls.title),
+                    "",
+                    JSON_OBJECT('title', urls.title, 'url', urls.url)
+                  )
+                ),
+                ']'
+              )
+            ) as profile,
             users.created_at AS startDate
           FROM
             users
+          LEFT JOIN urls
+            ON urls.users_id = users.id
           ${whereBuilder("users.id", ["="], userId, true)}
           ${whereBuilder("users.email", ["="], email)}
           ${whereBuilder("users.nickname", ["LIKE", "AND", "SEARCH"], search)}
+          GROUP BY
+            users.id,
+            users.nickname,
+            ${includePwd ? "users.password," : ""}
+            users.email,
+            -- profile,
+            users.created_at
         `,
             [userId]
         )
         .then((users) => {
             return [...users].map((user) => {
                 let profile = JSON.parse(user.profile);
+                if (profile.profileUrls) {
+                  const profileUrls = JSON.parse(profile.profileUrls);
+                  profile.profileUrls = profileUrls;
+                }
                 let profileImgUrl = profile.profileImgUrl
                   ?
                     `${domain}${profile.profileImgUrl}`
