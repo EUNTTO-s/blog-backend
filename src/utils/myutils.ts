@@ -21,6 +21,15 @@ const checkDataIsNotEmpty = (targetData : {[key : string] : any}) => {
   });
 }
 
+function isObjectEmpty(obj: {[key: string]: any}): boolean {
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key) && obj[key] !== undefined) {
+      return false;
+    }
+  }
+  return true;
+}
+
 const bodyText = (req: Request) => {
   let bodyText = '';
   if (req.method !== 'GET') {
@@ -85,4 +94,5 @@ export {
   morganCustomFormat,
   createFolder,
   enumToArray,
+  isObjectEmpty,
 };

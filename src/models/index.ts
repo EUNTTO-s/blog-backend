@@ -7,6 +7,7 @@ import postTagDao from "./postTag.dao";
 import followDao from "./follow.dao";
 import grassDao from "./grass.dao";
 import commentDao from "./comment.dao";
+import urlDao from "./url.dao";
 
 const dao_set = {
     userDao,
@@ -18,6 +19,7 @@ const dao_set = {
     followDao,
     grassDao,
     commentDao,
+    urlDao,
 };
 
 export default dao_set;

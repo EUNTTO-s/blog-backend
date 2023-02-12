@@ -13,6 +13,11 @@ interface UserSearchOption {
     search?: string;
 }
 
+interface UrlType {
+  title: string;
+  url: string;
+}
+
 interface ProfileInputType {
     userId: number;
     nickname?: string;
@@ -20,4 +25,5 @@ interface ProfileInputType {
     profileIntro?: string;
     profileImg?: Express.Multer.File;
     profileImgUrl?: string;
+    linkUrls?: UrlType[];
 }

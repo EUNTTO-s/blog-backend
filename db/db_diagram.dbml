@@ -63,6 +63,16 @@ table tags {
   tag_name varchar(150) [not null, unique]
 }
 
+table urls {
+  id integer [pk, increment]
+  users_id integer [ref: > u.id]
+  title varchar(150) [not null]
+  url varchar(500)
+  Indexes {
+    (users_id, title) [unique]
+  }
+}
+
 table posts_tags as pt {
   id integer [pk, increment]
   posts_id integer [not null, note: 'ref: > posts.id']

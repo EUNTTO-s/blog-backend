@@ -2,8 +2,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import fileManger from "../middlewares/fileManager";
 import dao_set from "../models";
+import {isObjectEmpty} from "../utils/myutils";
 
-const { userDao } = dao_set;
+const { userDao, urlDao } = dao_set;
 
 // 회원가입
 const signUp = async (nickname: string, email: string, password: string) => {
@@ -92,7 +93,17 @@ const updateProfile = async (input: ProfileInputType) => {
     }
 
     const profileImgUrl = await fileManger.updateFile('user', input.userId, input.profileImg);
-    await userDao.updateProfile({...input, profileImgUrl});
+    if (!isObjectEmpty({nickname, blogTitle, profileIntro, profileImgUrl})) {
+      await userDao.updateProfile({...input, profileImgUrl});
+    }
+
+    // URL 업데이트
+    if (input.linkUrls) {
+      await urlDao.deleteUrls({userId: input.userId})
+      for (const url of input.linkUrls) {
+        await urlDao.createUrls({ ...url, userId: input.userId });
+      }
+    }
 };
 
 // 유저 정보
