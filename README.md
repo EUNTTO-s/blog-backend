@@ -46,3 +46,5 @@ https://ttolog.netlify.app/
 
 ## 개발자
 - [이우령](https://unleashed-grill-14b.notion.site/332ac2d305e145169a2903cb877ecf6b), [이상윤](https://www.notion.so/b77735f1fe574271b3495719f0e26b5a)
+
+![image](https://user-images.githubusercontent.com/35091494/224192553-60cab81f-a466-4ec2-883d-b57430991e03.png)
