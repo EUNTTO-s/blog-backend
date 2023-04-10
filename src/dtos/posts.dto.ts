@@ -23,7 +23,7 @@ export class CreatePostDto {
   cateId?: number;
 
   @MinLength(1, {message: '내용은 최소 1글자 이상이여야 합니다.',})
-  @MaxLength(1500, {message: '내용은 최대 1500글자 이하이여야 합니다',})
+  @MaxLength(6500, {message: '내용은 최대 6000글자 이하이여야 합니다',})
   content?: string;
 
   thumnail?: Express.Multer.File;

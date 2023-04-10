@@ -15,7 +15,7 @@ table posts as p {
   categories_id integer [note: 'ref: > cate.id']
   topics_id integer [ref: > t.id, not null]
   title varchar(300) [not null]
-  content varchar(1500) [not null]
+  content varchar(6000) [not null]
   thumnail_img_url varchar(1000)
   secret_type tinyint [default: 0, note:'0: 모두 공개, 1: 맞팔 공개, 2: 비공개']
   created_at datetime [not null, default: `now()`]

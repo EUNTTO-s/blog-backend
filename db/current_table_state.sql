@@ -15,7 +15,7 @@ CREATE TABLE `posts` (
   `categories_id` integer COMMENT 'ref: > cate.id',
   `topics_id` integer NOT NULL,
   `title` varchar(300) NOT NULL,
-  `content` varchar(1500) NOT NULL,
+  `content` varchar(6000) NOT NULL,
   `thumnail_img_url` varchar(1000),
   `secret_type` tinyint DEFAULT 0 COMMENT '0: 모두 공개, 1: 맞팔 공개, 2: 비공개',
   `created_at` datetime NOT NULL DEFAULT (now())
