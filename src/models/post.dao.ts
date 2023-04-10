@@ -31,6 +31,7 @@ const getPosts = async (searchOption: SearchPostDto) => {
   if (myFollowing == "false") {
     myFollowing = undefined;
   }
+
   const answer = await dataSource
     .query(
       `
@@ -41,10 +42,13 @@ const getPosts = async (searchOption: SearchPostDto) => {
       ${whereBuilder("t.id",        ["="], topicId)}
       ${getQueryOfOpenRange(loginedUserId)}
       ${getQueryOfMyFollow(myFollowing)}
+      AND (
+        1 = 1
       ${whereBuilder("p.title",             ["LIKE", "AND", "SEARCH"], search)}
       ${whereBuilder("p.content",           ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("cate.category_name",  ["LIKE", "OR",  "SEARCH"], search)}
       ${whereBuilder("tagsOnPost.tags",     ["LIKE", "OR",  "SEARCH"], search)}
+      )
       ORDER BY p.created_at DESC
       ${
         onlyCount == false?
