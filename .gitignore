@@ -1,6 +1,5 @@
 schema.sql
 build
-package-lock.json
 uploads
 
 temp.*
