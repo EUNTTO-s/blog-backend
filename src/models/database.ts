@@ -11,9 +11,18 @@ const dataSource = new DataSource({
   entities: [Post, UserUrl],
 });
 
-dataSource.initialize().then(() => {
-  console.log("Data Source has been initialized!");
-});
+function handleDisconnect() {
+  dataSource.initialize()
+    .then(() => {
+    console.log("Data Source has been initialized!");
+    })
+    .catch(() => {
+      console.log("try re-connecting...");
+      setTimeout(handleDisconnect, 2000);
+    });
+}
+handleDisconnect();
+
 const postRep = dataSource.getRepository(Post);
 
 export default dataSource;

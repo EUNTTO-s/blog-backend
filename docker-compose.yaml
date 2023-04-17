@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: sororiri/entto-mysql:0.0.1
+    build:
+      context: .
+      dockerfile: db-server.Dockerfile
+    ports:
+      - 4406:3306
+    volumes:
+      - dbVolume:/var/lib/mysql
+
+  dbmate:
+    image: amacneil/dbmate
+    environment:
+      - DATABASE_URL=mysql://example:example@host.docker.internal:4406/entto-blog
+    command: "--wait up"
+    working_dir: /app
+    volumes:
+      - ./db/migrations:/app/db/migrations:ro
+      - dbmateVolume:/app/db
+    depends_on:
+      - db
+    extra_hosts:
+      host.docker.internal: host-gateway
+
+  backend:
+    image: sororiri/entto-backend:0.0.1
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    ports:
+      - 5502:5502
+    depends_on:
+      - dbmate
+    extra_hosts:
+      host.docker.internal: host-gateway
+
+  frontend:
+    image: sororiri/entto-front-dev:0.0.1
+    environment:
+      - REACT_APP_API_URL=http://localhost:5502
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+volumes:
+  dbVolume:
+  dbmateVolume:

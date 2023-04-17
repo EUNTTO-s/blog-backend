@@ -1,0 +1,17 @@
+*Dockerfile
+node_modules
+.github
+build
+db
+
+frontend
+tests
+typescript-test
+
+uploads/.well-known
+uploads/dev
+uploads/post
+uploads/temp
+uploads/user
+!uploads/user/default-img.png
+.*env*

@@ -1,5 +1,5 @@
 {
-    "name": "fastfive-freeonboarding",
+    "name": "entto-blog",
     "version": "0.0.1",
     "description": "",
     "scripts": {
@@ -15,7 +15,7 @@
         "distribute": "npm i && npm run build && pm2 start build/src/server.js --name entto-blog -i 1",
         "distribute-stop": "pm2 del entto-blog"
     },
-    "author": "sangyun, kihyeon, wooryeong",
+    "author": "sangyun, wooryeong",
     "license": "ISC",
     "dependencies": {
         "@types/cookie-parser": "^1.4.3",
