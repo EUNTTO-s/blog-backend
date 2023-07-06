@@ -90,16 +90,20 @@ const updateTagOnPost = async (postId: number, tagNames: string[]) => {
     .filter(v => v != "")
     .filter((v, idx, arr) => arr.indexOf(v) === idx)
     .map(v =>(v.trim()));
+    ;
+  const uniqueSet = new Set(trimedTagNames);
 
   // 새로운 태그 생성 및 포스트와 태그 연결
-  for (const tagName of trimedTagNames) {
+  const promises: Promise<any>[] = [];
+  uniqueSet.forEach(async (tagName) => {
     let [tag] = await tagDao.getTags(tagName);
     if (!tag) {
       tag = await tagDao.createTags(tagName);
     }
     tag.id = tag.id || tag.insertId;
-    await postTagDao.createPostTags(postId, tag.id);
-  }
+    promises.push(postTagDao.createPostTags(postId, tag.id));
+  })
+  await Promise.all(promises);
 }
 
 export default {
