@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: entto-backend
+spec:
+  selector:
+    matchLabels:
+      app: entto-backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: entto-backend
+    spec:
+      containers:
+      - image: sororiri/entto-backend:0.0.3
+        imagePullPolicy: Always
+        name: entto-backend
+        ports:
+        - containerPort: 80
+        envFrom:
+        - secretRef:
+            name: entto-secret-1
+        volumeMounts:
+          - name: minikube-mount
+            mountPath: /app/uploads_
+      volumes:
+      - name: minikube-mount
+        hostPath:
+          path: /db/entto
+          type: Directory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: entto-front
+spec:
+  selector:
+    matchLabels:
+      app: entto-front
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: entto-front
+    spec:
+      containers:
+      - image: sororiri/entto-front:0.0.1
+        imagePullPolicy: Always
+        name: entto-front
+        ports:
+        - containerPort: 80

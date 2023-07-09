@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: entto-backend
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: entto-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: entto-front
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: entto-front
