@@ -17,6 +17,6 @@ router.use("", postRouter);
 router.use("", followRouter);
 router.use("", grassRouter);
 router.use("", commentRouter);
-router.use(express.static(__dirname + "/../../uploads"));
+router.use(express.static(__dirname + "/../../uploads_"));
 router.use(middleware.errorHandler);
 export default router;

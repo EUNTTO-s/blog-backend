@@ -6,11 +6,11 @@ const NODE_ENV = process.env.NODE_ENV;
 const appendPath = NODE_ENV? `${NODE_ENV}`: '.';
 
 const getTempDir = () => {
-  return `${__dirname}/../../uploads/${appendPath}/temp`
+  return `${__dirname}/../../uploads_/${appendPath}/temp`
 }
 
 const getUploadRootDir = () => {
-  return `${__dirname}/../../uploads/${appendPath}/`;
+  return `${__dirname}/../../uploads_/${appendPath}/`;
 }
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {

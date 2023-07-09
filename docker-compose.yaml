@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   backend:
-    image: sororiri/entto-backend:0.0.1
+    image: sororiri/entto-backend:0.0.3
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 5502:80
-      - 4444:443
+      - 5501:80
+      - 4443:443
     env_file:
       - ./.env
     environment:
@@ -17,6 +17,6 @@ services:
       - HTTPS_PORT=443
     volumes:
       - /etc/letsencrypt/:/etc/letsencrypt:ro
-      - /home/sori/db/entto/:/app/uploads
+      # - ./uploads_/:/app/uploads_
     extra_hosts:
       host.docker.internal: host-gateway

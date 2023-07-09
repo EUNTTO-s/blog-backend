@@ -1,6 +1,6 @@
 schema.sql
 build
-uploads
+uploads*
 frontend
 temp.*
 # Created by https://www.toptal.com/developers/gitignore/api/react,visualstudiocode,node
