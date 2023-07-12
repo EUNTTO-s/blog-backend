@@ -45,7 +45,7 @@ spec:
         app: entto-front
     spec:
       containers:
-      - image: sororiri/entto-front:0.0.1
+      - image: sororiri/entto-front:0.0.3
         imagePullPolicy: Always
         name: entto-front
         ports:
