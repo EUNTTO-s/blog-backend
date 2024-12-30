@@ -2,7 +2,7 @@
 - 자유롭게 글을 작성하고 사람들과 소통할 수 있다.
 
 ## 배포 사이트
-https://ttolog.netlify.app/
+https://www.entto.shop
 
 ## 주요 기능 요구사항:
 - 유저 간 팔로우 기능
